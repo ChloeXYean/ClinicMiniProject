@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ClinicMiniProject.Models;
 
 namespace ClinicMiniProject.Modules
 {
@@ -19,7 +20,7 @@ namespace ClinicMiniProject.Modules
         public List<Appointment> ViewAppointmentHistory(Patient patient)
         {
             
-            return appointments.FindAll(a => a.patientIC == patient.patientIC).OrderByDescending(a => a.appointedAt).ToList();
+            return appointments.FindAll(a => a.patient_IC == patient.patient_IC).OrderByDescending(a => a.appointedAt).ToList();
         }
 
 
@@ -30,7 +31,7 @@ namespace ClinicMiniProject.Modules
             emergencyAppointment.bookedAt = DateTime.Now;
             foreach (var apt in appointments)
             {
-                if (apt.appointedAt == emergencyAppointment.appointedAt && apt.appointmentID != emergencyAppointment.appointmentID)
+                if (apt.appointedAt == emergencyAppointment.appointedAt && apt.appointment_ID != emergencyAppointment.appointment_ID)
                 {
                     apt.status = "Rescheduled";
                     //Neeed to send msg to the patiet that got emergency case
@@ -42,7 +43,7 @@ namespace ClinicMiniProject.Modules
 
         public void RegisterWalkInPatient(Patient patient)
         {
-            var existingPatient = patients.Find(p => p.patientIC == patient.patientIC);
+            var existingPatient = patients.Find(p => p.patient_IC == patient.patient_IC);
             if (existingPatient == null)
             {
                 //Validate patient details here 

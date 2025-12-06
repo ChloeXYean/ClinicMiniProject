@@ -8,7 +8,7 @@ namespace ClinicMiniProject.Models
 {
     public class DoctorAvailability
     {
-        public string staffID { get; set; }
+        public string staff_ID { get; set; }
         public bool Monday { get; set; }
         public bool Tuesday { get; set; }
         public bool Wednesday { get; set; }

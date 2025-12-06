@@ -33,7 +33,7 @@ namespace ClinicMiniProject.Services
             for (int i = 0; i < doctorAvailabilities.Count; i++)
             {
                 var docAvail = doctorAvailabilities[i];
-                if (docAvail.staffID == id)
+                if (docAvail.staff_ID == id)
                 {
                     bool isWorkDay = day switch
                     {
@@ -61,6 +61,7 @@ namespace ClinicMiniProject.Services
                 appointments.Add(newApt);
                 return true;
             }
+            return false;
         }
 
         public List<Appointment> GetQueueByStatus(string status)

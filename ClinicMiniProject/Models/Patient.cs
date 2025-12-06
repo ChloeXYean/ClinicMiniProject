@@ -8,10 +8,12 @@ namespace ClinicMiniProject.Models
 {
     public class Patient
     {
-        public string patientIC { get; set; }
-        public string patientName { get; set; }
-        public string patientContact { get; set; }
-        public string patientEmail { get; set; }
+        public string patient_IC { get; set; }
+        public string patient_name { get; set; }
+        public string patient_contact { get; set; }
+
+        public string password { get; set; }
+        public string patient_email { get; set; }
         public bool isAppUser { get; set; }
     }
 }

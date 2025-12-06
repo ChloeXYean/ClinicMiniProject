@@ -8,9 +8,9 @@ namespace ClinicMiniProject.Models
 {
     public class Staff
     {
-        public string staffID { get; set; }
-        public string staffName { get; set; }
-        public string staffContact { get; set; }
+        public string staff_ID { get; set; }
+        public string staff_name { get; set; }
+        public string staff_contact { get; set; }
         public string specialities { get; set; }
         public bool isDoctor { get; set; }
     }
