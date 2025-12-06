@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+//See if needed ba
 namespace ClinicMiniProject.Models
 {
-    public class AppointmentQueue
+    public enum AppointmentStatus     
     {
-        public DateTime Date { get; set; }
-        public List<Appointment> appointments { get; set; }
+        Pending,
+        Completed,
+        Cancelled,
+        Emergency
     }
 }

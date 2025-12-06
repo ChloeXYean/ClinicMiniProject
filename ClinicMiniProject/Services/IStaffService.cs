@@ -1,4 +1,4 @@
-﻿using ClinicMiniProject.Modules;
+﻿using ClinicMiniProject.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +9,7 @@ namespace ClinicMiniProject.Services
 {
     public interface IStaffService
     {
+        public Staff GetStaffIdByName(string name);
         Staff GetStaff(int id);
         List<Staff> GetAllStaffs();
         void CreateStaff(Staff staff);

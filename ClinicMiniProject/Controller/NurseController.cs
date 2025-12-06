@@ -27,6 +27,16 @@ namespace ClinicMiniProject.Modules
         public void ManageEmergencyAppointment(Appointment emergencyAppointment)
         {
             emergencyAppointment.status = "Emergency";
+            emergencyAppointment.bookedAt = DateTime.Now;
+            foreach (var apt in appointments)
+            {
+                if (apt.appointedAt == emergencyAppointment.appointedAt && apt.appointmentID != emergencyAppointment.appointmentID)
+                {
+                    apt.status = "Rescheduled";
+                    //Neeed to send msg to the patiet that got emergency case
+                    apt.appointedAt = apt.appointedAt.AddMinutes(30); // Reschedule by 30 minutes for simplicity
+                }
+            }
             appointments.Add(emergencyAppointment);
         }
 

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ClinicMiniProject.Modules;
+using ClinicMiniProject.Models;
+using ClinicMiniProject.Repository;
+
 
 namespace ClinicMiniProject.Services
 {
@@ -11,12 +13,16 @@ namespace ClinicMiniProject.Services
     public class StaffService : IStaffService
     {
         private readonly IStaffRepository _staffRepository;
-        private readonly IAppointmentReposirotu _aptRepo;
+        private readonly IAppointmentRepository _aptRepo;
 
-        public StaffService(IStaffRepository staffRepository, IAppointmentReposirotu aptRepo)
+        public StaffService(IStaffRepository staffRepository, IAppointmentRepository aptRepo)
         {
             _staffRepository = staffRepository;
             _aptRepo = aptRepo;
+        }
+        public string GetStaffIdByName(string name)
+        {
+            throw new NotImplementedException();
         }
 
         public Staff GetStaff(int id)
