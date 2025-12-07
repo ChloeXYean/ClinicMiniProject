@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClinicMiniProject.Modules
+namespace ClinicMiniProject.Models
 {
     public class DoctorAvailability
     {
-        public string doctorID { get; set; }
+        public string doctorID { get; set; } = string.Empty;
         public bool Monday { get; set; }
         public bool Tuesday { get; set; }
         public bool Wednesday { get; set; }

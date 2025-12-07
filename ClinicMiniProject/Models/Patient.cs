@@ -4,14 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClinicMiniProject.Modules
+namespace ClinicMiniProject.Models
 {
     public class Patient
     {
-        public string patientIC { get; set; }
-        public string patientName { get; set; }
-        public string patientContact { get; set; }
-        public string patientEmail { get; set; }
+        public string patient_IC { get; set; } = string.Empty;
+        public string patient_name { get; set; } = string.Empty;
+        public string patient_contact { get; set; } = string.Empty;
+        public string patient_email { get; set; } = string.Empty;
+
+        public string password { get; set; } = string.Empty;
         public bool isAppUser { get; set; }
     }
 }
