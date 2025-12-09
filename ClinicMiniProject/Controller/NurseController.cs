@@ -53,10 +53,29 @@ namespace ClinicMiniProject.Controller
             {
                 //ady registered
             }
+        }
 
+        public List<Appointment> EndDocConsultation() 
+        {
+            return appointments.FindAll(a => a.appointment_status == "Completed").OrderByDescending(a => a.appointedAt).ToList();
+        }
 
+        public void UpdatePaymentStatus(Appointment apt)
+        {
+            apt.payment_status = "Done";
+        }
 
+        public Patient ViewPatientDetails(string patientIC)
+        {
+            var patient = patients.FirstOrDefault(p => p.patient_IC != patientIC);
+            if (patient == null)
+                {
+                throw new ArgumentException("Patient not found.");
+            }
+            return patient;
 
         }
+
+
     }
 }
