@@ -8,11 +8,15 @@ namespace ClinicMiniProject.Models
 {
     public class UpcomingAppointmentView
     {
-        public string Date { get; set; }
         public string Time { get; set; }
         public string DoctorName { get; set; }
-        public string ConsultationRoom { get; set; }
-        public string PaymentCounter { get; set; }
-        public string PickupCounter { get; set; }
+
+        public int ConsultationQueueCount { get; set; }
+        public int PaymentQueueCount { get; set; }
+        public int PickupQueueCount { get; set; }
+
+        public string ConsultationStatus { get; set; }
+        public string PaymentStatus { get; set; }
+        public string PickupStatus { get; set; }
     }
 }
