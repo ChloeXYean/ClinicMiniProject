@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ClinicMiniProject.Models;
 
-namespace ClinicMiniProject.Modules
+namespace ClinicMiniProject.Controller
 {
     internal class NurseController
     {
@@ -27,13 +27,13 @@ namespace ClinicMiniProject.Modules
         //TODO: Need to modify this method to integrate with SystemUtils for timeslot assignment
         public void ManageEmergencyAppointment(Appointment emergencyAppointment)
         {
-            emergencyAppointment.status = "Emergency";
+            emergencyAppointment.appointment_status = "Emergency";
             emergencyAppointment.bookedAt = DateTime.Now;
             foreach (var apt in appointments)
             {
                 if (apt.appointedAt == emergencyAppointment.appointedAt && apt.appointment_ID != emergencyAppointment.appointment_ID)
                 {
-                    apt.status = "Rescheduled";
+                    apt.appointment_status = "Rescheduled";
                     //Neeed to send msg to the patiet that got emergency case
                     apt.appointedAt = apt.appointedAt.AddMinutes(30); // Reschedule by 30 minutes for simplicity
                 }

@@ -16,6 +16,5 @@ namespace ClinicMiniProject.Models
         public string appointment_status { get; set; }
         public string consultation_status { get; set; }
         public string payment_status { get; set; }
-        public string pickup_status { get; set; }
-    }
+        public string pickup_status { get; set; }    }
 }
