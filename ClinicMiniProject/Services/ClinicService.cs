@@ -56,7 +56,7 @@ namespace ClinicMiniProject.Services
             }
             if (isAvailable)
             {
-                newApt.status = "Pending";
+                newApt.appointment_status = "Pending";
                 newApt.appointedAt = preferDateTime;
                 appointments.Add(newApt);
                 return true;
@@ -66,7 +66,7 @@ namespace ClinicMiniProject.Services
 
         public List<Appointment> GetQueueByStatus(string status)
         {
-            return appointments.Where(a => a.status == "Pending").OrderBy(a => a.appointedAt).ToList();
+            return appointments.Where(a => a.appointment_status == "Pending").OrderBy(a => a.appointedAt).ToList();
         }
 
     }
