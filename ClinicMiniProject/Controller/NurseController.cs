@@ -11,7 +11,7 @@ namespace ClinicMiniProject.Controller
     internal class NurseController
     {
         public List<Appointment> appointments { get; private set; }
-        public List<DoctorAvailability> doctorAvailabilities { get; private set; }
+        public List<DoctorAvailability> doctorAvailabilities { get; private set; } 
         public List<Patient> patients { get; private set; }
         public List<Staff> staffs { get; private set; }
 
@@ -20,9 +20,12 @@ namespace ClinicMiniProject.Controller
 
         public List<Appointment> ViewAppointmentList(DateTime selectedDate)
         {
+            if (appointments == null || appointments.Count == 0)
+                return new List<Appointment>();
+
             return appointments
                 .Where(a => a.appointedAt.HasValue && a.appointedAt.Value.Date == selectedDate.Date)
-                .OrderBy(a => a.appointedAt)
+                .OrderBy(a => a.appointedAt.Value) 
                 .ToList();
         }
 
