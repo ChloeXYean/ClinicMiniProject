@@ -43,5 +43,34 @@ namespace ClinicMiniProject.Services
             return appointments.Where(a => a.appointment_status == "Pending").OrderBy(a => a.appointedAt).ToList();
         }
 
+        public int GetConsultationQueue(Appointment appt)
+        {
+            return appointments.Count(a =>
+                a.staff_ID == appt.staff_ID &&
+                a.appointedAt < appt.appointedAt &&
+                a.appointment_status == "Pending"
+            );
+        }
+
+        public int GetPaymentQueue(Appointment appt)
+        {
+            return appointments.Count(a =>
+                a.consultation_status == "Completed" &&
+                a.appointedAt < appt.appointedAt &&
+                a.appointment_status == "Pending"
+            );
+        }
+
+        public int GetPickupQueue(Appointment appt)
+        {
+            return appointments.Count(a =>
+                a.consultation_status == "Completed" &&
+                a.payment_status == "Completed" &&
+                a.appointedAt < appt.appointedAt &&
+                a.appointment_status == "Pending"
+            );
+        }
+
+
     }
 }
