@@ -63,17 +63,17 @@ namespace ClinicMiniProject.Services
 
         public List<Appointment> ViewAppointmentHistory(Patient patient)
         {
-            return _aptRepo.GetAppointmentsByPatient(patient.patientIC);
+            return _aptRepo.GetAppointmentsByPatient(patient.patient_IC);
         }
 
         public void UpdateAppointmentStatus(int appointmentId, string status)
         {
-            var appointment = _aptRepo.GetAppointmentById(appointmentId);
-            if (appointment != null)
-            {
-                appointment.status = status;
-                _aptRepo.UpdateAppointment(appointment);
-            }
+            //var appointment = _aptRepo.GetAppointmentById(appointmentId);
+            //if (appointment != null)
+            //{
+            //    appointment.status = status;
+            //    _aptRepo.UpdateAppointment(appointment);
+            //}
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace ClinicMiniProject.Modules
+namespace ClinicMiniProject.Controller
 {
     internal class ReportingController
     {
