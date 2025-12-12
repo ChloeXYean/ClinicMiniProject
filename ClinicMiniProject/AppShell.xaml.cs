@@ -10,6 +10,7 @@ namespace ClinicMiniProject
         {
             InitializeComponent();
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
+            Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
         }
 
         protected override async void OnAppearing()

@@ -1,30 +1,41 @@
 ﻿using ClinicMiniProject.Models;
+using ClinicMiniProject.Services.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
 
 namespace ClinicMiniProject.Services
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
         private static List<Patient> _patients = new List<Patient>();
         private static List<Staff> _staffs = new List<Staff>();
+
+        private static Staff? _currentStaff;
 
         public bool RegisterPatient(Patient patient, out string message)
         {
             message = "";
 
-            if (string.IsNullOrWhiteSpace(patient.patient_IC) ||
-                string.IsNullOrWhiteSpace(patient.patient_name) ||
-                string.IsNullOrWhiteSpace(patient.password))
+            if (string.IsNullOrWhiteSpace(patient.patient_IC))
             {
-                message = "Fields cannot be empty.";
+                message = "Ic number cannot be empty.";
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(patient.patient_name))
+            {
+                message = "Full name cannot be empty.";
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(patient.password))
+            {
+                message = "Password cannot be empty.";
                 return false;
             }
 
             if (_patients.Any(p => p.patient_IC == patient.patient_IC))
             {
-                message = "IC already registered.";
+                message = "IC already registered. Please login your account.";
                 return false;
             }
 
@@ -32,27 +43,52 @@ namespace ClinicMiniProject.Services
             return true;
         }
 
-        public object Login(string id, string password, out string message)
+        public object Login(string patient_IC, string password, out string message)
         {
             message = "";
 
-            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(patient_IC))
             {
-                message = "Fields cannot be empty.";
+                message = "Ic number cannot be empty.";
+                return null;
+            }
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                message = "Password cannot be empty.";
                 return null;
             }
 
-            var patient = _patients.FirstOrDefault(p => p.patient_IC == id && p.password == password);
+            var patient = _patients.FirstOrDefault(p => p.patient_IC == patient_IC && p.password == password);
             if (patient != null) return patient;
 
-            var staff = _staffs.FirstOrDefault(s => s.staff_ID == id && s.staff_password == password);
-            if (staff != null) return staff;
+            var staff = _staffs.FirstOrDefault(s => s.staff_ID == patient_IC && s.staff_password == password);
+            if (staff != null)
+            {
+                _currentStaff = staff;
+                return staff;
+            }
 
-            message = "Invalid credentials.";
+            message = "Account not found. Please try again or create a new account.";
             return null;
         }
 
-        // testing only
+        public Staff GetCurrentUser()
+        {
+            return _currentStaff;
+        }
+
+        public string GetDoctorName(string doctorId)
+        {
+            var staff = _staffs.FirstOrDefault(s => s.staff_ID == doctorId);
+            return staff?.staff_name ?? string.Empty;
+        }
+
+        public void Logout()
+        {
+            _currentStaff = null;
+        }
+
+        // TODO: testing only later need to delete
         public void SeedStaff()
         {
             if (_staffs.Count == 0)

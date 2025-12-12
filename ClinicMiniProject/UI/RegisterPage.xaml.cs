@@ -1,14 +1,23 @@
 using ClinicMiniProject.Models;
-using ClinicMiniProject.Services;
+using ClinicMiniProject.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ClinicMiniProject.UI
 {
     public partial class RegisterPage : ContentPage
     {
-        private readonly AuthService _authService = new AuthService();
+        private readonly IAuthService _authService;
 
         public RegisterPage()
         {
+            var sp = Application.Current?.Handler?.MauiContext?.Services;
+            _authService = sp?.GetService<IAuthService>() ?? new Services.AuthService();
+            InitializeComponent();
+        }
+
+        public RegisterPage(IAuthService authService)
+        {
+            _authService = authService;
             InitializeComponent();
         }
 
@@ -35,7 +44,7 @@ namespace ClinicMiniProject.UI
             if (success)
             {
                 await DisplayAlert("Success", "Account created", "OK");
-                await Navigation.PopAsync();
+                await Shell.Current.GoToAsync("..");
             }
             else
             {
@@ -45,7 +54,7 @@ namespace ClinicMiniProject.UI
 
         private async void OnGoToLogin(object sender, EventArgs e)
         {
-            await Navigation.PopAsync();
+            await Shell.Current.GoToAsync("..");
         }
     }
 }
