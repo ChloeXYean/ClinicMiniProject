@@ -21,40 +21,14 @@ namespace ClinicMiniProject.Services
 
         public bool AssignTimeslot(string name, DateTime preferDateTime)
         {
-            //string id = GetStaffIdByName(name);
-            string id = null;
-            Appointment newApt = null;
+            Appointment newApt = new Appointment();
 
 
             bool isAvailable = appointments.Any(a => a.appointedAt == preferDateTime);
-            //extract workday (Monday?..Friday) from preferDateTime
             string day = preferDateTime.DayOfWeek.ToString();
-            //for each, Monday, Tuesday, .. Friday, check if doctor is available on that day
-            for (int i = 0; i < doctorAvailabilities.Count; i++)
-            {
-                var docAvail = doctorAvailabilities[i];
-                if (docAvail.staff_ID == id)
-                {
-                    bool isWorkDay = day switch
-                    {
-                        "Monday" => docAvail.Monday,
-                        "Tuesday" => docAvail.Tuesday,
-                        "Wednesday" => docAvail.Wednesday,
-                        "Thursday" => docAvail.Thursday,
-                        "Friday" => docAvail.Friday,
-                        "Saturday" => docAvail.Saturday,
-                        "Sunday" => docAvail.Sunday,
-                        _ => false
-                    };
-                    if (!isWorkDay)
-                    {
-                        return false; // Doctor not available on that day
-                    }
-                    isAvailable = !isAvailable;
-                    break;
-                }
-            }
-            if (isAvailable)
+            var availabilityList = doctorAvailabilities.FirstOrDefault(a => a.IsAvailable(preferDateTime.DayOfWeek));
+
+            if (availabilityList == null)
             {
                 newApt.appointment_status = "Pending";
                 newApt.appointedAt = preferDateTime;
