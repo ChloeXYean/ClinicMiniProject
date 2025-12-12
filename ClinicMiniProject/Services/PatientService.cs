@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using ClinicMiniProject.Models;
+using ClinicMiniProject.Services;
 
 public class PatientService
 {
     private List<Patient> patients = new List<Patient>();
-    private List<Appointment> appointments = new List<Appointment>();
+    //private List<Appointment> appointments = new List<Appointment>();
     private StaffService staffService;
+    private ClinicService clinicService;
 
-    public PatientService(StaffService staffService)
+    public PatientService(StaffService staffService, ClinicService clinicService)
     {
         this.staffService = staffService;
+        this.clinicService = new ClinicService();
     }
 
     //Add a new patient
@@ -36,6 +39,18 @@ public class PatientService
     public List<Patient> GetAllPatients()
     {
         return patients;
+    }
+
+    // Get all appointments
+    public List<Appointment> GetPatientsAppointments(string patient_IC)
+    {
+        return clinicService.GetAllAppointments()
+            .Where((a => a.patient_IC == patient_IC)
+            .OrderBy(a => a.appointment_status == "Pending" ? 0:
+            a.appointment_status == "Completed" ? 1:
+            a.appointment_status == "Cancelled" ? 2 : 3)
+            .ThenBy(a => a.appointedBy)
+            .FirstOrDefault();
     }
 
     // Add appointment
@@ -69,13 +84,13 @@ public class PatientService
 
         var doctor = staffService.GetStaffByID(appt.staff_ID);
 
-        int consultationQueue = GetConsultationQueue(appt);
-        int paymentQueue = GetPaymentQueue(appt);
-        int pickupQueue = GetPickupQueue(appt);
+        int consultationQueue = clinicService.GetConsultationQueue(appt);
+        int paymentQueue = clinicService.GetPaymentQueue(appt);
+        int pickupQueue = clinicService.GetPickupQueue(appt);
 
         var view = new UpcomingAppointmentView
         {
-            Time = appt.appointedAt.ToString("HH:mm"),
+            Time = appt.appointedAt.ToString("HH:mm"), //not sure about the format
             DoctorName = doctor?.staff_name ?? "Unknown",
             ConsultationQueueCount = consultationQueue
         };
@@ -107,38 +122,41 @@ public class PatientService
         return view;
     }
 
-    private int GetConsultationQueue(Appointment appt)
+    //private int GetConsultationQueue(Appointment appt)
+    //{
+    //    return appointments.Count(a =>
+    //        a.staff_ID == appt.staff_ID &&
+    //        a.appointedAt < appt.appointedAt &&
+    //        a.appointment_status == "Pending"
+    //    );
+    //}
+
+    //private int GetPaymentQueue(Appointment appt)
+    //{
+    //    return appointments.Count(a =>
+    //        a.consultation_status == "Completed" &&
+    //        a.appointedAt < appt.appointedAt &&
+    //        a.appointment_status == "Pending"
+    //    );
+    //}
+
+    //private int GetPickupQueue(Appointment appt)
+    //{
+    //    return appointments.Count(a =>
+    //        a.consultation_status == "Completed" &&
+    //        a.payment_status == "Completed" &&
+    //        a.appointedAt < appt.appointedAt &&
+    //        a.appointment_status == "Pending"
+    //    );
+    //}
+
+    // get profile information
+    public Patient GetPatientPersonalInformation(string patient_IC)
     {
-        return appointments.Count(a =>
-            a.staff_ID == appt.staff_ID &&
-            a.appointedAt < appt.appointedAt &&
-            a.appointment_status == "Pending"
-        );
+        return patients.FirstOrDefault(p => p.patient_IC == patient_IC);
     }
 
-    private int GetPaymentQueue(Appointment appt)
-    {
-        return appointments.Count(a =>
-            a.consultation_status == "Completed" &&
-            a.appointedAt < appt.appointedAt &&
-            a.appointment_status == "Pending"
-        );
-    }
-
-    private int GetPickupQueue(Appointment appt)
-    {
-        return appointments.Count(a =>
-            a.consultation_status == "Completed" &&
-            a.payment_status == "Completed" &&
-            a.appointedAt < appt.appointedAt &&
-            a.appointment_status == "Pending"
-        );
-    }
-
-}
-
-    //get appointment booking
-
+    // appointment booking
 
     //get appointment history
 
