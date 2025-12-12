@@ -13,7 +13,7 @@ namespace ClinicMiniProject.Controller
         public List<Patient> patients = new List<Patient>();
         public List<Appointment> ViewAppointmentList(DateTime selectedDate)
         {
-            return appointments.FindAll(a => a.appointedAt.Date == selectedDate).OrderBy(a => a.appointedAt).ToList();
+            return appointments.Where(a => a.appointedAt.Date == selectedDate).OrderBy(a => a.appointedAt).ToList();
         }
 
         //View appointment history 
@@ -57,7 +57,7 @@ namespace ClinicMiniProject.Controller
 
         public List<Appointment> EndDocConsultation() 
         {
-            return appointments.FindAll(a => a.appointment_status == "Completed").OrderByDescending(a => a.appointedAt).ToList();
+            return appointments.Where(a => a.appointment_status == "Completed").OrderByDescending(a => a.appointedAt).ToList();
         }
 
         public void UpdatePaymentStatus(Appointment apt)
