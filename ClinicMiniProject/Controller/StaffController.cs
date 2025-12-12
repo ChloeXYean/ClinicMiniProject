@@ -65,6 +65,11 @@ namespace ClinicMiniProject.Controller
             apt.payment_status = "Pending";
         }
 
+
+        public void UpdateDoctorAvailability(string doctorId, DayOfWeek dayOfWeek, bool working)
+        {
+            var availableList = doctorAvailabilities.FirstOrDefault( a => a.staff_ID == doctorId && a.DayOfWeek == dayOfWeek );
+        } 
         //Payment staus update on Nurse controller
 
     }
