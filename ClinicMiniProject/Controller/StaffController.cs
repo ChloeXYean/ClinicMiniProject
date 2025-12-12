@@ -13,14 +13,11 @@ namespace ClinicMiniProject.Controller
         public List<DoctorAvailability> doctorAvailabilities = new List<DoctorAvailability>();
         public List<Appointment> ViewAppointmentList(DateTime selectedDate)
         {
-            return appointments.FindAll(a => a.appointedAt.Date == selectedDate).OrderBy(a => a.appointedAt).ToList();
+            return appointments.FindAll(a => a.appointedAt.HasValue && a.appointedAt.Value.Date == selectedDate).OrderBy(a => a.appointedAt).ToList();
         }
 
-        //Manage doctor availability - edit/update which day he got work, no job time, fix job time ady 
         public void ManageDoctorAvailability(string docID, string day)
         {
-            //After select a doc, then choose which day (Mon - Sun) to edit availability
-            //Monday: true/false
             var availability = doctorAvailabilities.FirstOrDefault(d => d.staff_ID == docID);
             if (availability == null)
             {
@@ -58,8 +55,6 @@ namespace ClinicMiniProject.Controller
 
         public void UpdateAppointmentStatus(Appointment apt)
         {
-            //Get the appointment from the list, after select then come to here 
-            //Press Done Consultation
             apt.appointment_status = "Completed";
             apt.consultation_status = "Done";
             apt.payment_status = "Pending";
@@ -68,9 +63,22 @@ namespace ClinicMiniProject.Controller
 
         public void UpdateDoctorAvailability(string doctorId, DayOfWeek dayOfWeek, bool working)
         {
-            var availableList = doctorAvailabilities.FirstOrDefault( a => a.staff_ID == doctorId && a.DayOfWeek == dayOfWeek );
-        } 
-        //Payment staus update on Nurse controller
+            var doc = doctorAvailabilities
+                .FirstOrDefault(a => a.staff_ID == doctorId);
+
+            if (doc == null) throw new ArgumentException("Doctor not found.");
+
+            switch (dayOfWeek)
+            {
+                case DayOfWeek.Monday: doc.Monday = working; break;
+                case DayOfWeek.Tuesday: doc.Tuesday = working; break;
+                case DayOfWeek.Wednesday: doc.Wednesday = working; break;
+                case DayOfWeek.Thursday: doc.Thursday = working; break;
+                case DayOfWeek.Friday: doc.Friday = working; break;
+                case DayOfWeek.Saturday: doc.Saturday = working; break;
+                case DayOfWeek.Sunday: doc.Sunday = working; break;
+            }
+        }
 
     }
 }
