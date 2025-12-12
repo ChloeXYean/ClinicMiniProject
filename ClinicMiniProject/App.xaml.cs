@@ -1,15 +1,17 @@
-﻿namespace ClinicMiniProject
+﻿using ClinicMiniProject.UI;
+using Microsoft.Maui.Controls;
+
+namespace ClinicMiniProject
 {
     public partial class App : Application
     {
         public App()
         {
             InitializeComponent();
-        }
-
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            return new Window(new AppShell());
+            // Ensure the application provides a startup UI.
+            // Use AppShell if your project is structured around Shell.
+            MainPage = new AppShell();
         }
     }
 }
+
