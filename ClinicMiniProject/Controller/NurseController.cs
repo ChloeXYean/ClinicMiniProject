@@ -97,7 +97,7 @@ namespace ClinicMiniProject.Controller
                 {
                     //unavailable 
                     assignedDoctorId = null;
-                }
+                }   
             }
             //No doc
             if (string.IsNullOrEmpty(assignedDoctorId))
@@ -157,6 +157,7 @@ namespace ClinicMiniProject.Controller
 
         }
 
+        
 
     }
 }
