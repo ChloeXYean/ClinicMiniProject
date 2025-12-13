@@ -195,10 +195,11 @@ namespace ClinicMiniProject.Services
                 .FirstOrDefault(p => p.patient_IC == patient_IC);
         }
 
-        public List<Patient> GetAllPatients()
-        {
-            return _context.Patients.ToList();
-        }
+    //Get all patients
+    public List<Patient> GetAllPatients()
+    {
+        return patients;
+    }
 
         public List<Appointment> GetPatientsAppointments(string patient_IC)
         {

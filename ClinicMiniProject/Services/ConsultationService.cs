@@ -38,12 +38,15 @@ namespace ClinicMiniProject.Services
             // If appointment start time + 15 mins has passed and doctor hasn't started consultation, cancel and reassign walk-in.
             // We treat "Started" as status == "InProgress".
             var isStarted = string.Equals(current.status, "InProgress", StringComparison.OrdinalIgnoreCase);
-            if (!isStarted && now >= current.appointedAt.AddMinutes(15))
+            if (!isStarted && current.appointedAt.HasValue && now >= current.appointedAt.Value.AddMinutes(15))
             {
                 await CancelAndReassignToRandomWalkInAsync(current, now);
 
                 // After reassignment, rebuild details using updated appointment.
-                var updated = await _appointmentService.GetAppointmentByIdAsync(current.appointmentID);
+                if (string.IsNullOrWhiteSpace(current.appointment_ID))
+                    return null;
+
+                var updated = await _appointmentService.GetAppointmentByIdAsync(current.appointment_ID);
                 if (updated == null)
                     return null;
 

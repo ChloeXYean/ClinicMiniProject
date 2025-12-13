@@ -1,5 +1,4 @@
-﻿using ClinicMiniProject.Models;
-using ClinicMiniProject.Services.Interfaces;
+﻿using ClinicMiniProject.Services.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,12 +7,12 @@ namespace ClinicMiniProject.Services
 {
     public class AuthService : IAuthService
     {
-        private static List<Patient> _patients = new List<Patient>();
-        private static List<Staff> _staffs = new List<Staff>();
+        private static List<ClinicMiniProject.Models.Patient> _patients = new List<ClinicMiniProject.Models.Patient>();
+        private static List<ClinicMiniProject.Models.Staff> _staffs = new List<ClinicMiniProject.Models.Staff>();
 
-        private static Staff? _currentStaff;
+        private static ClinicMiniProject.Models.Staff? _currentStaff;
 
-        public bool RegisterPatient(Patient patient, out string message)
+        public bool RegisterPatient(ClinicMiniProject.Models.Patient patient, out string message)
         {
             message = "";
 
@@ -72,7 +71,7 @@ namespace ClinicMiniProject.Services
             return null;
         }
 
-        public Staff GetCurrentUser()
+        public ClinicMiniProject.Models.Staff GetCurrentUser()
         {
             return _currentStaff;
         }
@@ -93,7 +92,7 @@ namespace ClinicMiniProject.Services
         {
             if (_staffs.Count == 0)
             {
-                _staffs.Add(new Staff
+                _staffs.Add(new ClinicMiniProject.Models.Staff
                 {
                     staff_ID = "S001",
                     staff_name = "Dr Ali",
