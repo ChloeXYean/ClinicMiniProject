@@ -25,7 +25,7 @@ namespace ClinicMiniProject.Models
         public string staff_ID { get; set; } = string.Empty;
 
         [Column("patient_IC")]
-        public long patient_IC { get; set; }
+        public string patient_IC { get; set; }
 
         [Column("status")]
         public string status { get; set; } = "Pending";

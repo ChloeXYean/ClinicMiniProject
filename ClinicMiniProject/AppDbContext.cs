@@ -35,7 +35,8 @@ namespace ClinicMiniProject
         {
             modelBuilder.Entity<Staff>()
                 .HasOne(s => s.Availability)
-                .WithOne(d => d.Staff)
+                //.WithOne(d => d.Staff)
+                .WithOne()
                 .HasForeignKey<DocAvailable>(d => d.staff_ID);
 
             // Ensure one-to-one relationship between Staff and DocAvailable
@@ -46,22 +47,22 @@ namespace ClinicMiniProject
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Patient)
                 .WithMany(p => p.Appointments)
-                .HasForeignKey(a => a.patientIC)
+                .HasForeignKey(a => a.patient_IC)
                 .HasPrincipalKey(p => p.patient_IC);
 
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Staff)
                 .WithMany(s => s.Appointments)
-                .HasForeignKey(a => a.staffID);
+                .HasForeignKey(a => a.staff_ID);
 
             // Ensure all column names match exactly with the database schema
-            foreach (var entity in modelBuilder.Model.GetEntityTypes())
-            {
-                foreach (var property in entity.GetProperties())
-                {
-                    property.SetColumnName(property.GetColumnName());
-                }
-            }
+            //foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            //{
+            //    foreach (var property in entity.GetProperties())
+            //    {
+            //        property.SetColumnName(property.GetColumnName());
+            //    }
+            //}
         }
     }
 }

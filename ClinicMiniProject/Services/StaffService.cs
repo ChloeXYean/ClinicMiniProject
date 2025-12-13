@@ -25,7 +25,7 @@ namespace ClinicMiniProject.Services
             throw new NotImplementedException();
         }
 
-        public Staff GetStaff(int id)
+        public Staff GetStaff(string id)
         {
             return _staffRepository.GetStaffById(id);
         }
@@ -75,5 +75,7 @@ namespace ClinicMiniProject.Services
             //    _aptRepo.UpdateAppointment(appointment);
             //}
         }
+
+        
     }
 }

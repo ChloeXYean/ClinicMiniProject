@@ -14,7 +14,7 @@ namespace ClinicMiniProject
         // Primary Key
         [Key]
         [Column("patient_IC")]
-        public long patient_IC { get; set; }
+        public string patient_IC { get; set; }
 
         [Column("patient_name")]
         [Required]
@@ -90,7 +90,7 @@ namespace ClinicMiniProject
         public string staff_ID { get; set; } = string.Empty;
 
         [Column("patient_IC")]
-        public long patient_IC { get; set; }
+        public string patient_IC { get; set; }
 
         [Column("status")]
         public string status { get; set; } = "Pending";
@@ -115,5 +115,18 @@ namespace ClinicMiniProject
 
 
         public Staff Staff { get; set; } = null!;
+
+        public bool IsAvailable(DayOfWeek day) =>
+         day switch
+         {
+             DayOfWeek.Monday => Monday,
+             DayOfWeek.Tuesday => Tuesday,
+             DayOfWeek.Wednesday => Wednesday,
+             DayOfWeek.Thursday => Thursday,
+             DayOfWeek.Friday => Friday,
+             DayOfWeek.Saturday => Saturday,
+             DayOfWeek.Sunday => Sunday,
+             _ => false,
+         };
     }
 }

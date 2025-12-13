@@ -54,7 +54,7 @@ namespace ClinicMiniProject.Services
             
             // Filter appointments that have been consulted (status = "Completed" or "Consulted")
             var consultedAppointments = todayAppointments
-                .Where(a => a.appointedAt.Date == today.Date && 
+                .Where(a => a.appointedAt.HasValue && a.appointedAt.Value.Date == today.Date && 
                            (a.status == "Completed" || a.status == "Consulted"))
                 .ToList();
 

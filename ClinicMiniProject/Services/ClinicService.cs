@@ -11,7 +11,7 @@ namespace ClinicMiniProject.Services
     {
         private List<Appointment> appointments = new List<Appointment>();
         private List<Patient> patients = new List<Patient>();
-        private List<DoctorAvailability> doctorAvailabilities = new List<DoctorAvailability>();
+        private List<DocAvailable> doctorAvailabilities = new List<DocAvailable>();
         private List<Staff> staffs = new List<Staff>();
 
         public ClinicService()
@@ -30,7 +30,7 @@ namespace ClinicMiniProject.Services
 
             if (availabilityList == null)
             {
-                newApt.appointment_status = "Pending";
+                newApt.status = "Pending";
                 newApt.appointedAt = preferDateTime;
                 appointments.Add(newApt);
                 return true;
@@ -40,7 +40,7 @@ namespace ClinicMiniProject.Services
 
         public List<Appointment> GetQueueByStatus(string status)
         {
-            return appointments.Where(a => a.appointment_status == "Pending").OrderBy(a => a.appointedAt).ToList();
+            return appointments.Where(a => a.status == "Pending").OrderBy(a => a.appointedAt).ToList();
         }
 
         public int GetConsultationQueue(Appointment appt)
@@ -48,29 +48,33 @@ namespace ClinicMiniProject.Services
             return appointments.Count(a =>
                 a.staff_ID == appt.staff_ID &&
                 a.appointedAt < appt.appointedAt &&
-                a.appointment_status == "Pending"
+                a.status == "Pending"
             );
         }
 
         public int GetPaymentQueue(Appointment appt)
         {
             return appointments.Count(a =>
-                a.consultation_status == "Completed" &&
+                a.status == "Completed" &&
                 a.appointedAt < appt.appointedAt &&
-                a.appointment_status == "Pending"
+                a.status == "Pending"
             );
         }
 
         public int GetPickupQueue(Appointment appt)
         {
             return appointments.Count(a =>
-                a.consultation_status == "Completed" &&
-                a.payment_status == "Completed" &&
+                a.status == "Completed" &&
+                a.status == "Completed" &&
                 a.appointedAt < appt.appointedAt &&
-                a.appointment_status == "Pending"
+                a.status == "Pending"
             );
         }
 
+        public List<Appointment> GetAllAppointments()
+        {
+            return appointments;
+        }
 
     }
 }

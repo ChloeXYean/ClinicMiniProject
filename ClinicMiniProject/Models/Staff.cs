@@ -34,7 +34,7 @@ namespace ClinicMiniProject.Models
         public bool isDoctor { get; set; }
 
         public List<Appointment> Appointments { get; set; } = new();
-        public DoctorAvailability? Availability { get; set; }
+        public DocAvailable? Availability { get; set; }
     }
 }
 

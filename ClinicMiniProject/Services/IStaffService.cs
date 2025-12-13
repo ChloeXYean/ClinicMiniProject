@@ -10,7 +10,7 @@ namespace ClinicMiniProject.Services
     public interface IStaffService
     {
         public string GetStaffIdByName(string name);
-        Staff GetStaff(int id);
+        Staff GetStaff(string id);
         List<Staff> GetAllStaffs();
         void CreateStaff(Staff staff);
         void ModifyStaff(Staff staff);

@@ -7,14 +7,14 @@ using ClinicMiniProject.Services;
 public class PatientService
 {
     private List<Patient> patients = new List<Patient>();
-    //private List<Appointment> appointments = new List<Appointment>();
+    private List<Appointment> appointments = new List<Appointment>();
     private StaffService staffService;
     private ClinicService clinicService;
 
     public PatientService(StaffService staffService, ClinicService clinicService)
     {
         this.staffService = staffService;
-        this.clinicService = new ClinicService();
+        this.clinicService = clinicService;
     }
 
     //Add a new patient
@@ -30,7 +30,7 @@ public class PatientService
     }
 
     //Get patient by IC
-    public Patient GetPatientByIC(string patient_IC)
+    public Patient? GetPatientByIC(string patient_IC)
     {
         return patients.FirstOrDefault(p => p.patient_IC == patient_IC);
     }
@@ -45,19 +45,16 @@ public class PatientService
     public List<Appointment> GetPatientsAppointments(string patient_IC)
     {
         return clinicService.GetAllAppointments()
-            .Where((a => a.patient_IC == patient_IC)
-            .OrderBy(a => a.appointment_status == "Pending" ? 0:
+            .Where(a => a.patient_IC == patient_IC)
+            .OrderBy(a => a.appointment_status == "Pending" ? 0: 
             a.appointment_status == "Completed" ? 1:
             a.appointment_status == "Cancelled" ? 2 : 3)
             .ThenBy(a => a.appointedBy)
-            .FirstOrDefault();
+            .FirstOrDefault());
     }
 
     // Add appointment
-    public void AddAppointment(Appointment appt)
-    {
-        appointments.Add(appt);
-    }
+
 
     //---------------------------------------------------------------
     /*get upcoming appointment
@@ -68,7 +65,7 @@ public class PatientService
      - payment counter
      - medical pickup counter */
 
-    public Appointment GetUpcomingAppointmentEntity(string patient_IC)
+    public Appointment? GetUpcomingAppointmentEntity(string patient_IC)
     {
         return appointments
             .Where(a => a.patient_IC == patient_IC && a.status == "Pending") // return when IC correct and status is pending
@@ -76,13 +73,13 @@ public class PatientService
             .FirstOrDefault();
     }
 
-    public UpcomingAppointmentView GetUpcomingAppointmentDetails(string patient_IC)
+    public UpcomingAppointmentView? GetUpcomingAppointmentDetails(string patient_IC)
     {
         var appt = GetUpcomingAppointmentEntity(patient_IC);
         if (appt == null)
             return null;
 
-        var doctor = staffService.GetStaffByID(appt.staff_ID);
+        var doctor = staffService.GetStaff(appt.staff_ID);
 
         int consultationQueue = clinicService.GetConsultationQueue(appt);
         int paymentQueue = clinicService.GetPaymentQueue(appt);
@@ -90,7 +87,7 @@ public class PatientService
 
         var view = new UpcomingAppointmentView
         {
-            Time = appt.appointedAt.ToString("HH:mm"), //not sure about the format
+            Time = appt.appointedAt?.ToString("HH:mm") ?? "--:--", //not sure about the format
             DoctorName = doctor?.staff_name ?? "Unknown",
             ConsultationQueueCount = consultationQueue
         };
@@ -98,24 +95,24 @@ public class PatientService
         // If still waiting for consultation, other stages are pending
         if (consultationQueue > 0)
         {
-            view.PaymentCounter = "Pending";
-            view.PickupCounter = "Pending";
+            view.PaymentStatus = "Pending";
+            view.PickupStatus = "Pending";
         }
         else
         {
-            view.PaymentCounter = paymentQueue > 0
+            view.PaymentStatus = paymentQueue > 0
                 ? $"{paymentQueue} ahead"
                 : "Your turn";
 
             if (paymentQueue == 0)
             {
-                view.PickupCounter = pickupQueue > 0
+                view.PickupStatus = pickupQueue > 0
                     ? $"{pickupQueue} ahead"
                     : "Your turn";
             }
             else
             {
-                view.PickupCounter = "Pending";
+                view.PickupStatus = "Pending";
             }
         }
 
@@ -151,7 +148,7 @@ public class PatientService
     //}
 
     // get profile information
-    public Patient GetPatientPersonalInformation(string patient_IC)
+    public Patient? GetPatientPersonalInformation(string patient_IC)
     {
         return patients.FirstOrDefault(p => p.patient_IC == patient_IC);
     }

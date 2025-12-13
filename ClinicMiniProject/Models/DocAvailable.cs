@@ -21,5 +21,21 @@ namespace ClinicMiniProject.Models
         public bool Friday { get; set; }
         public bool Saturday { get; set; }
         public bool Sunday { get; set; }
+
+        [ForeignKey(nameof(Staff))]
+        public Staff Staff { get; set; } = null!;
+
+
+        public bool IsAvailable(DayOfWeek day) => day switch
+        {
+            DayOfWeek.Monday => Monday,
+            DayOfWeek.Tuesday => Tuesday,
+            DayOfWeek.Wednesday => Wednesday,
+            DayOfWeek.Thursday => Thursday,
+            DayOfWeek.Friday => Friday,
+            DayOfWeek.Saturday => Saturday,
+            DayOfWeek.Sunday => Sunday,
+            _ => false,
+        };
     }
 }

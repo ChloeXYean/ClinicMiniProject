@@ -8,7 +8,7 @@ namespace ClinicMiniProject.Models
     {
         [Key]
         [Column("patient_IC")]
-        public long patient_IC { get; set; } // Changed to long to match your DbTables definition
+        public string patient_IC { get; set; } // Changed to long to match your DbTables definition
 
         [Column("patient_name")]
         [Required]
