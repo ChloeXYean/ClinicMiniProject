@@ -1,5 +1,6 @@
 using ClinicMiniProject.Models;
 using ClinicMiniProject.Services.Interfaces;
+using ClinicMiniProject.UI.Doctor;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClinicMiniProject.UI
@@ -34,10 +35,14 @@ namespace ClinicMiniProject.UI
                 // TODO: role-based routing
                 // If user is Staff and isDoctor => navigate to Doctor page
                 // If user is Patient => navigate to Patient page
-                if (user is Staff)
-                    await Shell.Current.GoToAsync("//MainPage");
+                if (user is Staff staff && staff.isDoctor)
+                {
+                    await Shell.Current.GoToAsync(nameof(DoctorDashboardPage));
+                }
                 else
+                {
                     await Shell.Current.GoToAsync("//MainPage");
+                }
             }
             else
                 await DisplayAlert("Error", message, "OK");

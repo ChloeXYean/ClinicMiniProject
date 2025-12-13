@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Control.TopNavBar">
     <Border BackgroundColor="#6EA8FE"
             StrokeThickness="0"
@@ -28,6 +29,7 @@
 
             <Label Grid.Column="1"
                    x:Name="TitleLabel"
+                   Text="{Binding Source={RelativeSource AncestorType={x:Type control:TopNavBar}}, Path=UserName, StringFormat='Hi, Dr. {0}!'}"
                    Text="{Binding UserGreeting}" 
                    TextColor="Black"
                    FontSize="18"

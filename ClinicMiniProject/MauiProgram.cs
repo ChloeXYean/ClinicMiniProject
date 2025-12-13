@@ -31,6 +31,10 @@ namespace ClinicMiniProject
                 builder.Services.AddTransient<ReportingManagementViewModel>();
                 builder.Services.AddScoped<IDoctorProfileService, DoctorProfileService>();
                 builder.Services.AddTransient<DoctorProfileViewModel>();
+				builder.Services.AddTransient<AppointmentScheduleViewModel>();
+				builder.Services.AddSingleton<IInquiryService, InquiryService>();
+				builder.Services.AddTransient<OnlineMedicalInquiryViewModel>();
+				builder.Services.AddTransient<InquiryDetailsViewModel>();
 
                 builder.Services.AddTransient<LoginPage>();
                 builder.Services.AddTransient<RegisterPage>();

@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ClinicMiniProject.Models;
+using Appointment = ClinicMiniProject.Models.Appointment;
+using DocAvailable = ClinicMiniProject.Models.DocAvailable;
+using Patient = ClinicMiniProject.Models.Patient;
+using Staff = ClinicMiniProject.Models.Staff;
 using ClinicMiniProject.Services;
 
 namespace ClinicMiniProject.Controller
