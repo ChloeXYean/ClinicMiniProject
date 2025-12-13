@@ -28,7 +28,7 @@
 
             <Label Grid.Column="1"
                    x:Name="TitleLabel"
-                   Text="{Binding UserGreeting}!" 
+                   Text="{Binding UserGreeting}" 
                    TextColor="Black"
                    FontSize="18"
                    FontAttributes="Bold"
