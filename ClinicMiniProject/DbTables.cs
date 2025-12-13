@@ -14,21 +14,21 @@ namespace ClinicMiniProject
         // Primary Key
         [Key]
         [Column("patient_IC")]
-        public long patientIC { get; set; }
+        public long patient_IC { get; set; }
 
         [Column("patient_name")]
         [Required]
         [StringLength(100)]
-        public string patientName { get; set; } = string.Empty;
+        public string patient_name { get; set; } = string.Empty;
 
         [Column("patient_contact")]
         [Required]
         [StringLength(15)]
-        public string patientContact { get; set; } = string.Empty;
+        public string patient_contact { get; set; } = string.Empty;
 
         [Column("patient_email")]
         [StringLength(100)]
-        public string? patientEmail { get; set; } = null;
+        public string? patientmail { get; set; } = null;
 
         [Column("password")]
         public string? password { get; set; } = null;
@@ -84,7 +84,7 @@ namespace ClinicMiniProject
 
         [Column("appointmentAt")]
         [Required]
-        public DateTime appointmentAt { get; set; }
+        public DateTime appointedAt { get; set; }
 
         [Column("staff_ID")]
         public string staffID { get; set; } = string.Empty;
@@ -104,8 +104,7 @@ namespace ClinicMiniProject
     {
         [Key]
         [Column("doctor_ID")]
-        public string doctorID { get; set; } = string.Empty;
-
+        public string staff_ID { get; set; } = string.Empty;
         public bool Monday { get; set; } = false;
         public bool Tuesday { get; set; } = false;
         public bool Wednesday { get; set; } = false;

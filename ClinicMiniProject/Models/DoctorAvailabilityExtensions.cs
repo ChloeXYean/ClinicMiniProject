@@ -8,7 +8,7 @@ namespace ClinicMiniProject.Models
 {
     public static class DoctorAvailabilityExtensions
     {
-        public static bool IsAvailable(this ClinicMiniProject.Models.DoctorAvailability da, DayOfWeek day)
+        public static bool IsAvailable(this ClinicMiniProject.Models.DocAvailable da, DayOfWeek day)
         {
             return day switch
             {

@@ -1,22 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ClinicMiniProject.Models
 {
+    [Table("appointment")]
     public class Appointment
     {
-          public string appointment_ID { get; set; }
-        public DateTime bookedAt { get; set; }
+        [Key]
+        [Column("id")]
+        public int Id { get; set; }
+
+        [Column("appointment_ID")]
+        [StringLength(7)]
+        public string? appointment_ID { get; set; } = null;
+
+        [Column("bookedAt")]
+        public DateTime bookedAt { get; set; } = DateTime.Now;
+
+        [Column("appointmentAt")]
+        [Required]
         public DateTime? appointedAt { get; set; }
-        public string staff_ID { get; set; }
-        public string patient_IC { get; set; }
-        public string appointment_status { get; set; }
+
+        [Column("staff_ID")]
+        public string staff_ID { get; set; } = string.Empty;
+
+        [Column("patient_IC")]
+        public long patient_IC { get; set; }
+
+        [Column("status")]
+        public string status { get; set; } = "Pending";
         public string consultation_status { get; set; }
         public string payment_status { get; set; }
-        public string pickup_status { get; set; }    
+        public string pickup_status { get; set; }
+
+        public Staff Staff { get; set; } = null!;
+        public Patient Patient { get; set; } = null!;
     }
 }

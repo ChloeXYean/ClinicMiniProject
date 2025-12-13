@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ClinicMiniProject.Models
 {
-    public class DoctorAvailability
+    [Table("docAvailable")]
+    public class DocAvailable
     {
+        [Key]
+        [Column("doctor_ID")]
         public string staff_ID { get; set; } = string.Empty;
         public bool Monday { get; set; }
         public bool Tuesday { get; set; }

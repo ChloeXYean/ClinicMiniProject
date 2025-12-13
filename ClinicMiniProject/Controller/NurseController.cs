@@ -11,7 +11,7 @@ namespace ClinicMiniProject.Controller
     internal class NurseController
     {
         public List<Appointment> appointments { get; private set; }
-        public List<DoctorAvailability> doctorAvailabilities { get; private set; } 
+        public List<DocAvailable> doctorAvailabilities { get; private set; } 
         public List<Patient> patients { get; private set; }
         public List<Staff> staffs { get; private set; }
 
