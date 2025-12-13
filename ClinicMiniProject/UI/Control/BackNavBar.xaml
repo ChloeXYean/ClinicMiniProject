@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ClinicMiniProject.UI.Control.BackNavBar">
+
+    <Border BackgroundColor="#6EA8FE"
+            StrokeThickness="0"
+            Padding="20,15,100,20"
+            HorizontalOptions="Fill"
+            VerticalOptions="Start">
+
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="0,0,30,30"/>
+        </Border.StrokeShape>
+
+        <Border.Shadow>
+            <Shadow Brush="Black" Opacity="0.1" Radius="5" Offset="0,5"/>
+        </Border.Shadow>
+
+        <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
+
+            <ImageButton Grid.Column="0"
+                         x:Name="BackBtn"
+                         Source="back.png" 
+                         HeightRequest="5"
+                         WidthRequest="5"
+                         HorizontalOptions="Start"
+                         VerticalOptions="Center"
+                         Clicked="OnBackClicked"/>
+
+            <Label Grid.Column="1"
+                   x:Name="TitleLabel"
+                   Text="Page Title"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="Black"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   Margin="15,0,0,0"/>
+        </Grid>
+    </Border>
+</ContentView>
