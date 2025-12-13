@@ -10,7 +10,7 @@ namespace ClinicMiniProject.Controller
     internal class StaffController  
     {
         public List<Appointment> appointments = new List<Appointment>();
-        public List<DoctorAvailability> doctorAvailabilities = new List<DoctorAvailability>();
+        public List<DocAvailable> doctorAvailabilities = new List<DocAvailable>();
         public List<Appointment> ViewAppointmentList(DateTime selectedDate)
         {
             return appointments.FindAll(a => a.appointedAt.HasValue && a.appointedAt.Value.Date == selectedDate).OrderBy(a => a.appointedAt).ToList();

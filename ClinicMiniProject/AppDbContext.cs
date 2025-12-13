@@ -11,11 +11,16 @@ namespace ClinicMiniProject
         public DbSet<Appointment> Appointments { get; set; } = null!;
         public DbSet<DocAvailable> DocAvailables { get; set; } = null!;
 
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+            Database.EnsureCreated();
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                string server = Environment.GetEnvironmentVariable("DB_SERVER_IP") ?? "127.0.0.1";
+                string server = Environment.GetEnvironmentVariable("DB_SERVER_IP") ?? "172.16.59.30";
                 string connStr = $"Server={server};Port=3306;Database=testdb;Uid=root;Pwd=123456;Charset=utf8mb4;";
 
                 optionsBuilder.UseMySql(
@@ -30,33 +35,34 @@ namespace ClinicMiniProject
         {
             modelBuilder.Entity<Staff>()
                 .HasOne(s => s.Availability)
-                .WithOne(d => d.Staff)
-                .HasForeignKey<DocAvailable>(d => d.doctorID);
+                //.WithOne(d => d.Staff)
+                .WithOne()
+                .HasForeignKey<DocAvailable>(d => d.staff_ID);
 
             // Ensure one-to-one relationship between Staff and DocAvailable
             modelBuilder.Entity<DocAvailable>()
-                .HasIndex(d => d.doctorID)
+                .HasIndex(d => d.staff_ID)
                 .IsUnique();
 
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Patient)
                 .WithMany(p => p.Appointments)
-                .HasForeignKey(a => a.patientIC)
-                .HasPrincipalKey(p => p.patientIC);
+                .HasForeignKey(a => a.patient_IC)
+                .HasPrincipalKey(p => p.patient_IC);
 
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Staff)
                 .WithMany(s => s.Appointments)
-                .HasForeignKey(a => a.staffID);
+                .HasForeignKey(a => a.staff_ID);
 
             // Ensure all column names match exactly with the database schema
-            foreach (var entity in modelBuilder.Model.GetEntityTypes())
-            {
-                foreach (var property in entity.GetProperties())
-                {
-                    property.SetColumnName(property.GetColumnName());
-                }
-            }
+            //foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            //{
+            //    foreach (var property in entity.GetProperties())
+            //    {
+            //        property.SetColumnName(property.GetColumnName());
+            //    }
+            //}
         }
     }
 }

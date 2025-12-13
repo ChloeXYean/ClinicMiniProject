@@ -15,8 +15,18 @@ namespace ClinicMiniProject.Services
 
         private static readonly Random _rng = new();
 
+        private readonly List<Appointment> appointments;
+        private readonly List<DocAvailable> availabilityList;
+
         public AppointmentService()
         {
+            appointments = _appointments;
+            availabilityList = new List<DocAvailable>();
+        }
+        public AppointmentService(List<Appointment> apts, List<DocAvailable> avails)
+        {
+            appointments = apts;
+            availabilityList = avails;
         }
 
         public async Task<IEnumerable<Appointment>> GetAppointmentsByStaffAndDateRangeAsync(
@@ -70,14 +80,14 @@ namespace ClinicMiniProject.Services
         {
             // TODO: link with database
             await Task.Yield();
-            return _appointments.FirstOrDefault(a => a.appointmentID == appointmentId);
+            return _appointments.FirstOrDefault(a => a.appointment_ID == appointmentId);
         }
 
         public async Task UpdateAppointmentAsync(Appointment appointment)
         {
             // TODO: link with database
             await Task.Yield();
-            var idx = _appointments.FindIndex(a => a.appointmentID == appointment.appointmentID);
+            var idx = _appointments.FindIndex(a => a.appointment_ID == appointment.appointment_ID);
             if (idx >= 0)
             {
                 _appointments[idx] = appointment;
@@ -98,21 +108,8 @@ namespace ClinicMiniProject.Services
 
             return walkIns[_rng.Next(walkIns.Count)];
         }
-    }
-    
-  public class AppointmentService
-    {
-        private readonly List<Appointment> appointments;
-        private readonly List<DoctorAvailability> availabilityList;
 
-        public AppointmentService(List<Appointment> apts, List<DoctorAvailability> avails)
-        {
-            appointments = apts;
-            availabilityList = avails;
-        }
-
-        //Temporary is 9am - 5pm
-        public DateTime? AssignWalkInTimeSlot(string doctorId,DateTime preferredDate,int workStartHour = 9,int workEndHour = 17, TimeSpan slotDuration = default)
+        public DateTime? AssignWalkInTimeSlot(string doctorId, DateTime preferredDate, int workStartHour = 9, int workEndHour = 17, TimeSpan slotDuration = default)
         {
             if (slotDuration == default) slotDuration = TimeSpan.FromHours(1);
 
@@ -123,8 +120,8 @@ namespace ClinicMiniProject.Services
                 return null;
 
             var bookedSlots = appointments
-                .Where(a => a.staff_ID == doctorId && a.appointedAt.Date == preferredDate.Date)
-                .Select(a => a.appointedAt)
+                .Where(a => a.staff_ID == doctorId && a.appointedAt.HasValue && a.appointedAt.Value.Date == preferredDate.Date)
+                .Select(a => a.appointedAt!.Value)
                 .ToList();
 
             var dayStart = new DateTime(preferredDate.Year, preferredDate.Month, preferredDate.Day, workStartHour, 0, 0);
@@ -158,6 +155,10 @@ namespace ClinicMiniProject.Services
             return null;
         }
 
+        public void AddAppointment(Appointment appt)
+        {
+            appointments.Add(appt);
+        }
     }
 
 }

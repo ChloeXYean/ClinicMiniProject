@@ -14,21 +14,21 @@ namespace ClinicMiniProject
         // Primary Key
         [Key]
         [Column("patient_IC")]
-        public long patientIC { get; set; }
+        public string patient_IC { get; set; }
 
         [Column("patient_name")]
         [Required]
         [StringLength(100)]
-        public string patientName { get; set; } = string.Empty;
+        public string patient_name { get; set; } = string.Empty;
 
         [Column("patient_contact")]
         [Required]
         [StringLength(15)]
-        public string patientContact { get; set; } = string.Empty;
+        public string patient_contact { get; set; } = string.Empty;
 
         [Column("patient_email")]
         [StringLength(100)]
-        public string? patientEmail { get; set; } = null;
+        public string? patient_email { get; set; } = null;
 
         [Column("password")]
         public string? password { get; set; } = null;
@@ -46,15 +46,15 @@ namespace ClinicMiniProject
         [Key]
         [Column("staff_ID")]
         [StringLength(4)]
-        public string staffID { get; set; } = string.Empty;
+        public string staff_ID { get; set; } = string.Empty;
 
         [Column("staff_name")]
         [Required, StringLength(100)]
-        public string staffName { get; set; } = string.Empty;
+        public string staff_name { get; set; } = string.Empty;
 
         [Column("staff_contact")]
         [Required, StringLength(15)]
-        public string staffContact { get; set; } = string.Empty;
+        public string staff_contact { get; set; } = string.Empty;
 
         [Column("specialities")]
         [StringLength(100)]
@@ -77,20 +77,20 @@ namespace ClinicMiniProject
 
         [Column("appointment_ID")]
         [StringLength(7)]
-        public string? appointmentID { get; set; } = null;
+        public string? appointment_ID { get; set; } = null;
 
         [Column("bookedAt")]
         public DateTime bookedAt { get; set; } = DateTime.Now;
 
         [Column("appointmentAt")]
         [Required]
-        public DateTime appointmentAt { get; set; }
+        public DateTime? appointedAt { get; set; }
 
         [Column("staff_ID")]
-        public string staffID { get; set; } = string.Empty;
+        public string staff_ID { get; set; } = string.Empty;
 
         [Column("patient_IC")]
-        public long patientIC { get; set; }
+        public string patient_IC { get; set; }
 
         [Column("status")]
         public string status { get; set; } = "Pending";
@@ -104,8 +104,7 @@ namespace ClinicMiniProject
     {
         [Key]
         [Column("doctor_ID")]
-        public string doctorID { get; set; } = string.Empty;
-
+        public string staff_ID { get; set; } = string.Empty;
         public bool Monday { get; set; } = false;
         public bool Tuesday { get; set; } = false;
         public bool Wednesday { get; set; } = false;
@@ -116,5 +115,18 @@ namespace ClinicMiniProject
 
 
         public Staff Staff { get; set; } = null!;
+
+        public bool IsAvailable(DayOfWeek day) =>
+         day switch
+         {
+             DayOfWeek.Monday => Monday,
+             DayOfWeek.Tuesday => Tuesday,
+             DayOfWeek.Wednesday => Wednesday,
+             DayOfWeek.Thursday => Thursday,
+             DayOfWeek.Friday => Friday,
+             DayOfWeek.Saturday => Saturday,
+             DayOfWeek.Sunday => Sunday,
+             _ => false,
+         };
     }
 }

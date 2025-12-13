@@ -11,12 +11,24 @@ namespace ClinicMiniProject.Controller
     internal class NurseController
     {
         public List<Appointment> appointments { get; private set; }
-        public List<DoctorAvailability> doctorAvailabilities { get; private set; } 
+        public List<DocAvailable> doctorAvailabilities { get; private set; } 
         public List<Patient> patients { get; private set; }
         public List<Staff> staffs { get; private set; }
 
         private readonly AppointmentService _aptService;
         private readonly PatientService _patientService;
+
+        public NurseController(AppointmentService aptSerivce,  PatientService patientService)
+        {
+            _aptService = aptSerivce;
+            _patientService = patientService;
+
+            appointments = new List<Appointment>();
+            doctorAvailabilities = new List<DocAvailable>();
+            patients = new List<Patient>();
+            staffs = new List<Staff>();
+
+        }
 
         public List<Appointment> ViewAppointmentList(DateTime selectedDate)
         {
@@ -43,7 +55,7 @@ namespace ClinicMiniProject.Controller
         {
             if (emergencyAppointment == null) throw new ArgumentNullException(nameof(emergencyAppointment));
 
-            emergencyAppointment.appointment_status = "Emergency";
+            emergencyAppointment.status = "Emergency";
             emergencyAppointment.bookedAt = DateTime.Now;
 
             if (!emergencyAppointment.appointedAt.HasValue)
@@ -67,7 +79,7 @@ namespace ClinicMiniProject.Controller
 
             foreach (var apt in conflicts)
             {
-                apt.appointment_status = "Rescheduled";
+                apt.status = "Rescheduled";
                 apt.appointedAt = apt.appointedAt.Value.AddMinutes(shiftMinutes);
                 // TODO: notify patient about reschedule
             }
@@ -108,6 +120,7 @@ namespace ClinicMiniProject.Controller
                 if (doctorAvailabilities != null)
                 {
                     var availableDoc = doctorAvailabilities
+                        .AsEnumerable()
                         .Where(a => a.IsAvailable(preferredDate.DayOfWeek))
                         .OrderBy(_ => Random.Shared.Next()) // random order
                         .ToList();
@@ -125,28 +138,28 @@ namespace ClinicMiniProject.Controller
                 }
             }
 
-            var appt = new Appointment
+            var apt = new Appointment
             {
                 patient_IC = patient.patient_IC,
                 staff_ID = assignedDoctorId ?? string.Empty,
                 appointedAt = slot,
-                appointment_status = slot.HasValue ? "Pending" : "NoSlot"
+                status = slot.HasValue ? "Pending" : "NoSlot"
             };
 
-            _patientService.AddAppointment(appt);
+            _aptService.AddAppointment(apt);
 
-            return appt;
+            return apt;
         }
 
 
         public List<Appointment> EndDocConsultation() 
         {
-            return appointments.Where(a => a.appointment_status == "Completed").OrderByDescending(a => a.appointedAt).ToList();
+            return appointments.Where(a => a.status == "Completed").OrderByDescending(a => a.appointedAt).ToList();
         }
 
         public void UpdatePaymentStatus(Appointment apt)
         {
-            apt.payment_status = "Done";
+            apt.status = "Done";
         }
 
         public Patient ViewPatientDetails(string patientIC)
