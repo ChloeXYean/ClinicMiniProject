@@ -8,9 +8,7 @@ namespace ClinicMiniProject
         public App()
         {
             InitializeComponent();
-            // Ensure the application provides a startup UI.
-            // Use AppShell if your project is structured around Shell.
-            MainPage = new AppShell();
+            MainPage = new UITestPage("Test user");
         }
     }
 }

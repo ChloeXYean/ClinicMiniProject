@@ -16,7 +16,7 @@ namespace ClinicMiniProject.Repository
             //_context = context;
         }
 
-        public Staff GetStaffById(int id)
+        public Staff GetStaffById(string id)
         {
             //return _context.Staffs.FirstOrDefault(s => s.staffID == id);
             return null; // Ignore for now 

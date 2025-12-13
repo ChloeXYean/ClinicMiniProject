@@ -50,7 +50,7 @@ public class PatientService
             a.appointment_status == "Completed" ? 1:
             a.appointment_status == "Cancelled" ? 2 : 3)
             .ThenBy(a => a.appointedBy)
-            .FirstOrDefault());
+            .FirstOrDefault();
     }
 
     // Add appointment
