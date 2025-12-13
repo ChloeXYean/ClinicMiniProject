@@ -3,6 +3,9 @@ using ClinicMiniProject.Services;
 using ClinicMiniProject.Services.Interfaces;
 using ClinicMiniProject.UI;
 using ClinicMiniProject.ViewModels;
+using ClinicMiniProject.Controller;
+using ClinicMiniProject.UI.Nurse;
+using ClinicMiniProject.Repository;
 
 namespace ClinicMiniProject
 {
@@ -18,30 +21,43 @@ namespace ClinicMiniProject
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
-                builder.Services.AddSingleton<IAuthService, AuthService>();
-                builder.Services.AddSingleton<IDoctorDashboardService, DoctorDashboardService>();
-                builder.Services.AddTransient<DoctorDashboardViewModel>();
-                builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-                builder.Services.AddScoped<IConsultationService, ConsultationService>();
-                builder.Services.AddTransient<ConsultationDetailsViewModel>();
-                builder.Services.AddTransient<ConsultationSessionViewModel>();
-                builder.Services.AddScoped<IAppointmentScheduleService, AppointmentScheduleService>();
-                builder.Services.AddScoped<IPatientInfoService, PatientInfoService>();
-                builder.Services.AddScoped<IReportingService, ReportingService>();
-                builder.Services.AddTransient<ReportingManagementViewModel>();
-                builder.Services.AddScoped<IDoctorProfileService, DoctorProfileService>();
-                builder.Services.AddTransient<DoctorProfileViewModel>();
-				builder.Services.AddTransient<AppointmentScheduleViewModel>();
-				builder.Services.AddSingleton<IInquiryService, InquiryService>();
-				builder.Services.AddTransient<OnlineMedicalInquiryViewModel>();
-				builder.Services.AddTransient<InquiryDetailsViewModel>();
+            //Register database context
+            builder.Services.AddDbContext<AppDbContext>();
 
-                builder.Services.AddTransient<LoginPage>();
-                builder.Services.AddTransient<RegisterPage>();
+            //Register repositories
+            builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            builder.Services.AddScoped<IStaffRepository, StaffRepository>();
 
-#if DEBUG
-    		builder.Logging.AddDebug();
-#endif
+            //Register services
+            builder.Services.AddSingleton<IAuthService, AuthService>();
+            builder.Services.AddSingleton<IDoctorDashboardService, DoctorDashboardService>();
+            builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+            builder.Services.AddScoped<IConsultationService, ConsultationService>();
+            builder.Services.AddScoped<IAppointmentScheduleService, AppointmentScheduleService>();
+            builder.Services.AddScoped<IPatientInfoService, PatientInfoService>();
+            builder.Services.AddScoped<IReportingService, ReportingService>();
+            builder.Services.AddScoped<IDoctorProfileService, DoctorProfileService>();
+            builder.Services.AddScoped<PatientService>();
+
+            builder.Services.AddScoped<NurseController>();
+            //ViewModels
+            builder.Services.AddTransient<DoctorDashboardViewModel>();
+            builder.Services.AddTransient<ConsultationDetailsViewModel>();
+            builder.Services.AddTransient<ConsultationSessionViewModel>();
+            builder.Services.AddTransient<ReportingManagementViewModel>();
+            builder.Services.AddTransient<DoctorProfileViewModel>();
+
+            //Auth
+            builder.Services.AddTransient<LoginPage>();
+            builder.Services.AddTransient<RegisterPage>();
+
+            //Nurse
+            builder.Services.AddTransient<NurseHomePage>();    
+            builder.Services.AddTransient<RegisterPatientPage>();
+
+//#if DEBUG
+//            builder.Logging.AddDebug();
+//#endif
 
             return builder.Build();
         }

@@ -12,6 +12,8 @@ namespace ClinicMiniProject.Services
         public string GetStaffIdByName(string name);
         Staff GetStaff(string id);
         List<Staff> GetAllStaffs();
+
+        List<Staff> GetAllDocs();
         void CreateStaff(Staff staff);
         void ModifyStaff(Staff staff);
         void DeleteStaff(Staff staff);
@@ -19,6 +21,5 @@ namespace ClinicMiniProject.Services
 
         List<Appointment> ViewAppointmentList(DateTime selectedDate);
         List<Appointment> ViewAppointmentHistory(Patient patient);
-        void UpdateAppointmentStatus(int appointmentId, string status);
     }
 }

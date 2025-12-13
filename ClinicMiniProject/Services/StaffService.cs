@@ -22,7 +22,8 @@ namespace ClinicMiniProject.Services
         }
         public string GetStaffIdByName(string name)
         {
-            throw new NotImplementedException();
+                var staff = _staffRepository.GetAllStaffs().FirstOrDefault(s =>s.staff_name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                return staff?.staff_ID ?? string.Empty;
         }
 
         public Staff GetStaff(string id)
@@ -34,6 +35,14 @@ namespace ClinicMiniProject.Services
         {
             return _staffRepository.GetAllStaffs();
         }
+        public List<Staff> GetAllDocs()
+        {
+                return _staffRepository
+                            .GetAllStaffs()
+                            .Where(s => s.isDoctor == true)
+                            .ToList();
+        }
+
 
         public void CreateStaff(Staff staff)
         {
@@ -63,19 +72,8 @@ namespace ClinicMiniProject.Services
 
         public List<Appointment> ViewAppointmentHistory(Patient patient)
         {
-            return _aptRepo.GetAppointmentsByPatient(patient.patient_IC);
-        }
-
-        public void UpdateAppointmentStatus(int appointmentId, string status)
-        {
-            //var appointment = _aptRepo.GetAppointmentById(appointmentId);
-            //if (appointment != null)
-            //{
-            //    appointment.status = status;
-            //    _aptRepo.UpdateAppointment(appointment);
-            //}
-        }
-
+            return _aptRepo.GetAppointmentsByPatientIC(patient.patient_IC);
+            }
         
     }
 }
