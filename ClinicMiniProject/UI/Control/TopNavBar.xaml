@@ -30,6 +30,7 @@
             <Label Grid.Column="1"
                    x:Name="TitleLabel"
                    Text="{Binding Source={RelativeSource AncestorType={x:Type control:TopNavBar}}, Path=UserName, StringFormat='Hi, Dr. {0}!'}"
+                   Text="{Binding UserGreeting}" 
                    TextColor="Black"
                    FontSize="18"
                    FontAttributes="Bold"

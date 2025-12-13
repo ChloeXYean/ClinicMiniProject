@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls ="clr-namespace:ClinicMiniProject.UI.Control"
+             x:Class="ClinicMiniProject.UI.Nurse.RegisterPatientPage"
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto, *">
+        <controls:BackNavBar Grid.Row="0"
+                             Title="Register Walk-In Patient"
+                             BackClicked="OnBackClicked" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="25" Spacing="25">
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Patient Full Name" FontAttributes="Bold" FontSize="16" TextColor="Black" />
+                    <Border BackgroundColor="#F0F0F0" StrokeThickness="0" StrokeShape="RoundRectangle 10" HeightRequest="70">
+                        <Entry x:Name="NameEntry" Placeholder="Enter full name" Margin="15,0" VerticalOptions="Center" TextColor="Black" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="IC Number" FontAttributes="Bold" FontSize="16" TextColor="Black" />
+                    <Border BackgroundColor="#F0F0F0" StrokeThickness="0" StrokeShape="RoundRectangle 10" HeightRequest="70">
+                        <Entry x:Name="IcEntry" Placeholder="e.g., 901212-14-5566" Margin="15,0" VerticalOptions="Center" Keyboard="Numeric" TextColor="Black"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Phone Number" FontAttributes="Bold" FontSize="16" TextColor="Black" />
+                    <Border BackgroundColor="#F0F0F0" StrokeThickness="0" StrokeShape="RoundRectangle 10" HeightRequest="70">
+                        <Entry x:Name="PhoneEntry" Placeholder="e.g., +60 12-345 6789" Margin="15,0" VerticalOptions="Center" Keyboard="Telephone" TextColor="Black"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Select Service Type" FontAttributes="Bold" FontSize="16" TextColor="Black" />
+
+                    <Border BackgroundColor="#6EA8FE" StrokeThickness="0" StrokeShape="RoundRectangle 10" HeightRequest="70">
+                        <Picker x:Name="ServiceTypePicker"
+                                Title="Select a service"
+                                TextColor="White"
+                                TitleColor="#E0E0E0"
+                                Margin="15,0"
+                                VerticalOptions="Center"
+                                HorizontalOptions="Fill"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <Button Text="Register"
+                        BackgroundColor="#6EA8FE"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        CornerRadius="10"
+                        HeightRequest="55"
+                        Margin="0,20,0,0"
+                        Clicked="OnRegisterClicked" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
