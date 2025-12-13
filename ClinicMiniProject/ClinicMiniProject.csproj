@@ -60,11 +60,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\AppIcon\appointment.png" />
 	  <None Remove="Resources\AppIcon\bell.png" />
+	  <None Remove="Resources\AppIcon\history.png" />
 	  <None Remove="Resources\AppIcon\home.png" />
 	  <None Remove="Resources\AppIcon\inquiry.png" />
 	  <None Remove="Resources\AppIcon\menu.png" />
 	  <None Remove="Resources\AppIcon\profile.png" />
+	  <None Remove="Resources\AppIcon\report.png" />
+	  <None Remove="Resources\AppIcon\walk-in.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -83,11 +87,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiImage Include="Resources\AppIcon\appointment.png" />
 	  <MauiImage Include="Resources\AppIcon\bell.png" />
+	  <MauiImage Include="Resources\AppIcon\history.png" />
 	  <MauiImage Include="Resources\AppIcon\home.png" />
 	  <MauiImage Include="Resources\AppIcon\inquiry.png" />
 	  <MauiImage Include="Resources\AppIcon\menu.png" />
 	  <MauiImage Include="Resources\AppIcon\profile.png" />
+	  <MauiImage Include="Resources\AppIcon\report.png" />
+	  <MauiImage Include="Resources\AppIcon\walk-in.png" />
 	</ItemGroup>
 
 	<ItemGroup>
