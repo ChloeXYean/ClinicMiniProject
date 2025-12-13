@@ -21,9 +21,9 @@
                         <Label Text="Upcoming Appointment" FontAttributes="Bold" FontSize="16" TextColor="Black"/>
 
                         <VerticalStackLayout Spacing="2">
-                            <Label Text="Date: 20 November 2025" FontSize="13" TextColor="#333"/>
-                            <Label Text="Time: 10.30am" FontSize="13" TextColor="#333"/>
-                            <Label Text="Doctor: Dr.Ali" FontSize="13" TextColor="#333"/>
+                            <Label x:Name="appDate" Text="Date: Loading..." FontSize="13" TextColor="#333"/>
+                            <Label x:Name="appTime" Text="Time: --:--" FontSize="13" TextColor="#333"/>
+                            <Label x:Name="appDoc" Text="Doctor: --" FontSize="13" TextColor="#333"/>
                         </VerticalStackLayout>
 
                         <Label Text="Number of People Pending Processing" 
@@ -34,7 +34,7 @@
 
                         <VerticalStackLayout Grid.Column="0" Spacing="5">
                             <Border HeightRequest="60" WidthRequest="350" StrokeShape="RoundRectangle 80" BackgroundColor="#E0E0E0" StrokeThickness="0">
-                                <Label Text="2" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" TextColor="Black"/>
+                                <Label x:Name="appPendingCount" Text="0" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" TextColor="Black"/>
                             </Border>
                             <Label Text="End Doctor Consultation" FontSize="12" HorizontalTextAlignment="Center" TextColor="#2D5AF0" TextDecorations="Underline"/>
                         </VerticalStackLayout>

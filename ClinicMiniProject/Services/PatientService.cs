@@ -160,9 +160,9 @@
 //    //get online inquiry
 
 //}
-
 using ClinicMiniProject.Models;
 using Microsoft.EntityFrameworkCore;
+
 namespace ClinicMiniProject.Services
 {
     public class PatientService
@@ -174,6 +174,7 @@ namespace ClinicMiniProject.Services
             _context = appDbContext;
         }
 
+        // Add patient
         public void AddPatient(Patient patient)
         {
             if (patient == null || string.IsNullOrWhiteSpace(patient.patient_IC))
@@ -189,18 +190,20 @@ namespace ClinicMiniProject.Services
             }
         }
 
+        // Get patient by IC
         public Patient? GetPatientByIC(string patient_IC)
         {
             return _context.Patients
                 .FirstOrDefault(p => p.patient_IC == patient_IC);
         }
 
-    //Get all patients
-    public List<Patient> GetAllPatients()
-    {
-        return patients;
-    }
+        // Get all patients
+        public List<Patient> GetAllPatients()
+        {
+            return _context.Patients.ToList();
+        }
 
+        // Get patient appointments
         public List<Appointment> GetPatientsAppointments(string patient_IC)
         {
             return _context.Appointments
@@ -212,6 +215,7 @@ namespace ClinicMiniProject.Services
                 .ToList();
         }
 
+        // Get upcoming appointment
         public Appointment? GetUpcomingAppointmentEntity(string patient_IC)
         {
             return _context.Appointments
@@ -220,6 +224,7 @@ namespace ClinicMiniProject.Services
                 .FirstOrDefault();
         }
 
+        // Get profile
         public Patient? GetPatientPersonalInformation(string patient_IC)
         {
             return _context.Patients

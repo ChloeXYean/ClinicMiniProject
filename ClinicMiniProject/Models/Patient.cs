@@ -29,7 +29,7 @@ namespace ClinicMiniProject.Models
 
         [Column("isAppUser")]
         [Required]
-        public bool IsAppUser { get; set; } = false;
+        public bool isAppUser { get; set; } = false;
 
         public List<Appointment> Appointments { get; set; } = new();
     }

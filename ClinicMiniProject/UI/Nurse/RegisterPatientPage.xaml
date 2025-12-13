@@ -36,6 +36,27 @@
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="8">
+                    <Label Text="Select Doctor (Optional)"
+                       FontAttributes="Bold"
+                       FontSize="16"
+                       TextColor="Black" />
+
+                    <Border BackgroundColor="#F0F0F0"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 10"
+                        HeightRequest="70">
+
+                        <Picker x:Name="DoctorPicker"
+                            Title="Auto-assign if not selected"
+                            Margin="15,0"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Fill"
+                            TextColor="Black"/>
+                    </Border>
+                </VerticalStackLayout>
+
+
+                <VerticalStackLayout Spacing="8">
                     <Label Text="Select Service Type" FontAttributes="Bold" FontSize="16" TextColor="Black" />
 
                     <Border BackgroundColor="#6EA8FE" StrokeThickness="0" StrokeShape="RoundRectangle 10" HeightRequest="70">

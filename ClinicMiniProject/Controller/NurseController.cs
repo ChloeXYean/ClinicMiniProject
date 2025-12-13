@@ -1,182 +1,100 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Appointment = ClinicMiniProject.Models.Appointment;
-using DocAvailable = ClinicMiniProject.Models.DocAvailable;
-using Patient = ClinicMiniProject.Models.Patient;
-using Staff = ClinicMiniProject.Models.Staff;
+﻿using ClinicMiniProject.Models;
 using ClinicMiniProject.Services;
 
 namespace ClinicMiniProject.Controller
 {
-    internal class NurseController
+    public class NurseController
     {
-        public List<Appointment> appointments { get; private set; }
-        public List<DocAvailable> doctorAvailabilities { get; private set; } 
-        public List<Patient> patients { get; private set; }
-        public List<Staff> staffs { get; private set; }
-
-        private readonly AppointmentService _aptService;
+        private readonly AppointmentService _appointmentService;
         private readonly PatientService _patientService;
+        private readonly IStaffService _staffService;
 
-        public NurseController(AppointmentService aptSerivce,  PatientService patientService)
+        public NurseController(
+            AppointmentService appointmentService,
+            PatientService patientService,
+            IStaffService staffService)
         {
-            _aptService = aptSerivce;
+            _appointmentService = appointmentService;
             _patientService = patientService;
+            _staffService = staffService;
+        }
+        public async Task<List<Appointment>> ViewAppointmentList(DateTime selectedDate)
+        {
+            // filter by staff or role
+            var start = selectedDate.Date;
+            var end = start.AddDays(1);
 
-            appointments = new List<Appointment>();
-            doctorAvailabilities = new List<DocAvailable>();
-            patients = new List<Patient>();
-            staffs = new List<Staff>();
+            var appointments = await _appointmentService
+                .GetAppointmentsByStaffAndDateRangeAsync("", start, end);
 
+            return appointments.ToList();
         }
 
-        public List<Appointment> ViewAppointmentList(DateTime selectedDate)
-        {
-            if (appointments == null || appointments.Count == 0)
-                return new List<Appointment>();
-
-            return appointments
-                .Where(a => a.appointedAt.HasValue && a.appointedAt.Value.Date == selectedDate.Date)
-                .OrderBy(a => a.appointedAt.Value) 
-                .ToList();
-        }
-
-        public List<Appointment> ViewAppointmentHistory(Patient patient)
-        {
-            if (patient == null) throw new ArgumentNullException(nameof(patient));
-
-            return appointments
-                .Where(a => a.patient_IC == patient.patient_IC)
-                .OrderByDescending(a => a.appointedAt ?? DateTime.MinValue)
-                .ToList();
-        }
-
-        public void ManageEmergencyAppointment(Appointment emergencyAppointment, int shiftMinutes = 60)
-        {
-            if (emergencyAppointment == null) throw new ArgumentNullException(nameof(emergencyAppointment));
-
-            emergencyAppointment.status = "Emergency";
-            emergencyAppointment.bookedAt = DateTime.Now;
-
-            if (!emergencyAppointment.appointedAt.HasValue)
+        public async Task<bool> RegisterWalkInPatient(string fullName,string ic,string phone, string? preferredDoctorId = null)
+        { //Reason idk need or not 
+            try
             {
-                appointments.Add(emergencyAppointment);
-                return;
-            }
-
-            var emergencyStart = emergencyAppointment.appointedAt.Value;
-            var emergencyEnd = emergencyStart.AddMinutes(shiftMinutes);
-
-            var conflicts = appointments
-                .Where(apt => apt.appointedAt.HasValue)
-                .Where(apt =>
+                var patient = new Patient
                 {
-                    var start = apt.appointedAt.Value;
-                    var end = start.AddMinutes(shiftMinutes);
-                    return !(emergencyEnd <= start || emergencyStart >= end);
-                })
-                .ToList();
+                    patient_IC = ic,
+                    patient_name = fullName,
+                    patient_contact = phone,
+                    isAppUser = false
+                };
 
-            foreach (var apt in conflicts)
-            {
-                apt.status = "Rescheduled";
-                apt.appointedAt = apt.appointedAt.Value.AddMinutes(shiftMinutes);
-                // TODO: notify patient about reschedule
+                _patientService.AddPatient(patient);
+
+                string doctorId = preferredDoctorId ?? "DOC001"; // TODO: real logic
+
+                var slot = _appointmentService.AssignWalkInTimeSlot(doctorId,DateTime.Today);
+
+                var appointment = new Appointment
+                {
+                    patient_IC = ic,
+                    staff_ID = doctorId,
+                    appointedAt = slot,
+                    bookedAt = DateTime.Now,
+                    status = slot.HasValue ? "Pending" : "NoSlot",
+                    //reason = serviceType
+                };
+
+                _appointmentService.AddAppointment(appointment);
+
+                return true;
             }
-
-            appointments.Add(emergencyAppointment);
+            catch
+            {
+                return false;
+            }
         }
 
-        public Appointment RegisterWalkInPatient(Patient patient, string docName = null)
+        public async Task<List<Appointment>> GetCompletedConsultationsAsync(string doctorId)
         {
-            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            var appointments = await _appointmentService.GetUpcomingAppointmentsAsync(doctorId);
 
-            _patientService.AddPatient(patient);
-
-            string? assignedDoctorId = null;
-            if (!string.IsNullOrWhiteSpace(docName) && staffs != null)
-            {
-                var doc = staffs.FirstOrDefault(s =>
-                    string.Equals(s.staff_name, docName, StringComparison.OrdinalIgnoreCase));
-                assignedDoctorId = doc?.staff_ID;
-            }
-
-            DateTime preferredDate = DateTime.Today;
-            DateTime? slot = null;
-
-            //if got specific doc
-            if (!string.IsNullOrEmpty(assignedDoctorId))
-            {
-                slot = _aptService.AssignWalkInTimeSlot(assignedDoctorId, preferredDate);
-                if (slot == null)
-                {
-                    //unavailable 
-                    assignedDoctorId = null;
-                }   
-            }
-            //No doc
-            if (string.IsNullOrEmpty(assignedDoctorId))
-            {
-                if (doctorAvailabilities != null)
-                {
-                    var availableDoc = doctorAvailabilities
-                        .AsEnumerable()
-                        .Where(a => a.IsAvailable(preferredDate.DayOfWeek))
-                        .OrderBy(_ => Random.Shared.Next()) // random order
-                        .ToList();
-
-                    foreach (var doc in availableDoc)
-                    {
-                        var trySlot = _aptService.AssignWalkInTimeSlot(doc.staff_ID, preferredDate);
-                        if (trySlot != null)
-                        {
-                            assignedDoctorId = doc.staff_ID;
-                            slot = trySlot;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            var apt = new Appointment
-            {
-                patient_IC = patient.patient_IC,
-                staff_ID = assignedDoctorId ?? string.Empty,
-                appointedAt = slot,
-                status = slot.HasValue ? "Pending" : "NoSlot"
-            };
-
-            _aptService.AddAppointment(apt);
-
-            return apt;
-        }
-
-
-        public List<Appointment> EndDocConsultation() 
-        {
             return appointments.Where(a => a.status == "Completed").OrderByDescending(a => a.appointedAt).ToList();
         }
 
-        public void UpdatePaymentStatus(Appointment apt)
+        public Patient? ViewPatientDetails(string patientIC)
         {
-            apt.status = "Done";
+            return _patientService.GetPatientByIC(patientIC);
         }
 
-        public Patient ViewPatientDetails(string patientIC)
+        public async Task<List<Appointment>> GetUpcomingAppointment()
         {
-            var patient = patients.FirstOrDefault(p => p.patient_IC != patientIC);
-            if (patient == null)
-                {
-                throw new ArgumentException("Patient not found.");
-            }
-            return patient;
+            var now = DateTime.Now;
 
+            var appointments = await _appointmentService
+                .GetAppointmentsByStaffAndDateRangeAsync(
+                    staffId: "",          
+                    startDate: now,
+                    endDate: now.AddDays(30) 
+                );
+
+            return appointments
+                .Where(a => a.status == "Pending" || a.status == "Scheduled")
+                .OrderBy(a => a.appointedAt)
+                .ToList();
         }
-
-        
-
     }
 }

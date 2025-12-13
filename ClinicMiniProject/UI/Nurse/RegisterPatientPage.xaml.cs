@@ -1,21 +1,39 @@
+using ClinicMiniProject.Controller;
+using ClinicMiniProject.Services;
+
 namespace ClinicMiniProject.UI.Nurse;
 
 public partial class RegisterPatientPage : ContentPage
 {
-	public RegisterPatientPage()
+    private readonly NurseController _controller;
+    private readonly IStaffService _staffService;
+    public RegisterPatientPage(NurseController controller, IStaffService staffService)
 	{
 		InitializeComponent();
+        _controller = controller;
+        _staffService = staffService;
         PopulateServiceTypes();
+        LoadDoctors();
+
     }
+    private void LoadDoctors()
+    {
+        var doctors = _staffService.GetAllDocs();
+        DoctorPicker.ItemsSource = doctors;
+        DoctorPicker.ItemDisplayBinding = new Binding("staff_name");
+    }
+
     private void PopulateServiceTypes()
     {
         var serviceTypes = new List<string>
         {
             "General Consultation",
-            "Specialist Consultation",
-            "Health Screening",
-            "Vaccination",
-            "Follow-up Visit"
+            "Follow up treatment",
+            "Test Result Discussion",
+            "Vaccination/Injection",
+            "Blood test",
+            "Blood pressure test",
+            "Sugar test"
         };
         ServiceTypePicker.ItemsSource = serviceTypes;
     }
@@ -29,22 +47,36 @@ public partial class RegisterPatientPage : ContentPage
     {
         if (string.IsNullOrWhiteSpace(NameEntry.Text) ||
             string.IsNullOrWhiteSpace(IcEntry.Text) ||
-            string.IsNullOrWhiteSpace(PhoneEntry.Text))
+            string.IsNullOrWhiteSpace(PhoneEntry.Text) ||
+            ServiceTypePicker.SelectedItem == null)
         {
-            await DisplayAlert("Error", "Please fill in all fields.", "OK");
+            await DisplayAlert("Error", "Please fill in all required fields.", "OK");
             return;
         }
 
-        if (ServiceTypePicker.SelectedIndex == -1)
+        string? selectedDoctorId = null;
+
+        if (DoctorPicker.SelectedItem is Staff selectedDoctor)
         {
-            await DisplayAlert("Error", "Please select a service type.", "OK");
-            return;
+            selectedDoctorId = selectedDoctor.staff_ID;
         }
 
-        // Success Action --> save to database
-        // For now, just show a success message and go back.
-        await DisplayAlert("Success", $"Patient {NameEntry.Text} has been registered for {ServiceTypePicker.SelectedItem}.", "OK");
+        bool success = await _controller.RegisterWalkInPatient(
+            NameEntry.Text,
+            IcEntry.Text,
+            PhoneEntry.Text,
+            //ServiceTypePicker.SelectedItem.ToString()!,
+            selectedDoctorId
+        );
 
-        await Navigation.PopAsync();
+        if (success)
+        {
+            await DisplayAlert("Success", "Patient registered successfully.", "OK");
+            await Navigation.PopAsync();
+        }
+        else
+        {
+            await DisplayAlert("Error", "Failed to register patient.", "OK");
+        }
     }
 }
