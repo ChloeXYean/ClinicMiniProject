@@ -29,9 +29,15 @@ namespace ClinicMiniProject.Models
 
         [Column("status")]
         public string status { get; set; } = "Pending";
-        public string consultation_status { get; set; }
-        public string payment_status { get; set; }
-        public string pickup_status { get; set; }
+        //public string consultation_status { get; set; }
+        //public string payment_status { get; set; }
+        //public string pickup_status { get; set; }
+
+        //[Column("payment_status")]
+        //public string payment_status { get; set; } = string.Empty;
+
+        //[Column("pickup_status")]
+        //public string pickup_status { get; set; } = string.Empty;
 
         public Staff Staff { get; set; } = null!;
         public Patient Patient { get; set; } = null!;

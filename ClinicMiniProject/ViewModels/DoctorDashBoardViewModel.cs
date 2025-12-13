@@ -13,9 +13,10 @@ namespace ClinicMiniProject.ViewModels
         private readonly IAuthService _authService;
         private readonly IDoctorDashboardService _dashboardService;
         private string _greeting;
-        private TodayStatsDto _todayStats;
-        private UpcomingScheduleDto _upcomingSchedule;
-        private string _nextAppointmentTime;
+        private TodayStatsDto _todayStats = new();
+        private UpcomingScheduleDto _upcomingSchedule = new();
+        private string _nextAppointmentTime = string.Empty;
+        private string _doctorName = string.Empty;
 
         public string Greeting
         {
@@ -23,8 +24,14 @@ namespace ClinicMiniProject.ViewModels
             set => SetProperty(ref _greeting, value);
         }
 
+        public string DoctorName
+        {
+            get => _doctorName;
+            set => SetProperty(ref _doctorName, value);
+        }
+
         public string CurrentDate => DateTime.Now.ToString("dddd, MMMM dd, yyyy");
-        
+
         public TodayStatsDto TodayStats
         {
             get => _todayStats;
@@ -53,6 +60,9 @@ namespace ClinicMiniProject.ViewModels
         public ICommand NavigateToInquiryCommand { get; }
         public ICommand NavigateToProfileCommand { get; }
 
+        public ICommand ToggleMenuCommand { get; }
+        public ICommand NotificationCommand { get; }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public DoctorDashboardViewModel(IAuthService authService, IDoctorDashboardService dashboardService)
@@ -70,6 +80,9 @@ namespace ClinicMiniProject.ViewModels
             NavigateToInquiryCommand = new Command(OnInquiry);
             NavigateToProfileCommand = new Command(OnProfile);
 
+            ToggleMenuCommand = new Command(OnToggleMenu);
+            NotificationCommand = new Command(OnNotification);
+
             LoadDashboardData();
         }
 
@@ -78,8 +91,9 @@ namespace ClinicMiniProject.ViewModels
             var currentUser = _authService.GetCurrentUser();
             if (currentUser == null) return;
 
+            DoctorName = currentUser.staff_name;
             Greeting = $"Hi, Dr. {currentUser.staff_name}";
-            
+
             try
             {
                 var dashboardData = await _dashboardService.GetDashboardDataAsync(currentUser.staff_ID);
@@ -98,31 +112,31 @@ namespace ClinicMiniProject.ViewModels
         {
             _authService.Logout();
             // Navigate to login page
-            Shell.Current.GoToAsync("//Login");
+            Shell.Current.GoToAsync(nameof(UI.LoginPage));
         }
 
         private void OnAppointmentSchedule()
         {
             // Navigate to appointment schedule page
-            Shell.Current.GoToAsync("//AppointmentSchedule");
+            Shell.Current.GoToAsync("AppointmentSchedule");
         }
 
         private void OnConsultationDetails()
         {
             // Navigate to consultation details page
-            Shell.Current.GoToAsync("//ConsultationDetails");
+            Shell.Current.GoToAsync("ConsultationDetails");
         }
 
         private void OnAppointmentHistory()
         {
             // Navigate to appointment history page
-            Shell.Current.GoToAsync("//AppointmentHistory");
+            Shell.Current.GoToAsync("AppointmentHistory");
         }
 
         private void OnReportingManagement()
         {
             // Navigate to reporting management page
-            Shell.Current.GoToAsync("//ReportingManagement");
+            Shell.Current.GoToAsync("ReportingManagement");
         }
 
         private void OnHome()
@@ -134,13 +148,23 @@ namespace ClinicMiniProject.ViewModels
         private void OnInquiry()
         {
             // Navigate to inquiry page
-            Shell.Current.GoToAsync("//Inquiry");
+            Shell.Current.GoToAsync("Inquiry");
         }
 
         private void OnProfile()
         {
             // Navigate to profile page
-            Shell.Current.GoToAsync("//Profile");
+            Shell.Current.GoToAsync("Profile");
+        }
+
+        private void OnToggleMenu()
+        {
+            // Placeholder for drawer/menu logic
+        }
+
+        private void OnNotification()
+        {
+            // Placeholder for notification logic
         }
 
         protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")

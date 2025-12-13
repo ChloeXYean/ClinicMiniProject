@@ -46,11 +46,11 @@ public class PatientService
     {
         return clinicService.GetAllAppointments()
             .Where(a => a.patient_IC == patient_IC)
-            .OrderBy(a => a.appointment_status == "Pending" ? 0: 
-            a.appointment_status == "Completed" ? 1:
-            a.appointment_status == "Cancelled" ? 2 : 3)
-            .ThenBy(a => a.appointedBy)
-            .FirstOrDefault();
+            .OrderBy(a => a.status == "Pending" ? 0 :
+                         a.status == "Completed" ? 1 :
+                         a.status == "Cancelled" ? 2 : 3)
+            .ThenBy(a => a.appointedAt ?? DateTime.MaxValue)
+            .ToList();
     }
 
     // Add appointment
@@ -82,8 +82,8 @@ public class PatientService
         var doctor = staffService.GetStaff(appt.staff_ID);
 
         int consultationQueue = clinicService.GetConsultationQueue(appt);
-        int paymentQueue = clinicService.GetPaymentQueue(appt);
-        int pickupQueue = clinicService.GetPickupQueue(appt);
+        //int paymentQueue = clinicService.GetPaymentQueue(appt);
+        //int pickupQueue = clinicService.GetPickupQueue(appt);
 
         var view = new UpcomingAppointmentView
         {
@@ -91,30 +91,6 @@ public class PatientService
             DoctorName = doctor?.staff_name ?? "Unknown",
             ConsultationQueueCount = consultationQueue
         };
-
-        // If still waiting for consultation, other stages are pending
-        if (consultationQueue > 0)
-        {
-            view.PaymentStatus = "Pending";
-            view.PickupStatus = "Pending";
-        }
-        else
-        {
-            view.PaymentStatus = paymentQueue > 0
-                ? $"{paymentQueue} ahead"
-                : "Your turn";
-
-            if (paymentQueue == 0)
-            {
-                view.PickupStatus = pickupQueue > 0
-                    ? $"{pickupQueue} ahead"
-                    : "Your turn";
-            }
-            else
-            {
-                view.PickupStatus = "Pending";
-            }
-        }
 
         return view;
     }

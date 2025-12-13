@@ -1,4 +1,5 @@
-﻿using ClinicMiniProject.Models;
+﻿using Appointment = ClinicMiniProject.Models.Appointment;
+using DocAvailable = ClinicMiniProject.Models.DocAvailable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,9 +56,7 @@ namespace ClinicMiniProject.Controller
 
         public void UpdateAppointmentStatus(Appointment apt)
         {
-            apt.appointment_status = "Completed";
-            apt.consultation_status = "Done";
-            apt.payment_status = "Pending";
+            apt.status = "Completed";
         }
 
 

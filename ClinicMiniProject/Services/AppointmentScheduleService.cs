@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ClinicMiniProject.Services.Interfaces;
 
@@ -7,31 +8,85 @@ namespace ClinicMiniProject.Services
 {
     public class AppointmentScheduleService : IAppointmentScheduleService
     {
-        public AppointmentScheduleService()
+        private readonly IAppointmentService _appointmentService;
+
+        public AppointmentScheduleService(IAppointmentService appointmentService)
         {
+            _appointmentService = appointmentService;
         }
 
         public async Task<AppointmentScheduleGridDto> GetScheduleGridAsync(string doctorId, DateTime date)
         {
-            await Task.Yield();
+            var day = date.Date;
+            var endOfDay = day.AddDays(1);
 
-            // TODO: link with database
-            // Required data to build schedule table:
-            // 1) All supported service types for schedule columns ("type1", "type2", ...)
-            // 2) All time slots for the given date (e.g., 09:00, 09:30, 10:00 ...)
-            // 3) All appointments for doctorId on that date, including patient IC + service type + appointedAt
-            // 4) Patient name lookup for each booked appointment
-            //
-            // Then map them into AppointmentScheduleGridDto:
-            // - Grid.ServiceTypes = distinct service types
-            // - Grid.Rows = one row per slot
-            // - Each row has CellsByServiceType[serviceType] = booked/unbooked cell
+            // Service columns required by UI.
+            // NOTE: current Appointment model doesn't have a service type field yet.
+            // We default all appointments into "General Consultation" until DB/model supports it.
+            var serviceTypes = new List<string>
+            {
+                "GeneralConsultation",
+                "FollowUpTreatment",
+                "TestResultDiscussion",
+                "VaccinationInjection",
+                "MedicalScreening"
+            };
+
+            var appts = (await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(doctorId, day, endOfDay))
+                ?.Where(a => a.appointedAt.HasValue)
+                .ToList() ?? new();
+
+            // Build 30-min slots from 09:00 to 21:00 (inclusive start, exclusive end).
+            var start = day.AddHours(9);
+            var end = day.AddHours(21);
+
+            var rows = new List<TimeSlotRowDto>();
+            for (var t = start; t < end; t = t.AddMinutes(30))
+            {
+                var row = new TimeSlotRowDto { SlotStart = t };
+
+                foreach (var st in serviceTypes)
+                {
+                    row.CellsByServiceType[st] = new SlotCellDto { IsBooked = false };
+                }
+
+                rows.Add(row);
+            }
+
+            // Fill appointments into the grid.
+            foreach (var appt in appts)
+            {
+                var slot = appt.appointedAt!.Value;
+
+                // Find matching row
+                var row = rows.FirstOrDefault(r => r.SlotStart == new DateTime(slot.Year, slot.Month, slot.Day, slot.Hour, slot.Minute < 30 ? 0 : 30, 0));
+                if (row == null)
+                    continue;
+
+                // Until service type is available on Appointment, put into General Consultation.
+                var col = "GeneralConsultation";
+                if (!row.CellsByServiceType.ContainsKey(col))
+                    continue;
+
+                var patient = await _appointmentService.GetPatientByIcAsync(appt.patient_IC);
+                var isOnline = _appointmentService.IsAppUser(appt.patient_IC);
+                var name = patient?.patient_name ?? appt.patient_IC;
+                var label = isOnline ? $"{name} (Online)" : $"{name} (Walk-in)";
+
+                row.CellsByServiceType[col] = new SlotCellDto
+                {
+                    IsBooked = true,
+                    AppointmentId = appt.appointment_ID ?? string.Empty,
+                    PatientIc = appt.patient_IC,
+                    PatientName = label
+                };
+            }
 
             return new AppointmentScheduleGridDto
             {
-                Date = date.Date,
-                ServiceTypes = new List<string>(),
-                Rows = new List<TimeSlotRowDto>()
+                Date = day,
+                ServiceTypes = serviceTypes,
+                Rows = rows
             };
         }
     }

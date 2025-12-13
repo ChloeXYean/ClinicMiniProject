@@ -15,6 +15,8 @@ namespace ClinicMiniProject.ViewModels
 
         private string _searchText = string.Empty;
         private ConsultationDetailsDto? _currentDetails;
+        private string _appointmentId = string.Empty;
+        private string _consultationRemark = string.Empty;
 
         public string SearchText
         {
@@ -25,14 +27,51 @@ namespace ClinicMiniProject.ViewModels
         public ConsultationDetailsDto? CurrentDetails
         {
             get => _currentDetails;
-            set => SetProperty(ref _currentDetails, value);
+            set
+            {
+                if (SetProperty(ref _currentDetails, value))
+                {
+                    OnPropertyChanged(nameof(DateText));
+                    OnPropertyChanged(nameof(AppointedTimeSlotText));
+                    OnPropertyChanged(nameof(PatientNameText));
+                    OnPropertyChanged(nameof(PatientIcText));
+                    OnPropertyChanged(nameof(PatientPhoneText));
+                    OnPropertyChanged(nameof(SelectedServiceTypeText));
+                }
+            }
         }
+
+        public string AppointmentId
+        {
+            get => _appointmentId;
+            set
+            {
+                if (SetProperty(ref _appointmentId, value))
+                {
+                    _ = LoadByAppointmentIdAsync();
+                }
+            }
+        }
+
+        public string ConsultationRemark
+        {
+            get => _consultationRemark;
+            set => SetProperty(ref _consultationRemark, value);
+        }
+
+        public string DateText => CurrentDetails == null ? "" : $"Date: {CurrentDetails.Date:dd MMMM yyyy}";
+        public string AppointedTimeSlotText => CurrentDetails == null ? "" : $"Appointed Time Slot: {CurrentDetails.AppointedTimeSlot:h:mm tt}";
+        public string PatientNameText => CurrentDetails == null ? "" : $"Patient Name: {CurrentDetails.PatientName}";
+        public string PatientIcText => CurrentDetails == null ? "" : $"IC Number: {CurrentDetails.PatientIc}";
+        public string PatientPhoneText => CurrentDetails == null ? "" : $"Phone Number: {CurrentDetails.PatientPhone}";
+        public string SelectedServiceTypeText => CurrentDetails == null ? "" : $"Selected Service Type: {CurrentDetails.SelectedServiceType}";
 
         public ObservableCollection<PatientLookupDto> SearchResults { get; } = new();
 
         public ICommand RefreshCommand { get; }
         public ICommand SearchCommand { get; }
         public ICommand StartConsultationCommand { get; }
+        public ICommand EndConsultationCommand { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -44,6 +83,15 @@ namespace ClinicMiniProject.ViewModels
             RefreshCommand = new Command(async () => await RefreshAsync());
             SearchCommand = new Command(async () => await SearchAsync());
             StartConsultationCommand = new Command(async () => await StartAsync());
+            EndConsultationCommand = new Command(async () => await EndAsync());
+        }
+
+        public async Task LoadByAppointmentIdAsync()
+        {
+            if (string.IsNullOrWhiteSpace(AppointmentId))
+                return;
+
+            CurrentDetails = await _consultationService.GetConsultationDetailsByAppointmentIdAsync(AppointmentId);
         }
 
         public async Task RefreshAsync()
@@ -74,6 +122,19 @@ namespace ClinicMiniProject.ViewModels
 
             await _consultationService.StartConsultationAsync(CurrentDetails.AppointmentId);
             await RefreshAsync();
+        }
+
+        public async Task EndAsync()
+        {
+            var apptId = CurrentDetails?.AppointmentId;
+            if (string.IsNullOrWhiteSpace(apptId))
+                apptId = AppointmentId;
+
+            if (string.IsNullOrWhiteSpace(apptId))
+                return;
+
+            await _consultationService.EndConsultationAsync(apptId, ConsultationRemark);
+            await Shell.Current.GoToAsync("..");
         }
 
         protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")
