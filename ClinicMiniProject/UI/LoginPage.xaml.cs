@@ -1,13 +1,13 @@
 using ClinicMiniProject.Models;
 using ClinicMiniProject.Services.Interfaces;
 using ClinicMiniProject.UI.Doctor;
+using ClinicMiniProject.UI.Nurse;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClinicMiniProject.UI
 {
     public partial class LoginPage : ContentPage
     {
-
 
         private readonly IAuthService _authService;
 
@@ -47,16 +47,18 @@ namespace ClinicMiniProject.UI
             {
                 await DisplayAlert("Success", "Login successful", "OK");
 
-                // TODO: role-based routing
-                // If user is Staff and isDoctor => navigate to Doctor page
-                // If user is Patient => navigate to Patient page
-                if (user is Staff staff && staff.isDoctor)
+                if (user is Staff staff)
                 {
-                    await Shell.Current.GoToAsync(nameof(DoctorDashboardPage));
-                }
-                else
-                {
-                    await Shell.Current.GoToAsync("//MainPage");
+                    if (staff.isDoctor)
+                    {
+                        // Go to Doctor Dashboard
+                        await Shell.Current.GoToAsync(nameof(DoctorDashboardPage));
+                    }
+                    else
+                    {
+                        // Go to Nurse Home Page
+                        await Shell.Current.GoToAsync(nameof(NurseHomePage));
+                    }
                 }
             }
             else
