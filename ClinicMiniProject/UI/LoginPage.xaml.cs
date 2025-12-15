@@ -7,14 +7,29 @@ namespace ClinicMiniProject.UI
 {
     public partial class LoginPage : ContentPage
     {
+
+
         private readonly IAuthService _authService;
 
         public LoginPage()
         {
-            var sp = Application.Current?.Handler?.MauiContext?.Services;
-            _authService = sp?.GetService<IAuthService>() ?? new Services.AuthService();
-            _authService.SeedStaff();
             InitializeComponent();
+            var sp = Application.Current?.Handler?.MauiContext?.Services;
+            _authService = sp?.GetService<IAuthService>();
+            if (_authService != null)
+            {
+                DisplayAlert("FATAL ERROR", "AuthService could not be resolved", "OK");
+                return;
+            }
+            try
+            {
+                _authService.SeedStaff();
+            }
+            catch (Exception ex)
+            {
+                //Database error handling
+                DisplayAlert("Database error", "Could not connect to database", "Check IP / Server status" + ex.Message, "OK");
+            }
         }
 
         public LoginPage(IAuthService authService)

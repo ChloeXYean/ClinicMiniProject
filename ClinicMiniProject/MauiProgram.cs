@@ -29,8 +29,9 @@ namespace ClinicMiniProject
             builder.Services.AddScoped<IStaffRepository, StaffRepository>();
 
             //Register services
-            builder.Services.AddSingleton<IAuthService, AuthService>();
-            builder.Services.AddSingleton<IDoctorDashboardService, DoctorDashboardService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IDoctorDashboardService, DoctorDashboardService>();
+            //Original above two is AddSingleton
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
             builder.Services.AddScoped<IConsultationService, ConsultationService>();
             builder.Services.AddScoped<IAppointmentScheduleService, AppointmentScheduleService>();

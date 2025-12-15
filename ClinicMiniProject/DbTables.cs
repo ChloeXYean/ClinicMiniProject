@@ -63,6 +63,8 @@ namespace ClinicMiniProject
         [Column("isDoctor")]
         [Required]
         public bool isDoctor { get; set; }
+        
+        //Password
 
         public List<Appointment> Appointments { get; set; } = new();
         public DocAvailable? Availability { get; set; }
