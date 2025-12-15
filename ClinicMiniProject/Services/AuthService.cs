@@ -7,12 +7,15 @@ namespace ClinicMiniProject.Services
 {
     public class AuthService : IAuthService
     {
-        private static List<ClinicMiniProject.Models.Patient> _patients = new List<ClinicMiniProject.Models.Patient>();
-        private static List<ClinicMiniProject.Models.Staff> _staffs = new List<ClinicMiniProject.Models.Staff>();
+        private readonly AppDbContext _context;
+        private static Staff? _currentStaff;
 
-        private static ClinicMiniProject.Models.Staff? _currentStaff;
+        public AuthService(AppDbContext appDbContext)
+        {
+            _context = appDbContext;
+        }
 
-        public bool RegisterPatient(ClinicMiniProject.Models.Patient patient, out string message)
+        public bool RegisterPatient(Patient patient, out string message)
         {
             message = "";
 
@@ -32,13 +35,15 @@ namespace ClinicMiniProject.Services
                 return false;
             }
 
-            if (_patients.Any(p => p.patient_IC == patient.patient_IC))
+            bool exists = _context.Patients.Any(p => p.patient_IC == patient.patient_IC);
+            if (exists)
             {
-                message = "IC already registered. Please login your account.";
+                message = "IC already registered. Please login to your account.";
                 return false;
             }
 
-            _patients.Add(patient);
+            _context.Patients.Add(patient);
+            _context.SaveChanges();
             return true;
         }
 
@@ -46,39 +51,35 @@ namespace ClinicMiniProject.Services
         {
             message = "";
 
-            if (string.IsNullOrWhiteSpace(patient_IC))
+            if (string.IsNullOrWhiteSpace(patient_IC) || string.IsNullOrWhiteSpace(password))
             {
-                message = "Ic number cannot be empty.";
-                return null;
-            }
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                message = "Password cannot be empty.";
+                message = "Ic number and password cannot be empty.";
                 return null;
             }
 
-            var patient = _patients.FirstOrDefault(p => p.patient_IC == patient_IC && p.password == password);
+            var patient = _context.Patients.FirstOrDefault(p => p.patient_IC == patient_IC && p.password == password);
             if (patient != null) return patient;
 
-            var staff = _staffs.FirstOrDefault(s => s.staff_ID == patient_IC && s.staff_password == password);
+            //var staff = _context.Staffs.FirstOrDefault(s => s.staff_ID == patient_IC && s.staff_password == password);
+            var staff = _context.Staffs.FirstOrDefault(s => s.staff_ID == patient_IC);
             if (staff != null)
             {
                 _currentStaff = staff;
                 return staff;
-            }
+            } 
 
             message = "Account not found. Please try again or create a new account.";
             return null;
         }
 
-        public ClinicMiniProject.Models.Staff GetCurrentUser()
+        public Staff GetCurrentUser()
         {
             return _currentStaff;
         }
 
         public string GetDoctorName(string doctorId)
         {
-            var staff = _staffs.FirstOrDefault(s => s.staff_ID == doctorId);
+            var staff = _context.Staffs.FirstOrDefault(s => s.staff_ID == doctorId);
             return staff?.staff_name ?? string.Empty;
         }
 
@@ -90,16 +91,18 @@ namespace ClinicMiniProject.Services
         // TODO: testing only later need to delete
         public void SeedStaff()
         {
-            if (_staffs.Count == 0)
+            if (!_context.Staffs.Any())
             {
-                _staffs.Add(new ClinicMiniProject.Models.Staff
+                _context.Staffs.Add(new Staff
                 {
                     staff_ID = "S001",
                     staff_name = "Dr Ali",
-                    staff_password = "1234",
+                    //staff_password = "1234",
                     isDoctor = true,
                     specialities = "General"
                 });
+
+                _context.SaveChanges();
             }
         }
     }
