@@ -16,7 +16,7 @@ namespace ClinicMiniProject.UI
             InitializeComponent();
             var sp = Application.Current?.Handler?.MauiContext?.Services;
             _authService = sp?.GetService<IAuthService>();
-            if (_authService != null)
+            if (_authService == null)
             {
                 DisplayAlert("FATAL ERROR", "AuthService could not be resolved", "OK");
                 return;

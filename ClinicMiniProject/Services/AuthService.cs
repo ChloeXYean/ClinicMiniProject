@@ -93,13 +93,24 @@ namespace ClinicMiniProject.Services
         {
             if (!_context.Staffs.Any())
             {
+                // Add Doctor
                 _context.Staffs.Add(new Staff
                 {
-                    staff_ID = "S001",
-                    staff_name = "Dr Ali",
-                    //staff_password = "1234",
+                    staff_ID = "D001",
+                    staff_name = "Dr. Ali",
+                    //password = "password123", // Make sure to set this!
                     isDoctor = true,
                     specialities = "General"
+                });
+
+                // Add Nurse
+                _context.Staffs.Add(new Staff
+                {
+                    staff_ID = "N001",
+                    staff_name = "Nurse Sarah",
+                    //password = "password123",
+                    isDoctor = false, // This will route to NurseHomePage
+                    specialities = "Nursing"
                 });
 
                 _context.SaveChanges();

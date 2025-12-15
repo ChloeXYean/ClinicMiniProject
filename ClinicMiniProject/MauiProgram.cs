@@ -5,6 +5,7 @@ using ClinicMiniProject.UI;
 using ClinicMiniProject.ViewModels;
 using ClinicMiniProject.Controller;
 using ClinicMiniProject.UI.Nurse;
+using ClinicMiniProject.UI.Doctor;
 using ClinicMiniProject.Repository;
 
 namespace ClinicMiniProject
@@ -56,9 +57,12 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<NurseHomePage>();    
             builder.Services.AddTransient<RegisterPatientPage>();
 
-//#if DEBUG
-//            builder.Logging.AddDebug();
-//#endif
+            //Doctor
+            builder.Services.AddTransient<DoctorDashboardPage>();
+
+            //#if DEBUG
+            //            builder.Logging.AddDebug();
+            //#endif
 
             return builder.Build();
         }

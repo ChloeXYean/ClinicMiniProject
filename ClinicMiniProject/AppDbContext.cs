@@ -16,12 +16,34 @@ namespace ClinicMiniProject
             Database.EnsureCreated();
         }
 
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //        string server = Environment.GetEnvironmentVariable("DB_SERVER_IP") ?? "172.16.59.30";
+        //        string connStr = $"Server={server};Port=3306;Database=testdb;Uid=root;Pwd=123456;Charset=utf8mb4;";
+
+        //        optionsBuilder.UseMySql(
+        //            connStr,
+        //            ServerVersion.AutoDetect(connStr),
+        //            options => options.EnableRetryOnFailure()
+        //        );
+        //    }
+        //}
+
+        //Chloe test for below, the above one is correct one, jian min one 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                string server = Environment.GetEnvironmentVariable("DB_SERVER_IP") ?? "172.16.59.30";
-                string connStr = $"Server={server};Port=3306;Database=testdb;Uid=root;Pwd=123456;Charset=utf8mb4;";
+                var connStr =
+                    "Server=ballast.proxy.rlwy.net;" +
+                    "Port=19463;" +
+                    "Database=testdb;" +
+                    "Uid=root;" +
+                    "Pwd=YOUR_RAILWAY_PASSWORD;" +
+                    "SslMode=Required;" +
+                    "Charset=utf8mb4;";
 
                 optionsBuilder.UseMySql(
                     connStr,
@@ -30,6 +52,7 @@ namespace ClinicMiniProject
                 );
             }
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
