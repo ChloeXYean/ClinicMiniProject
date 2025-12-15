@@ -8,7 +8,7 @@ namespace ClinicMiniProject
         public App()
         {
             InitializeComponent();
-            MainPage = new UITestPage("Test user");
+            MainPage = new AppShell();
         }
     }
 }

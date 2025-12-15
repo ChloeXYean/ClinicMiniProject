@@ -63,7 +63,7 @@ public partial class BottomNavBar : ContentView
             HomeCommand.Execute(null);
     }
 
-    private void OnChatClicked(object sender, EventArgs e)
+    private void OnInquiryClicked(object sender, EventArgs e)
     {
         if (ChatCommand?.CanExecute(null) == true)
             ChatCommand.Execute(null);
