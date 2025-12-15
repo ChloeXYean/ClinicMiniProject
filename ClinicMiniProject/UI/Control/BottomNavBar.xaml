@@ -47,7 +47,9 @@
                 <ImageButton Source="profile.png"
                              HeightRequest="25"
                              WidthRequest="25"
-                             HorizontalOptions="Center"/>
+                             HorizontalOptions="Center"
+                             Clicked="OnProfileClicked"/>
+
                 <Label Text="profile" 
                        FontSize="11" 
                        TextColor="Black" 

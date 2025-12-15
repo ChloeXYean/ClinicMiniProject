@@ -1,5 +1,6 @@
 ﻿using ClinicMiniProject.UI;
 using ClinicMiniProject.UI.Doctor;
+using ClinicMiniProject.UI.Nurse;
 
 namespace ClinicMiniProject
 {
@@ -13,6 +14,7 @@ namespace ClinicMiniProject
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
 
+            //Doctor
 			Routing.RegisterRoute(nameof(DoctorDashboardPage), typeof(DoctorDashboardPage));
 			Routing.RegisterRoute("AppointmentSchedule", typeof(AppointmentSchedulePage));
 			Routing.RegisterRoute("ConsultationDetails", typeof(ConsultationDetailsPage));
@@ -22,7 +24,17 @@ namespace ClinicMiniProject
 			Routing.RegisterRoute("Profile", typeof(ProfilePage));
 			Routing.RegisterRoute("PatientDetails", typeof(PatientDetailsPage));
 			Routing.RegisterRoute("InquiryDetails", typeof(InquiryDetailsPage));
+
+            //Nurse
+            Routing.RegisterRoute(nameof(NurseHomePage), typeof(NurseHomePage));
+            Routing.RegisterRoute(nameof(EndConsultationPage), typeof(EndConsultationPage));
+            Routing.RegisterRoute(nameof(RegisterPatientPage), typeof(RegisterPatientPage));
+            Routing.RegisterRoute(nameof(WalkInPatientQueuePage), typeof(WalkInPatientQueuePage));
+
+            //Patient
+            Routing.RegisterRoute(nameof(PatientHomePage), typeof(PatientHomePage));
         }
+        
 
         protected override async void OnAppearing()
         {
