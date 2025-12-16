@@ -89,33 +89,33 @@ namespace ClinicMiniProject.Services
         }
 
         // TODO: testing only later need to delete
-        public void SeedStaff()
-        {
-            if (!_context.Staffs.Any(s => s.staff_ID == "S001"))
-            {
-                // Add Doctor
-                _context.Staffs.Add(new Staff
-                {
-                    staff_ID = "S001",
-                    staff_name = "Dr Ali",
-                    staff_contact = "0123456789",
-                    password = "1234",
-                    isDoctor = true,
-                    specialities = "General"
-                });
+        //public void SeedStaff()
+        //{
+        //    if (!_context.Staffs.Any(s => s.staff_ID == "S001"))
+        //    {
+        //        // Add Doctor
+        //        _context.Staffs.Add(new Staff
+        //        {
+        //            staff_ID = "S001",
+        //            staff_name = "Dr Ali",
+        //            staff_contact = "0123456789",
+        //            password = "1234",
+        //            isDoctor = true,
+        //            specialities = "General"
+        //        });
 
-                // Add Nurse
-                _context.Staffs.Add(new Staff
-                {
-                    staff_ID = "N001",
-                    staff_name = "Nurse Sarah",
-                    //password = "password123",
-                    isDoctor = false, // This will route to NurseHomePage
-                    specialities = "Nursing"
-                });
+        //        // Add Nurse
+        //        _context.Staffs.Add(new Staff
+        //        {
+        //            staff_ID = "N001",
+        //            staff_name = "Nurse Sarah",
+        //            //password = "password123",
+        //            isDoctor = false, // This will route to NurseHomePage
+        //            specialities = "Nursing"
+        //        });
 
-                _context.SaveChanges();
-            }
-        }
+        //        _context.SaveChanges();
+        //    }
+        //}
     }
 }

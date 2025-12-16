@@ -42,7 +42,7 @@ namespace ClinicMiniProject
             if (_navigatedToLogin) return;
             _navigatedToLogin = true;
             // Absolute or relative route depending on your shell hierarchy
-            await Shell.Current.GoToAsync(nameof(LoginPage));
+            await Shell.Current.GoToAsync($"///{nameof(LoginPage)}");
         }
     }
 }

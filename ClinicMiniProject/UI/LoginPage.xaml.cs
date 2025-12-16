@@ -42,12 +42,12 @@ namespace ClinicMiniProject.UI
                     if (staff.isDoctor)
                     {
                         // Go to Doctor Dashboard
-                        await Shell.Current.GoToAsync(nameof(DoctorDashboardPage));
+                        await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}");
                     }
                     else
                     {
                         // Go to Nurse Home Page
-                        await Shell.Current.GoToAsync(nameof(NurseHomePage));
+                        await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}");
                     }
                 }
             }

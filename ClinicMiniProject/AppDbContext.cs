@@ -32,12 +32,43 @@ namespace ClinicMiniProject
         //        );
         //    }
         //}
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //        var connStr =
+        //            "Server=127.0.0.1;" +
+        //            "Port=3306;" +
+        //            "Database=testdb;" +
+        //            "Uid=root;" +
+        //            "Pwd=123456;" +
+        //            "SslMode=None;" +
+        //            "Charset=utf8mb4;";
+
+        //        optionsBuilder.UseMySql(
+        //            connStr,
+        //            new MySqlServerVersion(new Version(9, 0, 0)),
+        //            options => options.EnableRetryOnFailure()
+        //        );
+        //    }
+        //}
+
+        // ClinicMiniProject/AppDbContext.cs
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
+                // Default to localhost for Windows
+                string serverIp = "127.0.0.1";
+
+                // If running on Android, change IP to 10.0.2.2 (which points to your PC)
+#if ANDROID
+                serverIp = "10.0.2.2";
+#endif
+
                 var connStr =
-                    "Server=127.0.0.1;" +
+                    $"Server={serverIp};" + // Use the variable here
                     "Port=3306;" +
                     "Database=testdb;" +
                     "Uid=root;" +
