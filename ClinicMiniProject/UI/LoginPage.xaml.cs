@@ -51,7 +51,7 @@ namespace ClinicMiniProject.UI
                     else
                     {
                         // Go to Nurse Home Page
-                        await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}");
+                        await Shell.Current.GoToAsync($"///{nameof(NurseHomePage)}");
                     }
                 }
             }
