@@ -5,7 +5,7 @@ namespace ClinicMiniProject.Services.Interfaces
 {
     public interface IReportingService
     {
-        Task<ReportingSummaryDto> GetDoctorReportingAsync(string doctorId, DateTime start, DateTime end);
+        Task<ReportingSummaryDto> GetDoctorReportingAsync(string? doctorId, DateTime start, DateTime end);
     }
 
     public sealed class ReportingSummaryDto

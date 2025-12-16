@@ -1,21 +1,24 @@
+using ClinicMiniProject.ViewModels;
+
 namespace ClinicMiniProject.UI.Nurse;
 
 public partial class EndConsultationPage : ContentPage
 {
-    public EndConsultationPage()
+    private readonly EndConsultationViewModel _viewModel;
+
+    public EndConsultationPage(EndConsultationViewModel viewModel)
     {
         InitializeComponent();
+        BindingContext = _viewModel = viewModel;
     }
 
-    private async void OnBackClicked(object sender, EventArgs e)
+    private void OnBackClicked(object sender, EventArgs e)
     {
-        await Navigation.PopAsync();
+        _viewModel.BackCommand.Execute(null);
     }
 
-    private async void OnDetailsClicked(object sender, EventArgs e)
+    private void OnDetailsClicked(object sender, EventArgs e)
     {
-        await DisplayAlert("Info", "Navigating to details...", "OK");
+        _viewModel.ViewDetailsCommand.Execute(null);
     }
-
-
 }

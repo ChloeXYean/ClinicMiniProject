@@ -42,23 +42,39 @@ namespace ClinicMiniProject
             builder.Services.AddScoped<PatientService>();
 
             builder.Services.AddScoped<NurseController>();
+
             //ViewModels
-            builder.Services.AddTransient<DoctorDashboardViewModel>();
-            builder.Services.AddTransient<ConsultationDetailsViewModel>();
-            builder.Services.AddTransient<ConsultationSessionViewModel>();
-            builder.Services.AddTransient<ReportingManagementViewModel>();
-            builder.Services.AddTransient<DoctorProfileViewModel>();
 
             //Auth
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<RegisterPage>();
 
-            //Nurse
-            builder.Services.AddTransient<NurseHomePage>();    
-            builder.Services.AddTransient<RegisterPatientPage>();
+            //Staff
+            builder.Services.AddTransient<DoctorDashboardViewModel>();
+            builder.Services.AddTransient<ConsultationDetailsViewModel>();
+            builder.Services.AddTransient<ConsultationSessionViewModel>();
+            builder.Services.AddTransient<DoctorProfileViewModel>();
 
-            //Doctor
-            builder.Services.AddTransient<DoctorDashboardPage>();
+            builder.Services.AddTransient<ReportingManagementPage>();
+            builder.Services.AddTransient<ReportingManagementViewModel>();
+
+            builder.Services.AddTransient<NurseHomePage>();
+            builder.Services.AddTransient<NurseHomeViewModel>();
+
+            builder.Services.AddTransient<RegisterPatientPage>();
+            builder.Services.AddTransient<RegisterPatientViewModel>();
+
+            builder.Services.AddTransient<PatientDetailsPage>();
+            builder.Services.AddTransient<PatientDetailsViewModel>();
+
+            builder.Services.AddTransient<EndConsultationPage>();
+            builder.Services.AddTransient<EndConsultationViewModel>();
+
+            builder.Services.AddTransient<WalkInPatientQueuePage>();
+            builder.Services.AddTransient<WalkInPatientQueueViewModel>();
+
+
+
 
             //#if DEBUG
             //            builder.Logging.AddDebug();

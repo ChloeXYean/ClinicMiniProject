@@ -181,5 +181,15 @@ namespace ClinicMiniProject.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        async Task NavigateToProfile()
+        {
+            await Shell.Current.GoToAsync("ProfilePage");
+        }
+
+        async Task NavigateToInquiry()
+        {
+            await Shell.Current.GoToAsync("InquiryPage");
+        }
     }
 }

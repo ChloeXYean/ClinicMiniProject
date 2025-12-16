@@ -1,6 +1,7 @@
 ﻿using ClinicMiniProject.UI;
 using ClinicMiniProject.UI.Doctor;
 using ClinicMiniProject.UI.Nurse;
+using ClinicMiniProject.UI.Patient;
 
 namespace ClinicMiniProject
 {
@@ -11,37 +12,39 @@ namespace ClinicMiniProject
         public AppShell()
         {
             InitializeComponent();
+
+            // --- Authentication ---
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
 
-            //Doctor
-			//Routing.RegisterRoute(nameof(DoctorDashboardPage), typeof(DoctorDashboardPage));
-			Routing.RegisterRoute("AppointmentSchedule", typeof(AppointmentSchedulePage));
-			Routing.RegisterRoute("ConsultationDetails", typeof(ConsultationDetailsPage));
-			Routing.RegisterRoute("AppointmentHistory", typeof(AppointmentHistoryPage));
-			Routing.RegisterRoute("ReportingManagement", typeof(ReportingManagementPage));
-			Routing.RegisterRoute("Inquiry", typeof(InquiryPage));
-			Routing.RegisterRoute("Profile", typeof(ProfilePage));
-			Routing.RegisterRoute("PatientDetails", typeof(PatientDetailsPage));
-			Routing.RegisterRoute("InquiryDetails", typeof(InquiryDetailsPage));
+            // --- Shared / Doctor Routes (Using simple string keys to match ViewModel) ---
+            Routing.RegisterRoute("AppointmentSchedule", typeof(AppointmentSchedulePage));
+            Routing.RegisterRoute("ConsultationDetails", typeof(ConsultationDetailsPage));
+            Routing.RegisterRoute("AppointmentHistory", typeof(AppointmentHistoryPage));
+            Routing.RegisterRoute("ReportingManagement", typeof(ReportingManagementPage));
+            Routing.RegisterRoute("Inquiry", typeof(InquiryPage));       // Doctor/Nurse Inquiry View
+            Routing.RegisterRoute("Profile", typeof(ProfilePage));       // Doctor Profile
+            Routing.RegisterRoute("PatientDetails", typeof(PatientDetailsPage)); // Shared Patient Details
+            Routing.RegisterRoute("InquiryDetails", typeof(InquiryDetailsPage));
 
-            //Nurse
-            //Routing.RegisterRoute(nameof(NurseHomePage), typeof(NurseHomePage));
+            // --- Nurse Specific Routes ---
+            Routing.RegisterRoute(nameof(NurseHomePage), typeof(NurseHomePage));
             Routing.RegisterRoute(nameof(EndConsultationPage), typeof(EndConsultationPage));
             Routing.RegisterRoute(nameof(RegisterPatientPage), typeof(RegisterPatientPage));
             Routing.RegisterRoute(nameof(WalkInPatientQueuePage), typeof(WalkInPatientQueuePage));
 
-            //Patient
-            //Routing.RegisterRoute(nameof(PatientHomePage), typeof(PatientHomePage));
+            // --- Patient Specific Routes ---
+            Routing.RegisterRoute(nameof(PatientHomePage), typeof(PatientHomePage));
+            // Assuming these class names exist based on your file uploads
+            //Routing.RegisterRoute("InquiryHistoryPage", typeof(InquiryHistoryPage));
+            //Routing.RegisterRoute("OnlineMedicalInquiryPage", typeof(OnlineMedicalInquiryPage));
         }
-        
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             if (_navigatedToLogin) return;
             _navigatedToLogin = true;
-            // Absolute or relative route depending on your shell hierarchy
             await Shell.Current.GoToAsync($"///{nameof(LoginPage)}");
         }
     }

@@ -1,19 +1,24 @@
+using ClinicMiniProject.ViewModels;
+
 namespace ClinicMiniProject.UI.Nurse;
 
 public partial class PatientDetailsPage : ContentPage
 {
-	public PatientDetailsPage()
-	{
-		InitializeComponent();
-	}
+    private readonly PatientDetailsViewModel _viewModel;
 
-    private async void OnBackClicked(object sender, EventArgs e)
+    public PatientDetailsPage(PatientDetailsViewModel viewModel)
     {
-        await Navigation.PopAsync();
+        InitializeComponent();
+        BindingContext = _viewModel = viewModel;
     }
 
-    private async void OnUpdateClicked(object sender, EventArgs e)
+    private void OnBackClicked(object sender, EventArgs e)
     {
-        await DisplayAlert("Action", "Opening Edit Form...", "OK");
+        _viewModel.BackCommand.Execute(null);
+    }
+
+    private void OnUpdateClicked(object sender, EventArgs e)
+    {
+        _viewModel.UpdateCommand.Execute(null);
     }
 }
