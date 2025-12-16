@@ -17,13 +17,21 @@ namespace ClinicMiniProject.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        public ICommand HomeCommand { get; }
+        public ICommand ChatCommand { get; }
+        public ICommand ProfileCommand { get; }
+        public ICommand ViewPatientDetailsCommand { get; }
+
         public AppointmentScheduleViewModel(IAuthService authService, IAppointmentScheduleService scheduleService)
         {
             _authService = authService;
             _scheduleService = scheduleService;
 
-            ViewPatientDetailsCommand = new Command<string>(OnViewPatientDetails);
+            HomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
+            ChatCommand = new Command(async () => await Shell.Current.GoToAsync("Inquiry"));
+            ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("Profile"));
 
+            ViewPatientDetailsCommand = new Command<string>(OnViewPatientDetails);
             LoadSchedule();
         }
 
@@ -54,9 +62,6 @@ namespace ClinicMiniProject.ViewModels
 
         public IReadOnlyList<string> ServiceTypes => Grid.ServiceTypes;
         public IReadOnlyList<TimeSlotRowDto> Rows => Grid.Rows;
-
-        public ICommand ViewPatientDetailsCommand { get; }
-
         private async void LoadSchedule()
         {
             var current = _authService.GetCurrentUser();

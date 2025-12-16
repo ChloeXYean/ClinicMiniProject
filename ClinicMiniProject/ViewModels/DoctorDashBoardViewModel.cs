@@ -70,19 +70,22 @@ namespace ClinicMiniProject.ViewModels
             _authService = authService;
             _dashboardService = dashboardService;
 
-            // Initialize commands
-            LogoutCommand = new Command(OnLogout);
-            NavigateToAppointmentScheduleCommand = new Command(OnAppointmentSchedule);
-            NavigateToConsultationDetailsCommand = new Command(OnConsultationDetails);
-            NavigateToAppointmentHistoryCommand = new Command(OnAppointmentHistory);
-            NavigateToReportingManagementCommand = new Command(OnReportingManagement);
-            NavigateToHomeCommand = new Command(OnHome);
-            NavigateToInquiryCommand = new Command(OnInquiry);
-            NavigateToProfileCommand = new Command(OnProfile);
+            // --- Navigation Logic ---
+            NavigateToAppointmentScheduleCommand = new Command(async () => await Shell.Current.GoToAsync("AppointmentSchedule"));
+            NavigateToAppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("AppointmentHistory"));
+            NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("ReportingManagement"));
 
-            ToggleMenuCommand = new Command(OnToggleMenu);
-            NotificationCommand = new Command(OnNotification);
+            // Bottom Bar Commands
+            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("Inquiry"));
+            NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("Profile"));
 
+            LogoutCommand = new Command(async () =>
+            {
+                _authService.Logout();
+                await Shell.Current.GoToAsync($"///LoginPage");
+            });
+
+            // Initialize Data
             LoadDashboardData();
         }
 
@@ -108,65 +111,6 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
-        private void OnLogout()
-        {
-            _authService.Logout();
-            // Navigate to login page
-            Shell.Current.GoToAsync(nameof(UI.LoginPage));
-        }
-
-        private void OnAppointmentSchedule()
-        {
-            // Navigate to appointment schedule page
-            Shell.Current.GoToAsync("AppointmentSchedule");
-        }
-
-        private void OnConsultationDetails()
-        {
-            // Navigate to consultation details page
-            Shell.Current.GoToAsync("ConsultationDetails");
-        }
-
-        private void OnAppointmentHistory()
-        {
-            // Navigate to appointment history page
-            Shell.Current.GoToAsync("AppointmentHistory");
-        }
-
-        private void OnReportingManagement()
-        {
-            // Navigate to reporting management page
-            Shell.Current.GoToAsync("ReportingManagement");
-        }
-
-        private void OnHome()
-        {
-            // Navigate to home (refresh)
-            LoadDashboardData();
-        }
-
-        private void OnInquiry()
-        {
-            // Navigate to inquiry page
-            Shell.Current.GoToAsync("Inquiry");
-        }
-
-        private void OnProfile()
-        {
-            // Navigate to profile page
-            Shell.Current.GoToAsync("Profile");
-        }
-
-        private void OnToggleMenu()
-        {
-            // Placeholder for drawer/menu logic
-        }
-
-        private void OnNotification()
-        {
-            // Placeholder for notification logic
-        }
-
         protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")
         {
             if (EqualityComparer<T>.Default.Equals(backingStore, value))
@@ -180,16 +124,6 @@ namespace ClinicMiniProject.ViewModels
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        async Task NavigateToProfile()
-        {
-            await Shell.Current.GoToAsync("ProfilePage");
-        }
-
-        async Task NavigateToInquiry()
-        {
-            await Shell.Current.GoToAsync("InquiryPage");
         }
     }
 }

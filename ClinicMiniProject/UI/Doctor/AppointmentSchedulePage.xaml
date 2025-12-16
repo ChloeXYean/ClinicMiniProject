@@ -130,6 +130,10 @@
             </Grid>
         </ScrollView>
 
-        <control:BottomNavBar x:Name="BottomBar" Grid.Row="3" SelectedTab="Home" />
+        <control:BottomNavBar Grid.Row="3" 
+                      SelectedTab="Home"
+                      HomeCommand="{Binding HomeCommand}"
+                      ChatCommand="{Binding ChatCommand}"
+                      ProfileCommand="{Binding ProfileCommand}" />
     </Grid>
 </ContentPage>

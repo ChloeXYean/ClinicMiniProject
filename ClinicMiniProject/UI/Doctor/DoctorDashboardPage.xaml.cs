@@ -1,23 +1,29 @@
 using ClinicMiniProject.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace ClinicMiniProject.UI.Doctor;
 
 public partial class DoctorDashboardPage : ContentPage
 {
-    public DoctorDashboardPage()
-    {
-        InitializeComponent();
-
-        var sp = Application.Current?.Handler?.MauiContext?.Services;
-        var vm = sp?.GetService<DoctorDashboardViewModel>();
-        if (vm != null)
-            BindingContext = vm;
-    }
+    private readonly DoctorDashboardViewModel _viewModel;
 
     public DoctorDashboardPage(DoctorDashboardViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;
+    }
+
+    private void NavigateToAppointmentScheduleCommand(object sender, EventArgs e)
+    {
+        _viewModel.NavigateToAppointmentScheduleCommand.Execute(null);
+    }
+
+    private void NavigateToAppointmentHistoryCommand(object sender, EventArgs e)
+    {
+        _viewModel.NavigateToAppointmentHistoryCommand.Execute(null);
+    }
+
+    private void NavigateToReportingManagementCommand(object sender, EventArgs e)
+    {
+        _viewModel.NavigateToReportingManagementCommand.Execute(null);
     }
 }
