@@ -16,26 +16,16 @@ namespace ClinicMiniProject.UI
             InitializeComponent();
             var sp = Application.Current?.Handler?.MauiContext?.Services;
             _authService = sp?.GetService<IAuthService>();
-            if (_authService != null)
+            if (_authService == null)
             {
                 DisplayAlert("FATAL ERROR", "AuthService could not be resolved", "OK");
                 return;
-            }
-            try
-            {
-                _authService.SeedStaff();
-            }
-            catch (Exception ex)
-            {
-                //Database error handling
-                DisplayAlert("Database error", "Could not connect to database", "Check IP / Server status" + ex.Message, "OK");
             }
         }
 
         public LoginPage(IAuthService authService)
         {
             _authService = authService;
-            _authService.SeedStaff();
             InitializeComponent();
         }
 
@@ -52,12 +42,12 @@ namespace ClinicMiniProject.UI
                     if (staff.isDoctor)
                     {
                         // Go to Doctor Dashboard
-                        await Shell.Current.GoToAsync(nameof(DoctorDashboardPage));
+                        await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}");
                     }
                     else
                     {
                         // Go to Nurse Home Page
-                        await Shell.Current.GoToAsync(nameof(NurseHomePage));
+                        await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}");
                     }
                 }
             }

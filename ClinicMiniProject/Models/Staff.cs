@@ -17,9 +17,8 @@ namespace ClinicMiniProject.Models
         [Required, StringLength(100)]
         public string staff_name { get; set; } = string.Empty;
 
-        // Added this field which was missing in DbTables but present in logic
-        [Column("staff_password")]
-        public string? staff_password { get; set; }
+        [Column("password")]
+        public string? password { get; set; }
 
         [Column("staff_contact")]
         [Required, StringLength(15)]

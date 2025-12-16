@@ -10,8 +10,6 @@ namespace ClinicMiniProject.Services.Interfaces
         Staff GetCurrentUser();
         string GetDoctorName(string doctorId);
         void Logout();
-
-        void SeedStaff();
         // ... other existing methods
     }
 }

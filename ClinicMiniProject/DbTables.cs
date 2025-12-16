@@ -56,6 +56,10 @@ namespace ClinicMiniProject
         [Required, StringLength(15)]
         public string staff_contact { get; set; } = string.Empty;
 
+        [Column("password")]
+        [StringLength(15)]
+        public string? password { get; set; }
+
         [Column("specialities")]
         [StringLength(100)]
         public string? specialities { get; set; }
