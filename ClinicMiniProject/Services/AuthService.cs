@@ -91,13 +91,14 @@ namespace ClinicMiniProject.Services
         // TODO: testing only later need to delete
         public void SeedStaff()
         {
-            if (!_context.Staffs.Any())
+            if (!_context.Staffs.Any(s => s.staff_ID == "S001"))
             {
                 _context.Staffs.Add(new Staff
                 {
                     staff_ID = "S001",
                     staff_name = "Dr Ali",
-                    //staff_password = "1234",
+                    staff_contact = "0123456789",
+                    password = "1234",
                     isDoctor = true,
                     specialities = "General"
                 });

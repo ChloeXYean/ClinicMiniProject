@@ -21,21 +21,11 @@ namespace ClinicMiniProject.UI
                 DisplayAlert("FATAL ERROR", "AuthService could not be resolved", "OK");
                 return;
             }
-            try
-            {
-                _authService.SeedStaff();
-            }
-            catch (Exception ex)
-            {
-                //Database error handling
-                DisplayAlert("Database error", "Could not connect to database", "Check IP / Server status" + ex.Message, "OK");
-            }
         }
 
         public LoginPage(IAuthService authService)
         {
             _authService = authService;
-            _authService.SeedStaff();
             InitializeComponent();
         }
 

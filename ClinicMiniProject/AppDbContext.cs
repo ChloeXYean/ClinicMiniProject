@@ -13,23 +13,46 @@ namespace ClinicMiniProject
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
         }
 
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //        //string server = Environment.GetEnvironmentVariable("DB_SERVER_IP") ?? "172.16.59.30";
+        //        //string server = Environment.GetEnvironmentVariable("DB_SERVER_IP") ?? "localhost";
+        //        //string connStr = $"Server={server};Port=3306;Database=testdb;Uid=root;Pwd=123456;Charset=utf8mb4;";
+        //        string connStr = $"Server=localhost;Port=3306;Database=testdb;Uid=root;Pwd=123456;Charset=utf8mb4;";
+
+        //        optionsBuilder.UseMySql(
+        //            connStr,
+        //            ServerVersion.AutoDetect(connStr),
+        //            options => options.EnableRetryOnFailure()
+        //        );
+        //    }
+        //}
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                string server = Environment.GetEnvironmentVariable("DB_SERVER_IP") ?? "172.16.59.30";
-                string connStr = $"Server={server};Port=3306;Database=testdb;Uid=root;Pwd=123456;Charset=utf8mb4;";
+                var connStr =
+                    "Server=127.0.0.1;" +
+                    "Port=3306;" +
+                    "Database=testdb;" +
+                    "Uid=root;" +
+                    "Pwd=123456;" +
+                    "SslMode=None;" +
+                    "Charset=utf8mb4;";
 
                 optionsBuilder.UseMySql(
                     connStr,
-                    ServerVersion.AutoDetect(connStr),
+                    new MySqlServerVersion(new Version(9, 0, 0)),
                     options => options.EnableRetryOnFailure()
                 );
             }
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
