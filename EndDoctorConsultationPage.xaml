@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="ClinicMiniProject.EndDoctorConsultationPage"
+    Title="End Consultation">
+
+    <VerticalStackLayout Padding="20" Spacing="12">
+
+        <Label Text="Date: 12 November 2025"
+               FontAttributes="Bold"/>
+
+        <Frame CornerRadius="12">
+            <VerticalStackLayout>
+                <Label Text="Patient Name: Alex" />
+                <Label Text="End Time: 10:12 AM" />
+                <Button Text="View Consultation Details"
+                        FontSize="12"/>
+            </VerticalStackLayout>
+        </Frame>
+
+        <Frame CornerRadius="12">
+            <VerticalStackLayout>
+                <Label Text="Patient Name: John" />
+                <Label Text="End Time: 10:20 AM" />
+                <Button Text="View Consultation Details"
+                        FontSize="12"/>
+            </VerticalStackLayout>
+        </Frame>
+
+    </VerticalStackLayout>
+</ContentPage>
