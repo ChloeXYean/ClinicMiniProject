@@ -24,6 +24,7 @@ namespace ClinicMiniProject.ViewModels
         private int _repliedInquiries;
         private bool _hasReport;
 
+
         public DateTime ReportSelectedDate
         {
             get => _selectedDate;

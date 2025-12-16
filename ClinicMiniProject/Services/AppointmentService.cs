@@ -199,11 +199,17 @@ namespace ClinicMiniProject.Services
         }
 
         public async Task<IEnumerable<Appointment>> GetAppointmentsByStaffAndDateRangeAsync(
-            string staffId, DateTime startDate, DateTime endDate)
+            string? staffId, DateTime startDate, DateTime endDate)
         {
-            return await _context.Appointments.Where(a => a.staff_ID == staffId &&a.appointedAt >= startDate && a.appointedAt <= endDate)
-                .OrderBy(a => a.appointedAt)
-                .ToListAsync();
+            var query = _context.Appointments
+                    .Where(a => a.appointedAt >= startDate && a.appointedAt <= endDate);
+
+            if (!string.IsNullOrEmpty(staffId))
+            {
+                query = query.Where(a => a.staff_ID == staffId);
+            }
+
+            return await query.OrderBy(a => a.appointedAt).ToListAsync();
         }
 
         public DateTime? AssignWalkInTimeSlot(string doctorId,DateTime preferredDate,int workStartHour = 9,int workEndHour = 17,TimeSpan slotDuration = default)

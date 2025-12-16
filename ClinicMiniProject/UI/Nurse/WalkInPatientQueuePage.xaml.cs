@@ -1,20 +1,24 @@
+using ClinicMiniProject.ViewModels;
+
 namespace ClinicMiniProject.UI.Nurse;
 
 public partial class WalkInPatientQueuePage : ContentPage
 {
-    public WalkInPatientQueuePage()
+    private readonly WalkInPatientQueueViewModel _viewModel;
+
+    public WalkInPatientQueuePage(WalkInPatientQueueViewModel viewModel)
     {
         InitializeComponent();
+        BindingContext = _viewModel = viewModel;
     }
 
-    private async void OnBackClicked(object sender, EventArgs e)
+    private void OnBackClicked(object sender, EventArgs e)
     {
-        await Navigation.PopAsync();
+        _viewModel.BackCommand.Execute(null);
     }
 
-    private async void OnClickViewDetails(object sender, EventArgs e)
+    private void OnClickViewDetails(object sender, EventArgs e)
     {
-        await DisplayAlert("Info", "Navigating to details...", "OK");
+        _viewModel.ViewDetailsCommand.Execute(null);
     }
-
 }

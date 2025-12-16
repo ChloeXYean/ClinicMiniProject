@@ -21,12 +21,12 @@
                         <Label Text="Upcoming Appointment" FontAttributes="Bold" FontSize="16" TextColor="Black"/>
 
                         <VerticalStackLayout Spacing="2">
-                            <Label x:Name="appDate" Text="Date: Loading..." FontSize="13" TextColor="#333"/>
-                            <Label x:Name="appTime" Text="Time: --:--" FontSize="13" TextColor="#333"/>
-                            <Label x:Name="appDoc" Text="Doctor: --" FontSize="13" TextColor="#333"/>
+                            <Label Text="{Binding AppDate}" FontSize="13" TextColor="#333"/>
+                            <Label Text="{Binding AppTime}" FontSize="13" TextColor="#333"/>
+                            <Label Text="{Binding AppDoc}" FontSize="13" TextColor="#333"/>
                         </VerticalStackLayout>
 
-                        <Label Text="Number of People Pending Processing" 
+                        <Label Text="{Binding PendingCount}" 
                                FontAttributes="Bold" 
                                FontSize="14" 
                                TextColor="Black"
@@ -36,7 +36,17 @@
                             <Border HeightRequest="60" WidthRequest="350" StrokeShape="RoundRectangle 80" BackgroundColor="#E0E0E0" StrokeThickness="0">
                                 <Label x:Name="appPendingCount" Text="0" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" TextColor="Black"/>
                             </Border>
-                            <Label Text="End Doctor Consultation" FontSize="12" HorizontalTextAlignment="Center" TextColor="#2D5AF0" TextDecorations="Underline"/>
+                            <Label Text="End Doctor Consultation"
+                                   FontSize="12"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="#2D5AF0"
+                                   TextDecorations="Underline">
+
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding EndConsultationCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+
                         </VerticalStackLayout>
 
                     </VerticalStackLayout>
@@ -64,6 +74,10 @@
                                VerticalOptions="Center" 
                                HorizontalOptions="End"/>
                     </Grid>
+
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding RegisterPatientCommand}"/>
+                    </Border.GestureRecognizers>
                 </Border>
 
                 <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="20" Margin="0,10,0,0">
@@ -74,6 +88,9 @@
                                 <Shadow Brush="Black" Opacity="0.2" Radius="15" Offset="2,5"/>
                             </Border.Shadow>
                             <Image Source="appointment.png" Aspect="AspectFit" Margin="15"/>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnViewAppointmentTapped"/>
+                            </Border.GestureRecognizers>
                         </Border>
                         <Label Text="View&#x0a;Appointment" FontSize="12" HorizontalTextAlignment="Center" TextColor="Black"/>
                     </VerticalStackLayout>
@@ -84,6 +101,9 @@
                                 <Shadow Brush="Black" Opacity="0.2" Radius="15" Offset="2,5"/>
                             </Border.Shadow>
                             <Image Source="history.png" Aspect="AspectFit" Margin="15"/>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnAppointmentHistoryTapped"/>
+                            </Border.GestureRecognizers>
                         </Border>
                         <Label Text="Appointment&#x0a;History" FontSize="12" HorizontalTextAlignment="Center" TextColor="Black"/>
                     </VerticalStackLayout>
@@ -94,6 +114,9 @@
                                 <Shadow Brush="Black" Opacity="0.2" Radius="15" Offset="2,5"/>
                             </Border.Shadow>
                             <Image Source="report.png" Aspect="AspectFit" Margin="15"/>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnReportingManagementTapped"/>
+                            </Border.GestureRecognizers>
                         </Border>
                         <Label Text="Reporting&#x0a;Management" FontSize="12" HorizontalTextAlignment="Center" TextColor="Black"/>
                     </VerticalStackLayout>
@@ -104,6 +127,9 @@
                                 <Shadow Brush="Black" Opacity="0.2" Radius="15" Offset="2,5"/>
                             </Border.Shadow>
                             <Image Source="walkin.png" Aspect="AspectFit" Margin="15"/>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnWalkInQueueTapped"/>
+                            </Border.GestureRecognizers>
                         </Border>
                         <Label Text="Walk-in&#x0a;Patient queue" FontSize="12" HorizontalTextAlignment="Center" TextColor="Black"/>
                     </VerticalStackLayout>
@@ -111,8 +137,11 @@
 
             </VerticalStackLayout>
         </ScrollView>
-
-        <controls:BottomNavBar Grid.Row="2" />
+        <controls:BottomNavBar Grid.Row="2" 
+                       SelectedTab="Home"
+                       HomeCommand="{Binding HomeCommand}"
+                       ChatCommand="{Binding InquiryCommand}"
+                       ProfileCommand="{Binding ProfileCommand}"/>
 
     </Grid>
 </ContentPage>

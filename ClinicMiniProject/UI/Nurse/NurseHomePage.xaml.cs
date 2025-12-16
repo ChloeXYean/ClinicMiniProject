@@ -1,42 +1,48 @@
-using ClinicMiniProject.Controller;
-namespace ClinicMiniProject.UI.Nurse;
+using ClinicMiniProject.ViewModels;
 
+namespace ClinicMiniProject.UI.Nurse;
 
 public partial class NurseHomePage : ContentPage
 {
-    private readonly NurseController _controller;
-    public NurseHomePage(NurseController controller)
-	{
-		InitializeComponent();
-		_controller = controller;
-	}
+    private readonly NurseHomeViewModel _viewModel;
 
-    protected override async void OnAppearing()
+    public NurseHomePage(NurseHomeViewModel viewModel)
+    {
+        InitializeComponent();
+        BindingContext = _viewModel = viewModel;
+    }
+    protected override void OnAppearing()
     {
         base.OnAppearing();
-        await LoadDashboardData();
+        _viewModel.LoadDashboardData();
     }
-    private async Task LoadDashboardData()
+    private void OnViewAppointmentTapped(object sender, EventArgs e)
     {
-        var upcomingList = await _controller.GetUpcomingAppointment();
+        _viewModel.ViewAppointmentCommand.Execute(null);
+    }
 
-        var nextAppointment = upcomingList.FirstOrDefault();
+    private void OnAppointmentHistoryTapped(object sender, EventArgs e)
+    {
+        _viewModel.AppointmentHistoryCommand.Execute(null);
+    }
 
-        appDate.Text = $"Date: {DateTime.Now:dd MMMM yyyy}";
+    private void OnReportingManagementTapped(object sender, EventArgs e)
+    {
+        _viewModel.ReportingManagementCommand.Execute(null);
+    }
 
-        if (nextAppointment != null && nextAppointment.appointedAt.HasValue)
-        {
-            appTime.Text = $"Time: {nextAppointment.appointedAt.Value:hh:mm tt}";
+    private void OnWalkInQueueTapped(object sender, EventArgs e)
+    {
+        _viewModel.WalkInQueueCommand.Execute(null);
+    }
 
-            // using staff ID for now, should use name
-            appDoc.Text = $"Doctor: {nextAppointment.staff_ID}";
-        }
-        else
-        {
-            appTime.Text = "Time: --";
-            appDoc.Text = "Doctor: --";
-        }
+    private void OnRegisterPatientTapped(object sender, EventArgs e)
+    {
+        _viewModel.RegisterPatientCommand.Execute(null);
+    }
 
-        appPendingCount.Text = $"Pending: {upcomingList.Count}";
+    private void OnEndConsultationTapped(object sender, EventArgs e)
+    {
+        _viewModel.EndConsultationCommand.Execute(null);
     }
 }

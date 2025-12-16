@@ -11,7 +11,7 @@ namespace ClinicMiniProject.Services.Interfaces
         
         // Add these new methods
         Task<IEnumerable<Appointment>> GetAppointmentsByStaffAndDateRangeAsync(
-            string staffId, 
+            string? staffId, 
             DateTime startDate, 
             DateTime endDate);
             
