@@ -1,4 +1,4 @@
-namespace ClinicMiniProject.UI;
+namespace ClinicMiniProject.UI.Patient;
 
 public partial class PatientHomePage : ContentPage
 {

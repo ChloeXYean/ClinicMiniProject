@@ -1,6 +1,7 @@
 ﻿using ClinicMiniProject.Services.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using ClinicMiniProject.Models;
 
 
 namespace ClinicMiniProject.Services

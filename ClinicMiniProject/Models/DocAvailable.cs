@@ -22,7 +22,7 @@ namespace ClinicMiniProject.Models
         public bool Saturday { get; set; }
         public bool Sunday { get; set; }
 
-        [ForeignKey(nameof(Staff))]
+        [ForeignKey(nameof(staff_ID))]
         public Staff Staff { get; set; } = null!;
 
 

@@ -1,5 +1,6 @@
 using ClinicMiniProject.Controller;
 using ClinicMiniProject.Services;
+using ClinicMiniProject.Models;
 
 namespace ClinicMiniProject.UI.Nurse;
 
