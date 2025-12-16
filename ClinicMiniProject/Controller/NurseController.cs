@@ -1,16 +1,18 @@
 ﻿using ClinicMiniProject.Models;
+using ClinicMiniProject.Services.Interfaces;
 using ClinicMiniProject.Services;
+
 
 namespace ClinicMiniProject.Controller
 {
     public class NurseController
     {
-        private readonly AppointmentService _appointmentService;
+        private readonly IAppointmentService _appointmentService;
         private readonly PatientService _patientService;
         private readonly IStaffService _staffService;
 
         public NurseController(
-            AppointmentService appointmentService,
+            IAppointmentService appointmentService,
             PatientService patientService,
             IStaffService staffService)
         {
@@ -18,6 +20,8 @@ namespace ClinicMiniProject.Controller
             _patientService = patientService;
             _staffService = staffService;
         }
+
+
         public async Task<List<Appointment>> ViewAppointmentList(DateTime selectedDate)
         {
             // filter by staff or role

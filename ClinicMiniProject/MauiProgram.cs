@@ -39,6 +39,7 @@ namespace ClinicMiniProject
             builder.Services.AddScoped<IPatientInfoService, PatientInfoService>();
             builder.Services.AddScoped<IReportingService, ReportingService>();
             builder.Services.AddScoped<IDoctorProfileService, DoctorProfileService>();
+            builder.Services.AddScoped<IStaffService, StaffService>();
             builder.Services.AddScoped<PatientService>();
 
             builder.Services.AddScoped<NurseController>();
@@ -50,9 +51,16 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<RegisterPage>();
 
             //Staff
+            builder.Services.AddTransient<DoctorDashboardPage>();
             builder.Services.AddTransient<DoctorDashboardViewModel>();
+
+            builder.Services.AddTransient<ConsultationDetailsPage>();
             builder.Services.AddTransient<ConsultationDetailsViewModel>();
+
+            builder.Services.AddTransient<ConsultationDetailsPage>();
             builder.Services.AddTransient<ConsultationSessionViewModel>();
+
+            builder.Services.AddTransient<ProfilePage>();
             builder.Services.AddTransient<DoctorProfileViewModel>();
 
             builder.Services.AddTransient<ReportingManagementPage>();
@@ -72,6 +80,12 @@ namespace ClinicMiniProject
 
             builder.Services.AddTransient<WalkInPatientQueuePage>();
             builder.Services.AddTransient<WalkInPatientQueueViewModel>();
+
+            builder.Services.AddTransient<AppointmentSchedulePage>();
+            builder.Services.AddTransient<AppointmentScheduleViewModel>();
+
+            builder.Services.AddTransient<ConsultationDetailsPage>();
+            builder.Services.AddTransient<ConsultationDetailsViewModel>();
 
 
 
