@@ -37,7 +37,11 @@ namespace ClinicMiniProject.UI
             {
                 await DisplayAlert("Success", "Login successful", "OK");
 
-                if (user is Staff staff)
+                if (user is Models.Patient)
+                {
+                    await Shell.Current.GoToAsync("///PatientHomePage");
+                }
+                else if (user is Staff staff)
                 {
                     if (staff.isDoctor)
                     {
