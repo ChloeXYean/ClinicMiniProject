@@ -57,7 +57,7 @@ namespace ClinicMiniProject.ViewModels
 
             HomeCommand = new Command(async () => await Shell.Current.GoToAsync($"///{nameof(NurseHomePage)}"));
             InquiryCommand = new Command(async () => await Shell.Current.GoToAsync("Inquiry"));
-            ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("PatientDetails"));
+            ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///NurseProfile"));
 
             RegisterPatientCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(RegisterPatientPage)));
             EndConsultationCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(EndConsultationPage)));

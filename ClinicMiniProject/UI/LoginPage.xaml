@@ -31,7 +31,30 @@
 		<Entry x:Name="IcEntry" Placeholder="IC Number" />
 		<Entry x:Name="PasswordEntry" Placeholder="Password" IsPassword="True" />
 
-		<Button Text="Login" Clicked="OnLoginClicked" />
+		<Button Text="Login" Clicked="OnLoginClicked">
+            <Button.VisualStateManager.VisualStateGroups>
+                <VisualStateGroup Name="CommonStates">
+                    <VisualState Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="#6EA8FE" />
+                            <Setter Property="TextColor" Value="White" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="#5A90E6" />
+                            <Setter Property="Scale" Value="1.02" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="#4A7BC8" />
+                            <Setter Property="Scale" Value="0.98" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </Button.VisualStateManager.VisualStateGroups>
+        </Button>
 
 		<Label Grid.Row="4" HorizontalOptions="Center">
 			<Label.FormattedText>
