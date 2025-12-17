@@ -108,6 +108,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="UI\Patient\OnlineInquiryPatient.xaml.cs">
+	    <DependentUpon>OnlineInquiryPatient.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <MauiXaml Update="UI\Control\BackNavBar.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
