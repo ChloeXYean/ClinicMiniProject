@@ -3,15 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Doctor.DoctorDashboardPage"
-             Title="DoctorDashboardPage">
+             Title=""
+             Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
+        <Grid RowDefinitions="Auto,*,80" RowSpacing="0" VerticalOptions="FillAndExpand">
         <control:TopNavBar Grid.Row="0"
                           UserName="{Binding DoctorName}"
                           MenuCommand="{Binding ToggleMenuCommand}"
                           BellCommand="{Binding NotificationCommand}" />
 
-        <ScrollView Grid.Row="1">
+        <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
             <VerticalStackLayout Padding="20" Spacing="16">
 
                 <Border BackgroundColor="#F5F7FF" StrokeThickness="0" Padding="16">
@@ -99,6 +100,7 @@
                              SelectedTab="Home"
                              HomeCommand="{Binding NavigateToHomeCommand}"
                              ChatCommand="{Binding NavigateToInquiryCommand}"
-                             ProfileCommand="{Binding NavigateToProfileCommand}" />
+                             ProfileCommand="{Binding NavigateToProfileCommand}"
+                             VerticalOptions="End" />
     </Grid>
 </ContentPage>

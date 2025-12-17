@@ -27,9 +27,4 @@ public partial class InquiryDetailsPage : ContentPage
         if (vm != null)
             BindingContext = vm;
     }
-
-    private async void OnBackClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync("..");
-    }
 }

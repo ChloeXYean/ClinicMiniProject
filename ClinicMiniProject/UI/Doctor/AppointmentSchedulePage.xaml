@@ -32,30 +32,38 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="90" />
-                            <ColumnDefinition Width="170" />
-                            <ColumnDefinition Width="170" />
-                            <ColumnDefinition Width="170" />
-                            <ColumnDefinition Width="170" />
-                            <ColumnDefinition Width="190" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="120" />
                         </Grid.ColumnDefinitions>
 
                         <Border Grid.Row="0" Grid.Column="0" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
                             <Label Text="Time" FontAttributes="Bold" />
                         </Border>
                         <Border Grid.Row="0" Grid.Column="1" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
-                            <Label Text="General\nConsultation" FontAttributes="Bold" />
+                            <Label Text="Monday" FontAttributes="Bold" />
                         </Border>
                         <Border Grid.Row="0" Grid.Column="2" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
-                            <Label Text="Follow Up\nTreatment" FontAttributes="Bold" />
+                            <Label Text="Tuesday" FontAttributes="Bold" />
                         </Border>
                         <Border Grid.Row="0" Grid.Column="3" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
-                            <Label Text="Test Result\nDiscussion" FontAttributes="Bold" />
+                            <Label Text="Wednesday" FontAttributes="Bold" />
                         </Border>
                         <Border Grid.Row="0" Grid.Column="4" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
-                            <Label Text="Vaccination/\nInjection" FontAttributes="Bold" />
+                            <Label Text="Thursday" FontAttributes="Bold" />
                         </Border>
                         <Border Grid.Row="0" Grid.Column="5" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
-                            <Label Text="Medical\nScreening" FontAttributes="Bold" />
+                            <Label Text="Friday" FontAttributes="Bold" />
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="6" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
+                            <Label Text="Saturday" FontAttributes="Bold" />
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="7" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
+                            <Label Text="Sunday" FontAttributes="Bold" />
                         </Border>
                     </Grid>
                 </ScrollView>
@@ -67,11 +75,13 @@
                                 <Grid ColumnSpacing="0" RowSpacing="0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="90" />
-                                        <ColumnDefinition Width="170" />
-                                        <ColumnDefinition Width="170" />
-                                        <ColumnDefinition Width="170" />
-                                        <ColumnDefinition Width="170" />
-                                        <ColumnDefinition Width="190" />
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="120" />
                                     </Grid.ColumnDefinitions>
 
                                     <Border Grid.Column="0" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#FFFFFF">
