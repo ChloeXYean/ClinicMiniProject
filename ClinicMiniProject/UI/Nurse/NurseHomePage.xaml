@@ -37,6 +37,22 @@
 										StrokeShape="RoundRectangle 32.5"
 										BackgroundColor="#F0F4FF"
 										StrokeThickness="0">
+                                    <Border.VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup Name="CommonStates">
+                                            <VisualState Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="#F0F4FF" />
+                                                    <Setter Property="Scale" Value="1.0" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState Name="PointerOver">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="#E8EEFF" />
+                                                    <Setter Property="Scale" Value="1.05" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </Border.VisualStateManager.VisualStateGroups>
 									<Label x:Name="appPendingCount"
 										   Text="0"
 										   FontSize="28"
