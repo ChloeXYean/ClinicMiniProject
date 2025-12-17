@@ -23,6 +23,9 @@ namespace ClinicMiniProject.ViewModels
 
             SendResponseCommand = new Command(async () => await SendAsync());
             ViewFullProfileCommand = new Command(OnViewFullProfile);
+            NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
+            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///InquiryHistoryPage"));
+            NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfilePage"));
         }
 
         public string InquiryId
@@ -72,6 +75,9 @@ namespace ClinicMiniProject.ViewModels
 
         public ICommand SendResponseCommand { get; }
         public ICommand ViewFullProfileCommand { get; }
+        public ICommand NavigateToHomeCommand { get; }
+        public ICommand NavigateToInquiryCommand { get; }
+        public ICommand NavigateToProfileCommand { get; }
 
         private async Task LoadAsync()
         {

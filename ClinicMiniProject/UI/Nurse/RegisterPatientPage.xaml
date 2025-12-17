@@ -4,7 +4,7 @@
              xmlns:controls ="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Nurse.RegisterPatientPage"
              BackgroundColor="White"
-             NavigationPage.HasNavigationBar="False">
+			 Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="Auto, *">
         <controls:BackNavBar Grid.Row="0"
