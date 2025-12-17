@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="ClinicMiniProject.UI.Patient.ConsultationDetailsPage"
+    Title="Consultation Details">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+
+            <Label Text="Date: 12 November 2025"/>
+            <Label Text="Appointment Time: 10:00 AM"/>
+            <Label Text="Patient Name: Alex"/>
+            <Label Text="IC: 000000-00-0000"/>
+            <Label Text="Phone: 012-3456789"/>
+            <Label Text="Service: General Consultation"/>
+
+            <Label Text="Doctor's Remark
