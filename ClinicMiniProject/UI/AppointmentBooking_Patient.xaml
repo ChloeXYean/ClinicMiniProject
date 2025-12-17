@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="ClinicMiniProject.SelectDoctorPage"
+    BackgroundColor="White">
+
+    <VerticalStackLayout Spacing="10">
+
+        <Grid BackgroundColor="#5FA8FF" Padding="15" HeightRequest="70">
+            <Label
+                Text="← Select Doctor"
+                TextColor="White"
+                FontSize="20"
+                FontAttributes="Bold"
+                VerticalOptions="Center"/>
+        </Grid>
+
+        <SearchBar
+            Placeholder="Search Doctor Name"
+            Margin="15"/>
+
+        <CollectionView Margin="15">
+            <CollectionView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Dr. Ali</x:String>
+                    <x:String>Dr. Bob</x:String>
+                    <x:String>Dr. Col</x:String>
+                    <x:String>Dr. Dave</x:String>
+                    <x:String>Dr. Eve</x:String>
+                    <x:String>Dr. Fish</x:String>
+                </x:Array>
+            </CollectionView.ItemsSource>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame
+                        CornerRadius="12"
+                        Padding="10"
+                        Margin="0,5"
+                        BorderColor="#DDDDDD">
+
+                        <Grid ColumnDefinitions="50,*,40">
+
+                            <Frame
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                CornerRadius="20"
+                                BackgroundColor="#EAEAEA"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"/>
+
+                            <Label
+                                Grid.Column="1"
+                                Text="{Binding .}"
+                                FontSize="16"
+                                FontAttributes="Bold"
+                                VerticalOptions="Center"/>
+
+                            <Label
+                                Grid.Column="2"
+                                Text="♡"
+                                FontSize="20"
+                                VerticalOptions="Center"
+                                HorizontalOptions="End"/>
+
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </VerticalStackLayout>
+</ContentPage>
