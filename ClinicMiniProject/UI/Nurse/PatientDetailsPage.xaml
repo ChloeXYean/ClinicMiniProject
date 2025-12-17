@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ClinicMiniProject.UI.Control"
+             x:Class="ClinicMiniProject.UI.Nurse.PatientDetailsPage"
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <controls:BackNavBar Grid.Row="0" 
+                             Title="Patient Details" 
+                             BackClicked="OnBackClicked" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
+                    <Border HeightRequest="80" WidthRequest="80" StrokeShape="RoundRectangle 40" BackgroundColor="#E0E0E0" StrokeThickness="0">
+                        <Image Source="profilepicture.png" Aspect="AspectFit" Margin="20"/>
+                    </Border>
+                    <Label Text="Alex Tan" 
+                           FontSize="22" 
+                           FontAttributes="Bold" 
+                           TextColor="Black" 
+                           HorizontalTextAlignment="Center"/>
+                    <Label Text="Queue ID: W-105" 
+                           FontSize="14" 
+                           TextColor="#2D5AF0" 
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+
+                <Label Text="Personal Information" FontSize="16" FontAttributes="Bold" TextColor="Black" Margin="0,10,0,0"/>
+
+                <Border BackgroundColor="#F8F9FA" 
+                        StrokeThickness="0" 
+                        StrokeShape="RoundRectangle 15" 
+                        Padding="20">
+                    <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, *" RowSpacing="15">
+
+                        <Label Grid.Row="0" Grid.Column="0" Text="IC / Passport:" TextColor="Gray" FontSize="13" WidthRequest="100"/>
+                        <Label Grid.Row="0" Grid.Column="1" Text="901212-14-5566" TextColor="Black" FontSize="14" FontAttributes="Bold"/>
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="Gender:" TextColor="Gray" FontSize="13"/>
+                        <Label Grid.Row="1" Grid.Column="1" Text="Male" TextColor="Black" FontSize="14" FontAttributes="Bold"/>
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="Contact:" TextColor="Gray" FontSize="13"/>
+                        <Label Grid.Row="2" Grid.Column="1" Text="+60 12-345 6789" TextColor="Black" FontSize="14" FontAttributes="Bold"/>
+                    </Grid>
+                </Border>
+
+                <Label Text="Visit Details" FontSize="16" FontAttributes="Bold" TextColor="Black" Margin="0,10,0,0"/>
+
+                <Border BackgroundColor="#F8F9FA" 
+                        StrokeThickness="0" 
+                        StrokeShape="RoundRectangle 15" 
+                        Padding="20">
+                    <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="Auto, *" RowSpacing="15">
+
+                        <Label Grid.Row="0" Grid.Column="0" Text="Reg. Time:" TextColor="Gray" FontSize="13" WidthRequest="100"/>
+                        <Label Grid.Row="0" Grid.Column="1" Text="10:30 AM" TextColor="Black" FontSize="14" FontAttributes="Bold"/>
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="Reason:" TextColor="Gray" FontSize="13" VerticalOptions="Start"/>
+                        <Label Grid.Row="1" Grid.Column="1" Text="High fever (38.5°C), sore throat, and body aches since yesterday." TextColor="Black" FontSize="14" LineBreakMode="WordWrap"/>
+                    </Grid>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Border Grid.Row="2" 
+                Padding="20" 
+                StrokeThickness="0" 
+                BackgroundColor="White">
+            <Border.Shadow>
+                <Shadow Brush="Black" Opacity="0.1" Radius="10" Offset="0,-5"/>
+            </Border.Shadow>
+
+            <Button Text="Update Patient Info" 
+                    BackgroundColor="#6EA8FE" 
+                    TextColor="Black" 
+                    FontAttributes="Bold" 
+                    CornerRadius="10" 
+                    HeightRequest="50"
+                    Clicked="OnUpdateClicked"/>
+        </Border>
+    </Grid>
+</ContentPage>

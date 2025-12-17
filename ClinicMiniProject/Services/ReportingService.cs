@@ -14,7 +14,7 @@ namespace ClinicMiniProject.Services
             _appointmentService = appointmentService;
         }
 
-        public async Task<ReportingSummaryDto> GetDoctorReportingAsync(string doctorId, DateTime start, DateTime end)
+        public async Task<ReportingSummaryDto> GetDoctorReportingAsync(string? doctorId, DateTime start, DateTime end)
         {
             // Pull appointments within [start, end)
             var appts = (await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(doctorId, start, end))

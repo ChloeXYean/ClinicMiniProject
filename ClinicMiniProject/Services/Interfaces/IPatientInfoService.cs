@@ -13,7 +13,7 @@ namespace ClinicMiniProject.Services.Interfaces
         public string Name { get; init; } = string.Empty;
         public string PhoneNo { get; init; } = string.Empty;
         public string ServiceType { get; init; } = string.Empty;
-        public string PatientType { get; init; } = string.Empty;
+        public bool PatientType { get; init; } 
         public string RegisteredTime { get; init; } = string.Empty;
     }
 }

@@ -1,4 +1,5 @@
-﻿using ClinicMiniProject.Models;
+﻿using Appointment = ClinicMiniProject.Models.Appointment;
+using DocAvailable = ClinicMiniProject.Models.DocAvailable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace ClinicMiniProject.Controller
     internal class StaffController  
     {
         public List<Appointment> appointments = new List<Appointment>();
-        public List<DoctorAvailability> doctorAvailabilities = new List<DoctorAvailability>();
+        public List<DocAvailable> doctorAvailabilities = new List<DocAvailable>();
         public List<Appointment> ViewAppointmentList(DateTime selectedDate)
         {
             return appointments.FindAll(a => a.appointedAt.HasValue && a.appointedAt.Value.Date == selectedDate).OrderBy(a => a.appointedAt).ToList();
@@ -55,9 +56,7 @@ namespace ClinicMiniProject.Controller
 
         public void UpdateAppointmentStatus(Appointment apt)
         {
-            apt.appointment_status = "Completed";
-            apt.consultation_status = "Done";
-            apt.payment_status = "Pending";
+            apt.status = "Completed";
         }
 
 

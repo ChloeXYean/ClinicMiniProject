@@ -1,9 +1,11 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ClinicMiniProject.Services.Interfaces;
+using Microsoft.Maui.Storage;
 
 namespace ClinicMiniProject.ViewModels
 {
@@ -17,6 +19,7 @@ namespace ClinicMiniProject.ViewModels
         private string _phoneNo = string.Empty;
         private string _workingHoursText = string.Empty;
         private string _profileImageUri = string.Empty;
+        private bool _isEditMode;
 
         public string DoctorId
         {
@@ -30,10 +33,22 @@ namespace ClinicMiniProject.ViewModels
             set => SetProperty(ref _name, value);
         }
 
+        public string DoctorName
+        {
+            get => Name;
+            set => Name = value;
+        }
+
         public string PhoneNo
         {
             get => _phoneNo;
             set => SetProperty(ref _phoneNo, value);
+        }
+
+        public string PhoneNumber
+        {
+            get => PhoneNo;
+            set => PhoneNo = value;
         }
 
         public string WorkingHoursText
@@ -42,16 +57,40 @@ namespace ClinicMiniProject.ViewModels
             set => SetProperty(ref _workingHoursText, value);
         }
 
+        public string WorkingHours
+        {
+            get => WorkingHoursText;
+            set => WorkingHoursText = value;
+        }
+
         public string ProfileImageUri
         {
             get => _profileImageUri;
             set => SetProperty(ref _profileImageUri, value);
         }
 
-        public ObservableCollection<string> ServicesProvided { get; } = new();
+        public bool IsEditMode
+        {
+            get => _isEditMode;
+            set
+            {
+                if (SetProperty(ref _isEditMode, value))
+                {
+                    OnPropertyChanged(nameof(IsReadOnlyMode));
+                }
+            }
+        }
+
+        public bool IsReadOnlyMode => !IsEditMode;
+
+        public ObservableCollection<ServiceItem> ServicesProvided { get; } = new();
 
         public ICommand RefreshCommand { get; }
-        public ICommand SaveCommand { get; }
+        public ICommand SaveProfileCommand { get; }
+        public ICommand ToggleEditModeCommand { get; }
+        public ICommand ChangeProfilePictureCommand { get; }
+        public ICommand AddServiceCommand { get; }
+        public ICommand RemoveServiceCommand { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -61,7 +100,11 @@ namespace ClinicMiniProject.ViewModels
             _doctorProfileService = doctorProfileService;
 
             RefreshCommand = new Command(async () => await RefreshAsync());
-            SaveCommand = new Command(async () => await SaveAsync());
+            SaveProfileCommand = new Command(async () => await SaveAsync());
+            ToggleEditModeCommand = new Command(OnToggleEditMode);
+            ChangeProfilePictureCommand = new Command(async () => await ChangeProfilePictureAsync());
+            AddServiceCommand = new Command(async () => await AddServiceAsync());
+            RemoveServiceCommand = new Command<ServiceItem>(OnRemoveService);
         }
 
         public async Task RefreshAsync()
@@ -82,7 +125,7 @@ namespace ClinicMiniProject.ViewModels
 
             ServicesProvided.Clear();
             foreach (var s in dto.ServicesProvided)
-                ServicesProvided.Add(s);
+                ServicesProvided.Add(new ServiceItem { Name = s });
         }
 
         public async Task SaveAsync()
@@ -96,11 +139,55 @@ namespace ClinicMiniProject.ViewModels
                 Name = Name,
                 PhoneNo = PhoneNo,
                 WorkingHoursText = WorkingHoursText,
-                ServicesProvided = ServicesProvided,
+                ServicesProvided = ServicesProvided.Select(s => s.Name).ToList(),
                 ProfileImageUri = ProfileImageUri
             };
 
             await _doctorProfileService.UpdateDoctorProfileAsync(doctor.staff_ID, update);
+
+            IsEditMode = false;
+        }
+
+        private void OnToggleEditMode()
+        {
+            IsEditMode = !IsEditMode;
+        }
+
+        private async Task ChangeProfilePictureAsync()
+        {
+            if (!IsEditMode)
+                return;
+
+            var result = await FilePicker.PickAsync(new PickOptions
+            {
+                PickerTitle = "Select profile picture"
+            });
+
+            if (result != null)
+                ProfileImageUri = result.FullPath;
+        }
+
+        private async Task AddServiceAsync()
+        {
+            if (!IsEditMode)
+                return;
+
+            var name = await Shell.Current.DisplayPromptAsync("Add Service", "Service name:");
+            if (string.IsNullOrWhiteSpace(name))
+                return;
+
+            ServicesProvided.Add(new ServiceItem { Name = name.Trim() });
+        }
+
+        private void OnRemoveService(ServiceItem item)
+        {
+            if (!IsEditMode)
+                return;
+
+            if (item == null)
+                return;
+
+            ServicesProvided.Remove(item);
         }
 
         protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")
@@ -117,5 +204,10 @@ namespace ClinicMiniProject.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+    }
+
+    public sealed class ServiceItem
+    {
+        public string Name { get; set; } = string.Empty;
     }
 }

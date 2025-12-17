@@ -9,31 +9,45 @@ namespace ClinicMiniProject.Repository
 {
     public class AppointmentRepository : IAppointmentRepository
     {
-        public AppointmentRepository()
+        private readonly AppDbContext _context;
+        public AppointmentRepository(AppDbContext appDbContext)
         {
-            // Constructor implementation (if needed)   
-        }
+            _context = appDbContext;
+        }   
 
         public List<Appointment> GetAppointmentsByDate(DateTime date)
         {
-            throw new NotImplementedException(); // Implement data retrieval logic here
+            return _context.Appointments.Where(a => a.appointedAt.HasValue && a.appointedAt.Value.Date == date).ToList();
         }
-
-        public List<Appointment> GetAppointmentsByPatient(string patientIC)
+        public List<Appointment> GetAppointmentsById(string id)
         {
-            throw new NotImplementedException();
+            return _context.Appointments.Where(a => a.appointment_ID == id).ToList();
         }
-
-        public List<Appointment> GetAppointmentsById(int id)
+        public List<Appointment> GetAppointmentsByPatientIC(string patientIC)
         {
-            throw new NotImplementedException();
+            return _context.Appointments.Where(a => a.patient_IC == patientIC).ToList();
         }
-
-        public void UpdateAppointmentStatus(int appointmentId, string status)
+        public void AddAppointment(Appointment appointment)
         {
-            throw new NotImplementedException();
+            _context.Appointments.Add(appointment);
+            _context.SaveChanges();
         }
 
+        public void UpdateAppointmentStatus(string appointmentId, string status)
+        {
+            var appoint = _context.Appointments.FirstOrDefault(a => a.appointment_ID == appointmentId);
+            if (appoint != null)
+            {
+                appoint.status = status;
+                _context.SaveChanges();
+            }
+        }
 
+        public IQueryable<Appointment> GetQueryable()
+        {
+            return _context.Appointments.AsQueryable();
+
+
+        }
     }
 }

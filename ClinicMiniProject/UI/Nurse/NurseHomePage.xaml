@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ClinicMiniProject.UI.Control"
+             x:Class="ClinicMiniProject.UI.Nurse.NurseHomePage"
+             Title="NurseHomePage">
+    <Grid RowDefinitions="Auto, *, Auto">
+        <controls:TopNavBar Grid.Row="0"/>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="50">
+                <Border BackgroundColor="#CFE5FF" 
+                        StrokeThickness="0"
+                        Padding="20"
+                        StrokeShape="RoundRectangle 20">
+
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.2" Radius="15" Offset="2,5"/>
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Upcoming Appointment" FontAttributes="Bold" FontSize="16" TextColor="Black"/>
+
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding AppDate}" FontSize="13" TextColor="#333"/>
+                            <Label Text="{Binding AppTime}" FontSize="13" TextColor="#333"/>
+                            <Label Text="{Binding AppDoc}" FontSize="13" TextColor="#333"/>
+                        </VerticalStackLayout>
+
+                        <Label Text="{Binding PendingCount}" 
+                               FontAttributes="Bold" 
+                               FontSize="14" 
+                               TextColor="Black"
+                               Margin="0,10,0,5"/>
+
+                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                            <Border HeightRequest="60" WidthRequest="350" StrokeShape="RoundRectangle 80" BackgroundColor="#E0E0E0" StrokeThickness="0">
+                                <Label x:Name="appPendingCount" Text="0" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" TextColor="Black"/>
+                            </Border>
+                            <Label Text="End Doctor Consultation"
+                                   FontSize="12"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="#2D5AF0"
+                                   TextDecorations="Underline">
+
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding EndConsultationCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border BackgroundColor="#80F5A8" 
+                        StrokeThickness="0" 
+                        HeightRequest="80" 
+                        StrokeShape="RoundRectangle 10">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.2" Radius="15" Offset="2,5"/>
+                    </Border.Shadow>
+
+                    <Grid Padding="30,0">
+                        <Label Text="Register Patient" 
+                               TextColor="Black" 
+                               FontAttributes="Bold" 
+                               FontSize="23" 
+                               VerticalOptions="Center" 
+                               HorizontalOptions="Start"/>
+
+                        <Label Text="+" 
+                               TextColor="Black" 
+                               FontSize="30" 
+                               VerticalOptions="Center" 
+                               HorizontalOptions="End"/>
+                    </Grid>
+
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding RegisterPatientCommand}"/>
+                    </Border.GestureRecognizers>
+                </Border>
+
+                <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="20" Margin="0,10,0,0">
+
+                    <VerticalStackLayout Grid.Column="0" Spacing="5">
+                        <Border HeightRequest="80" WidthRequest="80" StrokeShape="RoundRectangle 15" BackgroundColor="#EFF5FF" StrokeThickness="0">
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Opacity="0.2" Radius="15" Offset="2,5"/>
+                            </Border.Shadow>
+                            <Image Source="appointment.png" Aspect="AspectFit" Margin="15"/>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnViewAppointmentTapped"/>
+                            </Border.GestureRecognizers>
+                        </Border>
+                        <Label Text="View&#x0a;Appointment" FontSize="12" HorizontalTextAlignment="Center" TextColor="Black"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="5">
+                        <Border HeightRequest="80" WidthRequest="80" StrokeShape="RoundRectangle 15" BackgroundColor="#EFF5FF" StrokeThickness="0">
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Opacity="0.2" Radius="15" Offset="2,5"/>
+                            </Border.Shadow>
+                            <Image Source="history.png" Aspect="AspectFit" Margin="15"/>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnAppointmentHistoryTapped"/>
+                            </Border.GestureRecognizers>
+                        </Border>
+                        <Label Text="Appointment&#x0a;History" FontSize="12" HorizontalTextAlignment="Center" TextColor="Black"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="2" Spacing="5">
+                        <Border HeightRequest="80" WidthRequest="80" StrokeShape="RoundRectangle 15" BackgroundColor="#EFF5FF" StrokeThickness="0">
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Opacity="0.2" Radius="15" Offset="2,5"/>
+                            </Border.Shadow>
+                            <Image Source="report.png" Aspect="AspectFit" Margin="15"/>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OnReportingManagementTapped}"/>
+                            </Border.GestureRecognizers>
+                        </Border>
+                        <Label Text="Reporting&#x0a;Management" FontSize="12" HorizontalTextAlignment="Center" TextColor="Black"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="3" Spacing="5">
+                        <Border HeightRequest="80" WidthRequest="80" StrokeShape="RoundRectangle 15" BackgroundColor="#EFF5FF" StrokeThickness="0">
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Opacity="0.2" Radius="15" Offset="2,5"/>
+                            </Border.Shadow>
+                            <Image Source="walkin.png" Aspect="AspectFit" Margin="15"/>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer 
+                                    Command="{Binding OnWalkInQueueTapped}"/>
+                            </Border.GestureRecognizers>
+                        </Border>
+                        <Label Text="Walk-in&#x0a;Patient queue" FontSize="12" HorizontalTextAlignment="Center" TextColor="Black"/>
+                    </VerticalStackLayout>
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+        <controls:BottomNavBar Grid.Row="2" 
+                       SelectedTab="Home"
+                       HomeCommand="{Binding HomeCommand}"
+                       ChatCommand="{Binding InquiryCommand}"
+                       ProfileCommand="{Binding ProfileCommand}"/>
+
+    </Grid>
+</ContentPage>

@@ -1,38 +1,35 @@
+using ClinicMiniProject.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
-using ClinicMiniProject.Services.Interfaces;
 
 namespace ClinicMiniProject.Services
 {
     public class PatientInfoService : IPatientInfoService
     {
-        public PatientInfoService()
+        private readonly AppDbContext _context;
+        public PatientInfoService(AppDbContext appDbContext)
         {
+            _context = appDbContext;
         }
 
         public async Task<PatientInfoDto?> GetPatientInfoAsync(string patientIc)
         {
-            await Task.Yield();
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.patient_IC == patientIc);
 
-            // TODO: link with database
-            // Required data to show on Patient Information page:
-            // - Name (Patient.patient_name)
-            // - Phone no (Patient.patient_contact)
-            // - IC no (Patient.patient_IC)
-            // - Service type (not present in current Patient model; likely from Appointment/Service table)
-            // - Patient type (Online vs Walk-in) -> can be derived from Patient.isAppUser
-            // - Registered time (not present in current Patient model; needs a createdAt/registeredAt field in DB)
-            //
-            // Since models don't include registered time / service type, return placeholders for now.
+            if (patient == null) return null;
+
+            // Note: If you have a 'ServiceType' or 'RegisteredTime' in your DB schema, map them here.
 
             return new PatientInfoDto
             {
-                PatientIc = patientIc,
-                Name = string.Empty,
-                PhoneNo = string.Empty,
-                ServiceType = string.Empty,
-                PatientType = string.Empty,
-                RegisteredTime = string.Empty
+                PatientIc = patient.patient_IC,
+                Name = patient.patient_name,
+                PhoneNo = patient.patient_contact ?? "N/A",
+                // Logic: if isAppUser is true, they likely registered online
+                PatientType = patient.isAppUser ? false : true,
+                ServiceType = "General Checkup", 
+                RegisteredTime = "N/A" 
             };
         }
     }

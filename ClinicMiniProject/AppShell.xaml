@@ -3,12 +3,32 @@
     x:Class="ClinicMiniProject.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:ClinicMiniProject"
+    xmlns:ui="clr-namespace:ClinicMiniProject.UI"
+    xmlns:doc="clr-namespace:ClinicMiniProject.UI.Doctor"
+    xmlns:nur="clr-namespace:ClinicMiniProject.UI.Nurse"
+    xmlns:pat="clr-namespace:ClinicMiniProject.UI.Patient"
     Title="ClinicMiniProject">
 
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        Title="Login"
+        ContentTemplate="{DataTemplate ui:LoginPage}"
+        Route="LoginPage"
+        Shell.FlyoutBehavior="Disabled" 
+        Shell.TabBarIsVisible="False" />
+
+    <ShellContent
+        Title="Doctor Dashboard"
+        ContentTemplate="{DataTemplate doc:DoctorDashboardPage}"
+        Route="DoctorDashboardPage" />
+
+    <ShellContent
+        Title="Nurse Home"
+        ContentTemplate="{DataTemplate nur:NurseHomePage}"
+        Route="NurseHomePage" />
+
+    <ShellContent
+        Title="Patient Home"
+        ContentTemplate="{DataTemplate pat:PatientHomePage}"
+        Route="PatientHomePage" />
 
 </Shell>

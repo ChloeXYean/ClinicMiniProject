@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ClinicMiniProject.UI.Doctor.ConsultationDetailsPage"
+             Title="ConsultationDetails">
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Padding="20,15" BackgroundColor="#6EA8FE">
+            <ImageButton Grid.Column="0" Source="menu.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent" Clicked="OnBackClicked" />
+            <Label Grid.Column="1" Text="Consultation Details" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="14">
+
+                <Border BackgroundColor="#F5F7FF" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{Binding DateText}" />
+                        <Label Text="{Binding AppointedTimeSlotText}" />
+                        <Label Text="{Binding PatientNameText}" />
+                        <Label Text="{Binding PatientIcText}" />
+                        <Label Text="{Binding PatientPhoneText}" />
+                        <Label Text="{Binding SelectedServiceTypeText}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Remark:" FontAttributes="Bold" />
+                        <Editor Text="{Binding ConsultationRemark, Mode=TwoWay}"
+                                Placeholder="type your remark"
+                                AutoSize="TextChanges"
+                                HeightRequest="160" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Button Text="End Consultation"
+                        Command="{Binding EndConsultationCommand}"
+                        HeightRequest="52" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="2" HeightRequest="0" />
+    </Grid>
+</ContentPage>

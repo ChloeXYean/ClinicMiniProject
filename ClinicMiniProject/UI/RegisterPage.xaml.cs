@@ -1,4 +1,3 @@
-using ClinicMiniProject.Models;
 using ClinicMiniProject.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,7 +10,7 @@ namespace ClinicMiniProject.UI
         public RegisterPage()
         {
             var sp = Application.Current?.Handler?.MauiContext?.Services;
-            _authService = sp?.GetService<IAuthService>() ?? new Services.AuthService();
+            _authService = sp?.GetService<IAuthService>();
             InitializeComponent();
         }
 
@@ -29,7 +28,7 @@ namespace ClinicMiniProject.UI
                 return;
             }
 
-            var patient = new Patient
+            var patient = new Models.Patient
             {
                 patient_IC = IcEntry.Text,
                 patient_name = FullNameEntry.Text,

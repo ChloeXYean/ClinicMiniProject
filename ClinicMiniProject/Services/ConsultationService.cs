@@ -27,7 +27,7 @@ namespace ClinicMiniProject.Services
             // Define "current time slot" as the earliest appointment that is not completed and is scheduled for today.
             // If you have a fixed slot system, replace this selection logic.
             var current = todayAppointments
-                .Where(a => a.appointedAt.Date == today && (a.status == "Scheduled" || a.status == "Pending" || a.status == "Confirmed"))
+                .Where(a => a.appointedAt.Value.Date == today && (a.status == "Scheduled" || a.status == "Pending" || a.status == "Confirmed"))
                 .OrderBy(a => a.appointedAt)
                 .FirstOrDefault();
 
@@ -38,12 +38,15 @@ namespace ClinicMiniProject.Services
             // If appointment start time + 15 mins has passed and doctor hasn't started consultation, cancel and reassign walk-in.
             // We treat "Started" as status == "InProgress".
             var isStarted = string.Equals(current.status, "InProgress", StringComparison.OrdinalIgnoreCase);
-            if (!isStarted && now >= current.appointedAt.AddMinutes(15))
+            if (!isStarted && current.appointedAt.HasValue && now >= current.appointedAt.Value.AddMinutes(15))
             {
                 await CancelAndReassignToRandomWalkInAsync(current, now);
 
                 // After reassignment, rebuild details using updated appointment.
-                var updated = await _appointmentService.GetAppointmentByIdAsync(current.appointmentID);
+                if (string.IsNullOrWhiteSpace(current.appointment_ID))
+                    return null;
+
+                var updated = await _appointmentService.GetAppointmentByIdAsync(current.appointment_ID);
                 if (updated == null)
                     return null;
 
@@ -119,7 +122,7 @@ namespace ClinicMiniProject.Services
             // Reassign same slot to a walk-in patient.
             var reassigned = new Appointment
             {
-                appointmentID = appointment.appointmentID,
+                appointment_ID = appointment.appointment_ID,
                 bookedAt = now,
                 appointedAt = appointment.appointedAt,
                 staff_ID = appointment.staff_ID,
@@ -137,9 +140,9 @@ namespace ClinicMiniProject.Services
 
             return new ConsultationDetailsDto
             {
-                AppointmentId = appt.appointmentID,
-                Date = appt.appointedAt.Date,
-                AppointedTimeSlot = appt.appointedAt,
+                AppointmentId = appt.appointment_ID,
+                Date = appt.appointedAt.Value.Date,
+                AppointedTimeSlot = appt.appointedAt.Value,
                 PatientIc = appt.patient_IC,
                 PatientName = patient?.patient_name ?? string.Empty,
                 PatientPhone = patient?.patient_contact ?? string.Empty,

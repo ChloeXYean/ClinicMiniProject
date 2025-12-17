@@ -8,10 +8,14 @@ namespace ClinicMiniProject.Services.Interfaces
     public interface IAppointmentService
     {
         // TODO: Existing methods... maybe got another functions
-        
+
         // Add these new methods
+
+        public void AddAppointment(Appointment appt);
+
+        public DateTime? AssignWalkInTimeSlot(string doctorId, DateTime preferredDate, int workStartHour = 9, int workEndHour = 17, TimeSpan slotDuration = default);
         Task<IEnumerable<Appointment>> GetAppointmentsByStaffAndDateRangeAsync(
-            string staffId, 
+            string? staffId, 
             DateTime startDate, 
             DateTime endDate);
             
