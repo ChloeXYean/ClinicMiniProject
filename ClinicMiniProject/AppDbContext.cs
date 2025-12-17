@@ -20,7 +20,6 @@ namespace ClinicMiniProject
         //{
         //    if (!optionsBuilder.IsConfigured)
         //    {
-        //        //string server = Environment.GetEnvironmentVariable("DB_SERVER_IP") ?? "172.16.59.30";
         //        //string server = Environment.GetEnvironmentVariable("DB_SERVER_IP") ?? "localhost";
         //        //string connStr = $"Server={server};Port=3306;Database=testdb;Uid=root;Pwd=123456;Charset=utf8mb4;";
         //        string connStr = $"Server=localhost;Port=3306;Database=testdb;Uid=root;Pwd=123456;Charset=utf8mb4;";
@@ -32,49 +31,34 @@ namespace ClinicMiniProject
         //        );
         //    }
         //}
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    if (!optionsBuilder.IsConfigured)
-        //    {
-        //        var connStr =
-        //            "Server=127.0.0.1;" +
-        //            "Port=3306;" +
-        //            "Database=testdb;" +
-        //            "Uid=root;" +
-        //            "Pwd=123456;" +
-        //            "SslMode=None;" +
-        //            "Charset=utf8mb4;";
 
-        //        optionsBuilder.UseMySql(
-        //            connStr,
-        //            new MySqlServerVersion(new Version(9, 0, 0)),
-        //            options => options.EnableRetryOnFailure()
-        //        );
-        //    }
-        //}
-
-        // ClinicMiniProject/AppDbContext.cs
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-            {
-                // Default to localhost for Windows
-                string serverIp = "127.0.0.1";
-
-                // If running on Android, change IP to 10.0.2.2 (which points to your PC)
-#if ANDROID
-                serverIp = "10.0.2.2";
-#endif
-
-                var connStr =
+{
+                // local database
+                /*string serverIp = "localhost";
+                    var connStr =
                     $"Server={serverIp};" + // Use the variable here
                     "Port=3306;" +
                     "Database=testdb;" +
                     "Uid=root;" +
                     "Pwd=123456;" +
                     "SslMode=None;" +
-                    "Charset=utf8mb4;";
+                    "Charset=utf8mb4;"; */
+
+                //Online db
+                string serverip = "ballast.proxy.rlwy.net";
+                var connStr =
+                    $"server={serverip};" + // use the variable here
+                    "port=19463;" +
+                    "database=testdb;" +
+                    "uid=root;" +
+                    "pwd=NrIvCewJcTGAPqmOXyoziksWgwoQmaQd;" +
+                    "sslmode=Required;" +
+                    "charset=utf8mb4;";
+
 
                 optionsBuilder.UseMySql(
                     connStr,
