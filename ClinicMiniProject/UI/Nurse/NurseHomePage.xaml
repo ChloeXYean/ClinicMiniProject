@@ -89,7 +89,7 @@
                             </Border.Shadow>
                             <Image Source="appointment.png" Aspect="AspectFit" Margin="15"/>
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnViewAppointmentTapped"/>
+                                <TapGestureRecognizer Command="{Binding OnViewAppointmentTapped}"/>
                             </Border.GestureRecognizers>
                         </Border>
                         <Label Text="View&#x0a;Appointment" FontSize="12" HorizontalTextAlignment="Center" TextColor="Black"/>
@@ -102,7 +102,7 @@
                             </Border.Shadow>
                             <Image Source="history.png" Aspect="AspectFit" Margin="15"/>
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnAppointmentHistoryTapped"/>
+                                <TapGestureRecognizer Command="{Binding OnAppointmentHistoryTapped}"/>
                             </Border.GestureRecognizers>
                         </Border>
                         <Label Text="Appointment&#x0a;History" FontSize="12" HorizontalTextAlignment="Center" TextColor="Black"/>
@@ -115,7 +115,7 @@
                             </Border.Shadow>
                             <Image Source="report.png" Aspect="AspectFit" Margin="15"/>
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnReportingManagementTapped"/>
+                                <TapGestureRecognizer Command="{Binding OnReportingManagementTapped}"/>
                             </Border.GestureRecognizers>
                         </Border>
                         <Label Text="Reporting&#x0a;Management" FontSize="12" HorizontalTextAlignment="Center" TextColor="Black"/>
@@ -128,7 +128,7 @@
                             </Border.Shadow>
                             <Image Source="walkin.png" Aspect="AspectFit" Margin="15"/>
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnWalkInQueueTapped"/>
+                                <TapGestureRecognizer Command="{Binding OnWalkInQueueTapped}"/>
                             </Border.GestureRecognizers>
                         </Border>
                         <Label Text="Walk-in&#x0a;Patient queue" FontSize="12" HorizontalTextAlignment="Center" TextColor="Black"/>
