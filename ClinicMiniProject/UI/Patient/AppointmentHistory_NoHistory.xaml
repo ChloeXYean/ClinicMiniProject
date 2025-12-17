@@ -15,7 +15,7 @@
         </Border>
 
         <VerticalStackLayout HorizontalOptions="Center"
-                             VerticalOptions="CenterAndExpand"
+                             VerticalOptions="Center"
                              Spacing="16">
 
             <Image Source="calendar_icon.png"

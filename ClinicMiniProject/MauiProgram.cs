@@ -6,6 +6,7 @@ using ClinicMiniProject.ViewModels;
 using ClinicMiniProject.Controller;
 using ClinicMiniProject.UI.Nurse;
 using ClinicMiniProject.UI.Doctor;
+using ClinicMiniProject.UI.Patient;
 using ClinicMiniProject.Repository;
 
 namespace ClinicMiniProject
@@ -22,6 +23,8 @@ namespace ClinicMiniProject
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
+
             //Register database context
             builder.Services.AddDbContext<AppDbContext>();
 
@@ -57,9 +60,6 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<ConsultationDetailsPage>();
             builder.Services.AddTransient<ConsultationDetailsViewModel>();
 
-            builder.Services.AddTransient<ConsultationDetailsPage>();
-            builder.Services.AddTransient<ConsultationSessionViewModel>();
-
             builder.Services.AddTransient<ProfilePage>();
             builder.Services.AddTransient<DoctorProfileViewModel>();
 
@@ -84,8 +84,6 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<AppointmentSchedulePage>();
             builder.Services.AddTransient<AppointmentScheduleViewModel>();
 
-            builder.Services.AddTransient<ConsultationDetailsPage>();
-            builder.Services.AddTransient<ConsultationDetailsViewModel>();
 
 
 

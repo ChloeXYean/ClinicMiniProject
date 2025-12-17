@@ -2,6 +2,7 @@
 using ClinicMiniProject.UI.Doctor;
 using ClinicMiniProject.UI.Nurse;
 using ClinicMiniProject.UI.Patient;
+using YourNamespace.UI.Patient;
 
 namespace ClinicMiniProject
 {
@@ -19,8 +20,10 @@ namespace ClinicMiniProject
 
             // --- Shared / Doctor Routes (Using simple string keys to match ViewModel) ---
             Routing.RegisterRoute("AppointmentSchedule", typeof(AppointmentSchedulePage));
-            Routing.RegisterRoute("ConsultationDetails", typeof(ConsultationDetailsPage));
-            Routing.RegisterRoute("AppointmentHistory", typeof(AppointmentHistoryPage));
+            Routing.RegisterRoute("DoctorConsultationDetails", typeof(ConsultationDetailsPage));
+            Routing.RegisterRoute("PatientConsultationDetails", typeof (PatientConsultationDetailsPage));
+            Routing.RegisterRoute("DoctorAppointmentHistory", typeof(AppointmentHistoryPage));
+            Routing.RegisterRoute("PatientAppointmentHistory", typeof(PatientAppointmentHistoryPage));
             Routing.RegisterRoute("ReportingManagement", typeof(ReportingManagementPage));
             Routing.RegisterRoute("Inquiry", typeof(InquiryPage));       // Doctor/Nurse Inquiry View
             Routing.RegisterRoute("Profile", typeof(ProfilePage));       // Doctor Profile
@@ -36,8 +39,8 @@ namespace ClinicMiniProject
             // --- Patient Specific Routes ---
             Routing.RegisterRoute(nameof(PatientHomePage), typeof(PatientHomePage));
             // Assuming these class names exist based on your file uploads
-            //Routing.RegisterRoute("InquiryHistoryPage", typeof(InquiryHistoryPage));
-            //Routing.RegisterRoute("OnlineMedicalInquiryPage", typeof(OnlineMedicalInquiryPage));
+            Routing.RegisterRoute("InquiryHistoryPage", typeof(InquiryHistory));
+            Routing.RegisterRoute("InquiryDetialsPage", typeof(InquiryHistory_DetailedView));
         }
 
         protected override async void OnAppearing()
