@@ -31,7 +31,10 @@ namespace ClinicMiniProject.UI
 
         private async void OnLoginClicked(object sender, EventArgs e)
         {
-            var user = _authService.Login(IcEntry.Text, PasswordEntry.Text, out string message);
+            var icEntry = FindByName("IcEntry") as Entry;
+            var passwordEntry = FindByName("PasswordEntry") as Entry;
+            
+            var user = _authService.Login(icEntry?.Text ?? "", passwordEntry?.Text ?? "", out string message);
 
             if (user != null)
             {
