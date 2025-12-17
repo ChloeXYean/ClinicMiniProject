@@ -3,104 +3,136 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Doctor.DoctorDashboardPage"
-             Title=""
+             BackgroundColor="#F8F9FD" 
              Shell.NavBarIsVisible="False">
 
-        <Grid RowDefinitions="Auto,*,80" RowSpacing="0" VerticalOptions="FillAndExpand">
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
         <control:TopNavBar Grid.Row="0"
                           UserName="{Binding DoctorName}"
                           MenuCommand="{Binding ToggleMenuCommand}"
                           BellCommand="{Binding NotificationCommand}" />
 
-        <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
-            <VerticalStackLayout Padding="20" Spacing="16">
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
 
-                <Border BackgroundColor="#F5F7FF" StrokeThickness="0" Padding="16">
+                <Border StrokeThickness="0" BackgroundColor="White" Padding="0">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="16" />
                     </Border.StrokeShape>
-
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Today Overview:" FontSize="20" FontAttributes="Bold" />
-
-                        <Label Text="{Binding CurrentDate, StringFormat='Date: {0}'}" FontSize="14" />
-                        <Label Text="{Binding TodayStats.TotalConsulted, StringFormat='Total Consulted: {0}'}" FontSize="14" />
-                        <Label Text="{Binding TodayStats.OnlineConsulted, StringFormat='Online: {0}'}" FontSize="14" />
-                        <Label Text="{Binding TodayStats.WalkInConsulted, StringFormat='Walk-in: {0}'}" FontSize="14" />
-                    </VerticalStackLayout>
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.05" Radius="10" Offset="0,4"/>
+                    </Border.Shadow>
+                    
+                    <Grid ColumnDefinitions="6, *">
+                        <BoxView Grid.Column="0" Color="#6EA8FE" CornerRadius="16,0,16,0"/>
+                        
+                        <VerticalStackLayout Grid.Column="1" Padding="16" Spacing="12">
+                            <Label Text="Today Overview" FontSize="18" FontAttributes="Bold" TextColor="#333" />
+                            <Label Text="{Binding CurrentDate, StringFormat='📅 {0}'}" FontSize="13" TextColor="#666"/>
+                            
+                            <Grid ColumnDefinitions="*, *, *" RowSpacing="5" Margin="0,5,0,0">
+                                <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
+                                    <Label Text="{Binding TodayStats.TotalConsulted}" FontSize="22" FontAttributes="Bold" TextColor="#2D5AF0" HorizontalOptions="Center"/>
+                                    <Label Text="Total" FontSize="11" TextColor="#999" HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
+                                    <Label Text="{Binding TodayStats.OnlineConsulted}" FontSize="22" FontAttributes="Bold" TextColor="#333" HorizontalOptions="Center"/>
+                                    <Label Text="Online" FontSize="11" TextColor="#999" HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                                    <Label Text="{Binding TodayStats.WalkInConsulted}" FontSize="22" FontAttributes="Bold" TextColor="#333" HorizontalOptions="Center"/>
+                                    <Label Text="Walk-in" FontSize="11" TextColor="#999" HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Grid>
                 </Border>
 
-                <Border BackgroundColor="#F5F7FF" StrokeThickness="0" Padding="16">
+                <Border StrokeThickness="0" BackgroundColor="White" Padding="16">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="16" />
                     </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.05" Radius="10" Offset="0,4"/>
+                    </Border.Shadow>
 
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Upcoming Schedule:" FontSize="20" FontAttributes="Bold" />
+                    <VerticalStackLayout Spacing="15">
+                        <Label Text="Upcoming Schedule" FontSize="18" FontAttributes="Bold" TextColor="#333" />
+                        
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="5">
+                                <Label Text="{Binding UpcomingSchedule.PendingAppointments, StringFormat='Pending: {0}'}" FontSize="14" TextColor="#444" FontAttributes="Bold"/>
+                                <HorizontalStackLayout Spacing="10">
+                                    <Label Text="{Binding UpcomingSchedule.OnlinePending, StringFormat='Online: {0}'}" FontSize="12" TextColor="#666" />
+                                    <Label Text="|" TextColor="#DDD"/>
+                                    <Label Text="{Binding UpcomingSchedule.WalkInPending, StringFormat='Walk-in: {0}'}" FontSize="12" TextColor="#666" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
 
-                        <Label Text="{Binding UpcomingSchedule.PendingAppointments, StringFormat='Pending Appointment: {0}'}" FontSize="14" />
-                        <Label Text="{Binding UpcomingSchedule.OnlinePending, StringFormat='Online: {0}'}" FontSize="14" />
-                        <Label Text="{Binding UpcomingSchedule.WalkInPending, StringFormat='Walk-in: {0}'}" FontSize="14" />
-
-                        <Label Text="{Binding NextAppointmentTime, StringFormat='Next Appointment: {0}'}"
-                               FontSize="14"
-                               TextColor="#D61F1F"
-                               FontAttributes="Bold" />
+                            <Border Grid.Column="1" BackgroundColor="#FFF0F0" Padding="12,8" StrokeShape="RoundRectangle 10">
+                                <VerticalStackLayout HorizontalOptions="Center">
+                                    <Label Text="NEXT AT" FontSize="10" TextColor="#D61F1F" HorizontalOptions="Center" FontAttributes="Bold"/>
+                                    <Label Text="{Binding NextAppointmentTime}" FontSize="14" TextColor="#D61F1F" FontAttributes="Bold" HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
                     </VerticalStackLayout>
                 </Border>
 
-                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="16" RowSpacing="16">
+                <Label Text="Quick Actions" FontAttributes="Bold" FontSize="16" TextColor="#555" Margin="5,10,0,0"/>
 
-                    <Border Grid.Row="0" Grid.Column="0" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="14">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                            <Image Source="home.png" HeightRequest="42" WidthRequest="42" />
-                            <Button Text="Appointment Schedule" Command="{Binding NavigateToAppointmentScheduleCommand}" />
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="15" RowSpacing="15">
+                    <Border Grid.Row="0" Grid.Column="0" BackgroundColor="White" StrokeThickness="0" Padding="20" StrokeShape="RoundRectangle 16">
+                        <Border.Shadow><Shadow Brush="Black" Opacity="0.03" Radius="8" Offset="0,3"/></Border.Shadow>
+                        <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                            <Image Source="appointment_icon.png" HeightRequest="40" WidthRequest="40"/>
+                            <Label Text="Schedule" FontSize="13" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="#333"/>
                         </VerticalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateToAppointmentScheduleCommand}"/>
+                        </Border.GestureRecognizers>
                     </Border>
 
-                    <Border Grid.Row="0" Grid.Column="1" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="14">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                            <Image Source="profile.png" HeightRequest="42" WidthRequest="42" />
-                            <Button Text="Consultation Details" Command="{Binding NavigateToConsultationDetailsCommand}" />
+                    <Border Grid.Row="0" Grid.Column="1" BackgroundColor="White" StrokeThickness="0" Padding="20" StrokeShape="RoundRectangle 16">
+                        <Border.Shadow><Shadow Brush="Black" Opacity="0.03" Radius="8" Offset="0,3"/></Border.Shadow>
+                        <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                            <Image Source="history_icon.png" HeightRequest="40" WidthRequest="40"/>
+                            <Label Text="History" FontSize="13" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="#333"/>
                         </VerticalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateToAppointmentHistoryCommand}"/>
+                        </Border.GestureRecognizers>
                     </Border>
 
-                    <Border Grid.Row="1" Grid.Column="0" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="14">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                            <Image Source="inquiry.png" HeightRequest="42" WidthRequest="42" />
-                            <Button Text="Appointment History" Command="{Binding NavigateToAppointmentHistoryCommand}" />
+                    <Border Grid.Row="1" Grid.Column="0" BackgroundColor="White" StrokeThickness="0" Padding="20" StrokeShape="RoundRectangle 16">
+                        <Border.Shadow><Shadow Brush="Black" Opacity="0.03" Radius="8" Offset="0,3"/></Border.Shadow>
+                        <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                            <Image Source="report_icon.png" HeightRequest="40" WidthRequest="40"/>
+                            <Label Text="Reporting" FontSize="13" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="#333"/>
                         </VerticalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateToReportingManagementCommand}"/>
+                        </Border.GestureRecognizers>
                     </Border>
 
-                    <Border Grid.Row="1" Grid.Column="1" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="14">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                            <Image Source="bell.png" HeightRequest="42" WidthRequest="42" />
-                            <Button Text="Reporting Management" Command="{Binding NavigateToReportingManagementCommand}" />
+                    <Border Grid.Row="1" Grid.Column="1" BackgroundColor="White" StrokeThickness="0" Padding="20" StrokeShape="RoundRectangle 16">
+                        <Border.Shadow><Shadow Brush="Black" Opacity="0.03" Radius="8" Offset="0,3"/></Border.Shadow>
+                        <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                            <Image Source="walkin_icon.png" HeightRequest="40" WidthRequest="40"/>
+                            <Label Text="Queue" FontSize="13" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="#333"/>
                         </VerticalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OnWalkInQueueTapped}"/>
+                        </Border.GestureRecognizers>
                     </Border>
-
                 </Grid>
 
             </VerticalStackLayout>
         </ScrollView>
 
-        <control:BottomNavBar Grid.Row="2"
-                             SelectedTab="Home"
+        <control:BottomNavBar Grid.Row="2" SelectedTab="Home"
                              HomeCommand="{Binding NavigateToHomeCommand}"
                              ChatCommand="{Binding NavigateToInquiryCommand}"
-                             ProfileCommand="{Binding NavigateToProfileCommand}"
-                             VerticalOptions="End" />
+                             ProfileCommand="{Binding NavigateToProfileCommand}" />
     </Grid>
 </ContentPage>
