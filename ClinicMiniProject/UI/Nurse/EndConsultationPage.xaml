@@ -52,7 +52,8 @@
                                        Text="View Consultation Details" 
                                        TextColor="#2D5AF0" FontSize="11" TextDecorations="Underline" HorizontalOptions="End" Margin="0,15,0,0">
                                     <Label.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnDetailsClicked"/>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:EndConsultationViewModel}}, Path=ViewDetailsCommand}"
+                                        CommandParameter="{Binding .}"/>
                                     </Label.GestureRecognizers>
                                 </Label>
                             </Grid>

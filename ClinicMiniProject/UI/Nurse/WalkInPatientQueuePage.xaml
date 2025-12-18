@@ -9,10 +9,8 @@
     
     <Grid RowDefinitions="Auto, *">
 
-        <controls:BackNavBar Grid.Row="0" 
-                             Title="Walk-in Patient Queue" 
-                             BackClicked="OnBackClicked" />
-
+        <controls:BackNavBar BackCommand="{Binding BackCommand}" />
+        
         <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="20">
 
             <Label Text="Date: 12 November 2025" 
@@ -53,7 +51,8 @@
                                        Text="View Details" 
                                        TextColor="#2D5AF0" FontSize="11" TextDecorations="Underline" HorizontalOptions="End" Margin="0,15,0,0">
                                     <Label.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnClickViewDetails"/>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WalkInPatientQueueViewModel}}, Path=ViewDetailsCommand}"
+                                        CommandParameter="{Binding .}"/>
                                     </Label.GestureRecognizers>
                                 </Label>
                             </Grid>

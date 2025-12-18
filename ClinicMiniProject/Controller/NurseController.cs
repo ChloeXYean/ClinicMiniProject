@@ -1,6 +1,7 @@
 ﻿using ClinicMiniProject.Models;
 using ClinicMiniProject.Services.Interfaces;
 using ClinicMiniProject.Services;
+using ClinicMiniProject.Dtos;
 
 
 namespace ClinicMiniProject.Controller
@@ -99,6 +100,41 @@ namespace ClinicMiniProject.Controller
                 .Where(a => a.status == "Pending" || a.status == "Scheduled")
                 .OrderBy(a => a.appointedAt)
                 .ToList();
+        }
+
+        public async Task<List<PatientQueueDto>> GetWalkInQueueForToday()
+        {
+            // 1. Fetch appointments for today that are "Pending" or "checked_in"
+            // This depends on your service logic (e.g., _appointmentService)
+            var today = DateTime.Today;
+            var appointments = await _appointmentService.GetAppointmentsByDateAsync(today); // You might need to add this method to your Service if missing
+
+            // 2. Filter for Walk-In only
+            var walkIns = appointments
+                .Where(a => a.service_type != "Online" && a.status == "Pending") // Adjust status check as needed
+                .ToList();
+
+            // 3. Convert DB Model -> UI DTO
+            var queueList = new List<PatientQueueDto>();
+
+            foreach (var app in walkIns)
+            {
+                queueList.Add(new PatientQueueDto
+                {
+                    // MAPPING: Use the real DB columns here
+                    PatientName = app.patient_IC, // Or fetch the name using PatientService if you only have IC
+                    RegisteredTime = app.appointedAt?.ToString("hh:mm tt") ?? "--:--",
+
+                    // QUEUE ID LOGIC:
+                    // If you have a specific queue_number column, use it. 
+                    // Otherwise, format the Appointment ID or create a fake one based on order.
+                    QueueId = $"Q-{app.appointment_ID.Substring(0, 4)}",
+
+                    ICNumber = app.patient_IC
+                });
+            }
+
+            return queueList;
         }
     }
 }
