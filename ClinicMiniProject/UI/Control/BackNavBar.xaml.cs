@@ -1,9 +1,20 @@
+using System.Windows.Input;
+
 namespace ClinicMiniProject.UI.Control;
 
 public partial class BackNavBar : ContentView
 {
+    public static readonly BindableProperty BackCommandProperty =
+            BindableProperty.Create(nameof(BackCommand), typeof(ICommand), typeof(BackNavBar));
+
+    public ICommand BackCommand
+    {
+        get => (ICommand)GetValue(BackCommandProperty);
+        set => SetValue(BackCommandProperty, value);
+    }
+
     public static readonly BindableProperty TitleProperty =
-        BindableProperty.Create(nameof(Title), typeof(string), typeof(BackNavBar), "Page Title", propertyChanged: OnTitleChanged);
+        BindableProperty.Create(nameof(Title), typeof(string), typeof(BackNavBar), string.Empty);
 
     public string Title
     {
@@ -11,21 +22,8 @@ public partial class BackNavBar : ContentView
         set => SetValue(TitleProperty, value);
     }
 
-    private static void OnTitleChanged(BindableObject bindable, object oldValue, object newValue)
-    {
-        var control = (BackNavBar)bindable;
-        control.TitleLabel.Text = (string)newValue;
-    }
-
     public BackNavBar()
     {
         InitializeComponent();
     }
-
-    private void OnBackClicked(object sender, EventArgs e)
-    {
-        BackClicked?.Invoke(this, EventArgs.Empty);
-    }
-
-    public event EventHandler BackClicked;
 }

@@ -7,10 +7,7 @@
              Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="Auto, *, Auto">
-
-        <controls:BackNavBar Grid.Row="0" 
-                             Title="Patient Details" 
-                             BackClicked="OnBackClicked" />
+        <controls:BackNavBar BackCommand="{Binding BackCommand}" Title="Patient Details" />
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="20">

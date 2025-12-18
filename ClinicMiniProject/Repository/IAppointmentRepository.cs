@@ -19,6 +19,6 @@ namespace ClinicMiniProject.Repository
 
         IQueryable<Appointment> GetQueryable();
 
-
+        Task<IEnumerable<Appointment>> GetAppointmentsByDateAsync(DateTime date);
     }
 }

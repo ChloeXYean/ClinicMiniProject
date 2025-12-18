@@ -44,6 +44,7 @@ namespace ClinicMiniProject
             Routing.RegisterRoute("PatientAppointmentHistory", typeof(PatientAppointmentHistoryPage));
             Routing.RegisterRoute("BookAnAppointment", typeof(BookAnAppointment));
             Routing.RegisterRoute("AppointmentBooking", typeof(AppointmentBooking_Patient));
+            Routing.RegisterRoute("SelectDoctorPage", typeof(SelectDoctorPage));
         }
 
         protected override async void OnAppearing()
