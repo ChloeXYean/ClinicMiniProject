@@ -35,9 +35,14 @@ namespace ClinicMiniProject
 
             // --- Patient Specific Routes ---
             Routing.RegisterRoute(nameof(PatientHomePage), typeof(PatientHomePage));
-            // Assuming these class names exist based on your file uploads
-            //Routing.RegisterRoute("InquiryHistoryPage", typeof(InquiryHistoryPage));
-            //Routing.RegisterRoute("OnlineMedicalInquiryPage", typeof(OnlineMedicalInquiryPage));
+            Routing.RegisterRoute("InquiryHistory", typeof(InquiryHistory));
+            Routing.RegisterRoute("InquiryDetailsView", typeof(InquiryHistory_DetailedView));
+            Routing.RegisterRoute("OnlineInquiry", typeof(OnlineInquiryPatient));
+            Routing.RegisterRoute("AppointmentHistory_NoHistory", typeof(AppointmentHistory_NoHistory));
+            Routing.RegisterRoute("PatientConsultationDetails", typeof(PatientConsultationDetailsPage));
+            Routing.RegisterRoute("PatientAppointmentHistory", typeof(PatientAppointmentHistoryPage));
+            Routing.RegisterRoute("BookAnAppointment", typeof(BookAnAppointment));
+            Routing.RegisterRoute("AppointmentBooking", typeof(AppointmentBooking_Patient));
         }
 
         protected override async void OnAppearing()

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="ClinicMiniProject.UI.Patient.OnlineInquiryPatient"
+    BackgroundColor="#F6F7F9">
+
+    <VerticalStackLayout Padding="20" Spacing="16">
+
+        <Border BackgroundColor="#5DA9FF" Padding="16">
+            <Label Text="Online Medical Inquiry"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   TextColor="White" />
+        </Border>
+
+        <Label Text="For non-emergency cases only"
+               TextColor="Red"
+               FontAttributes="Bold" />
+
+        <Label Text="Doctor" FontAttributes="Bold" />
+        <Picker Title="Select Doctor"
+                BackgroundColor="White" />
+
+        <Label Text="Symptom Description" FontAttributes="Bold" />
+        <Editor Placeholder="Describe your symptoms here..."
+                AutoSize="TextChanges"
+                HeightRequest="100"
+                BackgroundColor="White" />
+        
+        <Label Text="Upload Photo (Optional)" FontAttributes="Bold" />
+        <Button Text="Upload Photo"
+                BackgroundColor="#E3F0FF"
+                TextColor="#1E88E5"
+                CornerRadius="12" />
+
+        <Border HeightRequest="120"
+                BackgroundColor="White"
+                Stroke="LightGray"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 12">
+            <Label Text="No photo uploaded"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+        </Border>
+
+        <Button Text="Submit"
+                BackgroundColor="#5DA9FF"
+                TextColor="White"
+                CornerRadius="16"
+                HeightRequest="50" />
+
+    </VerticalStackLayout>
+</ContentPage>

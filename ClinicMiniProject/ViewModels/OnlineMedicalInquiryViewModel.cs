@@ -22,6 +22,9 @@ namespace ClinicMiniProject.ViewModels
 
             FilterCommand = new Command(async () => await LoadAsync());
             ViewInquiryDetailsCommand = new Command<string>(OnViewDetails);
+            NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
+            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///InquiryHistoryPage"));
+            NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfilePage"));
 
             _ = LoadAsync();
         }
@@ -36,6 +39,9 @@ namespace ClinicMiniProject.ViewModels
 
         public ICommand FilterCommand { get; }
         public ICommand ViewInquiryDetailsCommand { get; }
+        public ICommand NavigateToHomeCommand { get; }
+        public ICommand NavigateToInquiryCommand { get; }
+        public ICommand NavigateToProfileCommand { get; }
 
         public async Task LoadAsync()
         {

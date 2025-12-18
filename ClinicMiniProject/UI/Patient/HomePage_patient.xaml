@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="ClinicMiniProject.UI.Patient.HomePage_patient"
+    BackgroundColor="#F5F7FA">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
+
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Text="Hi, USERNAME!"
+                       FontSize="18"
+                       FontAttributes="Bold"/>
+                <Image Source="bell.png"
+                       HeightRequest="24"
+                       Grid.Column="1"/>
+            </Grid>
+
+            <Frame CornerRadius="16"
+                   BackgroundColor="#D6ECFF"
+                   Padding="30"
+                   HasShadow="False">
+                <Label Text="No appointment yet..."
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       TextColor="Gray"/>
+            </Frame>
+
+            <Grid ColumnDefinitions="*,*,*">
+                <VerticalStackLayout HorizontalOptions="Center">
+                    <Frame CornerRadius="50" Padding="16">
+                        <Label Text="📅"/>
+                    </Frame>
+                    <Label Text="Appointment Booking"
+                           FontSize="12"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
+                    <Frame CornerRadius="50" Padding="16">
+                        <Label Text="🕘"/>
+                    </Frame>
+                    <Label Text="Appointment History"
+                           FontSize="12"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                    <Frame CornerRadius="50" Padding="16">
+                        <Label Text="💬"/>
+                    </Frame>
+                    <Label Text="Online Inquiry"
+                           FontSize="12"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </Grid>
+
+            <Frame CornerRadius="16" Padding="12">
+                <HorizontalStackLayout Spacing="12">
+                    <BoxView WidthRequest="80"
+                             HeightRequest="80"
+                             BackgroundColor="#CCCCCC"/>
+                    <VerticalStackLayout>
+                        <Label Text="Now Available at our Clinic!"
+                               FontAttributes="Bold"/>
+                        <Label Text="Seasonal influenza vaccination now available."
+                               FontSize="12"
+                               TextColor="Gray"/>
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

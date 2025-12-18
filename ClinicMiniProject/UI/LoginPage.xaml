@@ -2,30 +2,71 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="ClinicMiniProject.UI.LoginPage">
+    x:Class="ClinicMiniProject.UI.LoginPage"
+    Title="">
 
 	<VerticalStackLayout Padding="30" Spacing="15">
 
-		<Label Text="HealHub"
-			   TextColor="Blue"
-               FontSize="32"
-               HorizontalOptions="Center" />
+		<!-- Logo Title -->
+		<Label Grid.Row="0">
+			<Label.FormattedText>
+				<FormattedString>
+					<Span Text="Heal" TextColor="Blue" FontAttributes="Bold" TextDecorations="Underline"/>
+					<Span Text="Hub" TextColor="Black" FontAttributes="Bold" TextDecorations="Underline"/>
+				</FormattedString>
+			</Label.FormattedText>
+			<Label.FontSize>42</Label.FontSize>
+			<Label.HorizontalOptions>Center</Label.HorizontalOptions>
+			<Label.Margin>0,0,0,20</Label.Margin>
+		</Label>
 
-		<Label Text="Welcome Back"
-               FontSize="20"
-               HorizontalOptions="Center" />
+		<!-- Welcome Message -->
+		<Label Grid.Row="1"
+			   Text="Welcome Back"
+			   FontSize="24"
+			   TextColor="Black"
+			   FontAttributes="Bold"
+			   HorizontalOptions="Center" />
 
 		<Entry x:Name="IcEntry" Placeholder="IC Number" />
 		<Entry x:Name="PasswordEntry" Placeholder="Password" IsPassword="True" />
 
-		<Button Text="Login" Clicked="OnLoginClicked" />
+		<Button Text="Login" Clicked="OnLoginClicked">
+            <Button.VisualStateManager.VisualStateGroups>
+                <VisualStateGroup Name="CommonStates">
+                    <VisualState Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="#6EA8FE" />
+                            <Setter Property="TextColor" Value="White" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="#5A90E6" />
+                            <Setter Property="Scale" Value="1.02" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="#4A7BC8" />
+                            <Setter Property="Scale" Value="0.98" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </Button.VisualStateManager.VisualStateGroups>
+        </Button>
 
-		<Label Text="Don't have an account? Sign Up"
-               TextColor="Blue"
-               HorizontalOptions="Center">
-			<Label.GestureRecognizers>
-				<TapGestureRecognizer Tapped="OnGoToRegister"/>
-			</Label.GestureRecognizers>
+		<Label Grid.Row="4" HorizontalOptions="Center">
+			<Label.FormattedText>
+				<FormattedString>
+					<Span Text="Don't have an account? " TextColor="Black"/>
+					<Span Text="Sign Up" TextColor="Blue">
+						<Span.GestureRecognizers>
+							<TapGestureRecognizer Tapped="OnGoToRegister"/>
+						</Span.GestureRecognizers>
+					</Span>
+				</FormattedString>
+			</Label.FormattedText>
 		</Label>
 
 	</VerticalStackLayout>

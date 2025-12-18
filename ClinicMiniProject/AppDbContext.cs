@@ -29,6 +29,49 @@ namespace ClinicMiniProject
                     "Pwd=NrIvCewJcTGAPqmOXyoziksWgwoQmaQd;" +
                     "SslMode=Required;" +
                     "Charset=utf8mb4;";
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //        //string server = Environment.GetEnvironmentVariable("DB_SERVER_IP") ?? "localhost";
+        //        //string connStr = $"Server={server};Port=3306;Database=testdb;Uid=root;Pwd=123456;Charset=utf8mb4;";
+        //        string connStr = $"Server=localhost;Port=3306;Database=testdb;Uid=root;Pwd=123456;Charset=utf8mb4;";
+
+        //        optionsBuilder.UseMySql(
+        //            connStr,
+        //            ServerVersion.AutoDetect(connStr),
+        //            options => options.EnableRetryOnFailure()
+        //        );
+        //    }
+        //}
+
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+{
+                // local database
+                /*string serverIp = "localhost";
+                    var connStr =
+                    $"Server={serverIp};" + // Use the variable here
+                    "Port=3306;" +
+                    "Database=testdb;" +
+                    "Uid=root;" +
+                    "Pwd=123456;" +
+                    "SslMode=None;" +
+                    "Charset=utf8mb4;"; */
+
+                //Online db
+                string serverip = "ballast.proxy.rlwy.net";
+                var connStr =
+                    $"server={serverip};" + // use the variable here
+                    "port=19463;" +
+                    "database=testdb;" +
+                    "uid=root;" +
+                    "pwd=NrIvCewJcTGAPqmOXyoziksWgwoQmaQd;" +
+                    "sslmode=Required;" +
+                    "charset=utf8mb4;";
+
 
                 optionsBuilder.UseMySql(
                     connStr,

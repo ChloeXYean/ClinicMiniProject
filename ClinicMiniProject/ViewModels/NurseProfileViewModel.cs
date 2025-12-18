@@ -9,22 +9,23 @@ using Microsoft.Maui.Storage;
 
 namespace ClinicMiniProject.ViewModels
 {
-    public class DoctorProfileViewModel : INotifyPropertyChanged
+    public class NurseProfileViewModel : INotifyPropertyChanged
     {
         private readonly IAuthService _authService;
-        private readonly IDoctorProfileService _doctorProfileService;
+        private readonly INurseProfileService _nurseProfileService;
 
-        private string _doctorId = string.Empty;
+        private string _nurseId = string.Empty;
         private string _name = string.Empty;
         private string _phoneNo = string.Empty;
         private string _workingHoursText = string.Empty;
+        private string _department = string.Empty;
         private string _profileImageUri = string.Empty;
         private bool _isEditMode;
 
-        public string DoctorId
+        public string NurseId
         {
-            get => _doctorId;
-            set => SetProperty(ref _doctorId, value);
+            get => _nurseId;
+            set => SetProperty(ref _nurseId, value);
         }
 
         public string Name
@@ -33,7 +34,7 @@ namespace ClinicMiniProject.ViewModels
             set => SetProperty(ref _name, value);
         }
 
-        public string DoctorName
+        public string NurseName
         {
             get => Name;
             set => Name = value;
@@ -63,6 +64,12 @@ namespace ClinicMiniProject.ViewModels
             set => WorkingHoursText = value;
         }
 
+        public string Department
+        {
+            get => _department;
+            set => SetProperty(ref _department, value);
+        }
+
         public string ProfileImageUri
         {
             get => _profileImageUri;
@@ -83,29 +90,23 @@ namespace ClinicMiniProject.ViewModels
 
         public bool IsReadOnlyMode => !IsEditMode;
 
-        public ObservableCollection<ServiceItem> ServicesProvided { get; } = new();
-
         public ICommand RefreshCommand { get; }
         public ICommand SaveProfileCommand { get; }
         public ICommand ToggleEditModeCommand { get; }
         public ICommand ChangeProfilePictureCommand { get; }
-        public ICommand AddServiceCommand { get; }
-        public ICommand RemoveServiceCommand { get; }
         public ICommand LogoutCommand { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public DoctorProfileViewModel(IAuthService authService, IDoctorProfileService doctorProfileService)
+        public NurseProfileViewModel(IAuthService authService, INurseProfileService nurseProfileService)
         {
             _authService = authService;
-            _doctorProfileService = doctorProfileService;
+            _nurseProfileService = nurseProfileService;
 
             RefreshCommand = new Command(async () => await RefreshAsync());
             SaveProfileCommand = new Command(async () => await SaveAsync());
             ToggleEditModeCommand = new Command(OnToggleEditMode);
             ChangeProfilePictureCommand = new Command(async () => await ChangeProfilePictureAsync());
-            AddServiceCommand = new Command(async () => await AddServiceAsync());
-            RemoveServiceCommand = new Command<ServiceItem>(OnRemoveService);
             LogoutCommand = new Command(async () =>
             {
                 _authService.Logout();
@@ -115,43 +116,49 @@ namespace ClinicMiniProject.ViewModels
 
         public async Task RefreshAsync()
         {
-            var doctor = _authService.GetCurrentUser();
-            if (doctor == null)
+            var nurse = _authService.GetCurrentUser();
+            if (nurse == null)
                 return;
 
-            var dto = await _doctorProfileService.GetDoctorProfileAsync(doctor.staff_ID);
+            var dto = await _nurseProfileService.GetNurseProfileAsync(nurse.staff_ID);
             if (dto == null)
                 return;
 
-            DoctorId = dto.DoctorId;
+            NurseId = dto.NurseId;
             Name = dto.Name;
             PhoneNo = dto.PhoneNo;
             WorkingHoursText = dto.WorkingHoursText;
+            Department = dto.Department;
             ProfileImageUri = dto.ProfileImageUri;
-
-            ServicesProvided.Clear();
-            foreach (var s in dto.ServicesProvided)
-                ServicesProvided.Add(new ServiceItem { Name = s });
         }
 
         public async Task SaveAsync()
         {
-            var doctor = _authService.GetCurrentUser();
-            if (doctor == null)
+            var nurse = _authService.GetCurrentUser();
+            if (nurse == null)
                 return;
 
-            var update = new DoctorProfileUpdateDto
+            var update = new NurseProfileUpdateDto
             {
                 Name = Name,
                 PhoneNo = PhoneNo,
                 WorkingHoursText = WorkingHoursText,
-                ServicesProvided = ServicesProvided.Select(s => s.Name).ToList(),
+                Department = Department,
                 ProfileImageUri = ProfileImageUri
             };
 
-            await _doctorProfileService.UpdateDoctorProfileAsync(doctor.staff_ID, update);
-
-            IsEditMode = false;
+            var success = await _nurseProfileService.UpdateNurseProfileAsync(nurse.staff_ID, update);
+            
+            if (success)
+            {
+                IsEditMode = false;
+                await RefreshAsync(); // Refresh data after successful save
+            }
+            else
+            {
+                // Optionally show error message to user
+                await Shell.Current.DisplayAlert("Error", "Failed to update profile. Please try again.", "OK");
+            }
         }
 
         private void OnToggleEditMode()
@@ -173,29 +180,6 @@ namespace ClinicMiniProject.ViewModels
                 ProfileImageUri = result.FullPath;
         }
 
-        private async Task AddServiceAsync()
-        {
-            if (!IsEditMode)
-                return;
-
-            var name = await Shell.Current.DisplayPromptAsync("Add Service", "Service name:");
-            if (string.IsNullOrWhiteSpace(name))
-                return;
-
-            ServicesProvided.Add(new ServiceItem { Name = name.Trim() });
-        }
-
-        private void OnRemoveService(ServiceItem item)
-        {
-            if (!IsEditMode)
-                return;
-
-            if (item == null)
-                return;
-
-            ServicesProvided.Remove(item);
-        }
-
         protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")
         {
             if (Equals(backingStore, value))
@@ -210,10 +194,5 @@ namespace ClinicMiniProject.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-    }
-
-    public sealed class ServiceItem
-    {
-        public string Name { get; set; } = string.Empty;
     }
 }

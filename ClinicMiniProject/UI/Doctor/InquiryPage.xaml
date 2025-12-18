@@ -4,7 +4,8 @@
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              xmlns:conv="clr-namespace:ClinicMiniProject.Converters"
              x:Class="ClinicMiniProject.UI.Doctor.InquiryPage"
-             Title="Inquiry">
+             Title=""
+             Shell.NavBarIsVisible="False">
 
     <ContentPage.Resources>
         <ResourceDictionary>

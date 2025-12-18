@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Doctor.InquiryDetailsPage"
-             Title="InquiryDetails">
+             Title=""
+             Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
-        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Padding="20,15" BackgroundColor="#6EA8FE">
-            <ImageButton Grid.Column="0" Source="menu.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent" Clicked="OnBackClicked" />
-            <Label Grid.Column="1" Text="Inquiry Details" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
-        </Grid>
-
+    <Grid RowDefinitions="Auto,*,80" RowSpacing="0">
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="14">
 
@@ -69,6 +66,11 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <Grid Grid.Row="2" HeightRequest="0" />
+        <control:BottomNavBar Grid.Row="2"
+                             SelectedTab="Inquiry"
+                             HomeCommand="{Binding NavigateToHomeCommand}"
+                             ChatCommand="{Binding NavigateToInquiryCommand}"
+                             ProfileCommand="{Binding NavigateToProfileCommand}"
+                             VerticalOptions="End" />
     </Grid>
 </ContentPage>

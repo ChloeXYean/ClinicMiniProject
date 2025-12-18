@@ -19,6 +19,7 @@ namespace ClinicMiniProject.ViewModels
         private DateTime _selectedDate = DateTime.Today;
         private string _reportPeriodType = "Day";
         private string _selectedServiceType = "General Consultation";
+        private string _userType = "Doctor";
         private ReportingSummaryDto? _summary;
         private int _totalOnlineInquiries;
         private int _repliedInquiries;
@@ -45,6 +46,12 @@ namespace ClinicMiniProject.ViewModels
             "Vaccination/Injection",
             "Medical Screening"
         };
+
+        public string UserType
+        {
+            get => _userType;
+            set => SetProperty(ref _userType, value);
+        }
 
         public string SelectedServiceType
         {

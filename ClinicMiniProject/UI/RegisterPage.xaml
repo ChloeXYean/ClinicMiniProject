@@ -2,16 +2,26 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="ClinicMiniProject.UI.RegisterPage">
+    x:Class="ClinicMiniProject.UI.RegisterPage"
+    NavigationPage.HasBackButton="False">
 
 	<VerticalStackLayout Padding="30" Spacing="15">
 
-		<Label Text="HealHub"
-               FontSize="32"
-               HorizontalOptions="Center" />
+		<Label>
+			<Label.FormattedText>
+				<FormattedString>
+					<Span Text="Heal" TextColor="Blue" FontAttributes="Bold" TextDecorations="Underline"/>
+					<Span Text="Hub" TextColor="Black" FontAttributes="Bold" TextDecorations="Underline"/>
+				</FormattedString>
+			</Label.FormattedText>
+			<Label.FontSize>32</Label.FontSize>
+			<Label.HorizontalOptions>Center</Label.HorizontalOptions>
+		</Label>
 
 		<Label Text="Create New Account"
+			   TextColor="Black"
                FontSize="20"
+			   FontAttributes="Bold"
                HorizontalOptions="Center" />
 
 		<Entry x:Name="FullNameEntry" Placeholder="Full Name"/>
@@ -24,14 +34,19 @@
 
 		<Button Text="Confirm" Clicked="OnRegisterClicked"/>
 
-		<Label Text="──────── or ────────" HorizontalOptions="Center"/>
+		<Label Text="──────── or ────────" HorizontalOptions="Center" FontAttributes="Bold"/>
 
-		<Label Text="Already have an account? Login"
-               TextColor="Blue"
-               HorizontalOptions="Center">
-			<Label.GestureRecognizers>
-				<TapGestureRecognizer Tapped="OnGoToLogin"/>
-			</Label.GestureRecognizers>
+		<Label HorizontalOptions="Center">
+			<Label.FormattedText>
+				<FormattedString>
+					<Span Text="Already have an account? " TextColor="Black"/>
+					<Span Text="Login" TextColor="Blue">
+						<Span.GestureRecognizers>
+							<TapGestureRecognizer Tapped="OnGoToLogin"/>
+						</Span.GestureRecognizers>
+					</Span>
+				</FormattedString>
+			</Label.FormattedText>
 		</Label>
 
 	</VerticalStackLayout>

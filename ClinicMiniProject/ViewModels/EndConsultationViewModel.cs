@@ -21,8 +21,7 @@ namespace ClinicMiniProject.ViewModels
 
         private async void OnViewDetails()
         {
-            await Application.Current.MainPage.DisplayAlert("Info", "Navigating to consultation details...", "OK");
-            // await Shell.Current.GoToAsync("ConsultationDetailsPage");
+            await Shell.Current.GoToAsync("ConsultationDetails");
         }
     }
 }
