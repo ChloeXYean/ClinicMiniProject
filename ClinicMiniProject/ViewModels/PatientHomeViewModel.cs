@@ -18,8 +18,12 @@ namespace ClinicMiniProject.ViewModels
         public ICommand InquiryHistoryCommand { get; }
         public ICommand ProfileCommand { get; }
 
+        public ICommand NavigateToAppointmentBookingCommand { get; }
         public ICommand NavigateToAppointmentHistoryCommand { get; }
         public ICommand NavigateToOnlineInquiryCommand { get; }
+        public ICommand NotificationCommand { get; }
+
+        public string Username => _authService.GetCurrentUser()?.staff_name ?? "Patient";
 
         public PatientHomeViewModel(IAppointmentService appointmentService, IAuthService authService)
         {
@@ -38,10 +42,16 @@ namespace ClinicMiniProject.ViewModels
 
 
             // 2. Main Page Buttons
+            NavigateToAppointmentBookingCommand = new Command(async () =>
+                await Shell.Current.GoToAsync("AppointmentBooking")); // Ensure this route exists or is AppointmentBooking_Patient
+
             NavigateToAppointmentHistoryCommand = new Command(async () => await OnNavigateToHistory());
 
             NavigateToOnlineInquiryCommand = new Command(async () => 
                 await Shell.Current.GoToAsync("OnlineInquiry"));
+
+            NotificationCommand = new Command(async () => 
+                await Shell.Current.DisplayAlert("Notification", "You have no new notifications.", "OK"));
         }
 
         private async Task OnNavigateToHistory()
