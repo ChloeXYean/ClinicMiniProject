@@ -1,9 +1,10 @@
-﻿using System;
+﻿using ClinicMiniProject.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ClinicMiniProject.Models;
 
 namespace ClinicMiniProject.Repository
 {
@@ -48,6 +49,18 @@ namespace ClinicMiniProject.Repository
             return _context.Appointments.AsQueryable();
 
 
+        }
+
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByDateAsync(DateTime date)
+        {
+            // Calculate the full 24-hour range for the given date
+            var startOfDay = date.Date;
+            var endOfDay = startOfDay.AddDays(1);
+
+            return await _context.Appointments
+                .Where(a => a.appointedAt >= startOfDay && a.appointedAt < endOfDay)
+                .OrderBy(a => a.appointedAt)
+                .ToListAsync();
         }
     }
 }

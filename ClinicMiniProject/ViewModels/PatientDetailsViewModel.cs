@@ -1,7 +1,9 @@
 ﻿using System.Windows.Input;
+using ClinicMiniProject.Dtos; 
 
 namespace ClinicMiniProject.ViewModels
 {
+    [QueryProperty(nameof(Patient), "SelectedPatient")]
     public class PatientDetailsViewModel : BindableObject
     {
         private string patientName = string.Empty;
@@ -29,16 +31,16 @@ namespace ClinicMiniProject.ViewModels
             } 
         }
 
-        // Commands
+        // --- Commands ---
         public ICommand BackCommand { get; }
         public ICommand UpdateCommand { get; }
 
         public PatientDetailsViewModel()
         {
-            // Test only, Later change to real data 
-            PatientName = "Alex Tan";
-            QueueNo = "W-105";
-            IcNumber = "901212-14-5566";
+
+            PatientName = "Loading...";
+            QueueId = "--";
+            IcNumber = "--";
 
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
             UpdateCommand = new Command(OnUpdate);

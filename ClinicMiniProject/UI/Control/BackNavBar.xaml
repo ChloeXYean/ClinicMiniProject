@@ -1,42 +1,48 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ClinicMiniProject.UI.Control.BackNavBar">
+             x:Class="ClinicMiniProject.UI.Control.BackNavBar"
+             x:Name="thisControl">
 
-    <Border BackgroundColor="#6EA8FE"
+    <Grid ColumnDefinitions="Auto, *" Padding="10">
+        <Border BackgroundColor="#6EA8FE"
             StrokeThickness="0"
             Padding="20,15,100,20"
             HorizontalOptions="Fill"
             VerticalOptions="Start">
 
-        <Border.StrokeShape>
-            <RoundRectangle CornerRadius="0,0,30,30"/>
-        </Border.StrokeShape>
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0,0,30,30"/>
+            </Border.StrokeShape>
 
-        <Border.Shadow>
-            <Shadow Brush="Black" Opacity="0.1" Radius="5" Offset="0,5"/>
-        </Border.Shadow>
+            <Border.Shadow>
+                <Shadow Brush="Black" Opacity="0.1" Radius="5" Offset="0,5"/>
+            </Border.Shadow>
 
-        <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
+            <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
 
-            <ImageButton Grid.Column="0"
+                <ImageButton Grid.Column="0"
                          x:Name="BackBtn"
                          Source="back.png" 
+<<<<<<< HEAD
                          HeightRequest="32"
                          WidthRequest="32"
+=======
+                         HeightRequest="3"
+                         WidthRequest="3"
+>>>>>>> 26f0c4f7b24a60606bdf02dc1d82cbbf1a720039
                          HorizontalOptions="Start"
-                         VerticalOptions="Center"
-                         Clicked="OnBackClicked"/>
-
-            <Label Grid.Column="1"
+                         Command="{Binding BackCommand, Source={x:Reference thisControl}}"/>
+                <Label Grid.Column="1"
                    x:Name="TitleLabel"
-                   Text="Page Title"
+                   Text="{Binding Title, Source={x:Reference thisControl}}"
                    FontSize="20"
                    FontAttributes="Bold"
                    TextColor="Black"
                    HorizontalOptions="Center"
                    VerticalOptions="Center"
                    Margin="15,0,0,0"/>
-        </Grid>
-    </Border>
+            </Grid>
+        </Border>
+    </Grid>
 </ContentView>
