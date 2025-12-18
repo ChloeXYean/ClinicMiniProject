@@ -2,7 +2,6 @@
 using ClinicMiniProject.UI.Doctor;
 using ClinicMiniProject.UI.Nurse;
 using ClinicMiniProject.UI.Patient;
-using ClinicMiniProject.UI.Patient;
 
 namespace ClinicMiniProject
 {
