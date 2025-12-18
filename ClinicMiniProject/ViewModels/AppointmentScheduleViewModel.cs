@@ -67,7 +67,7 @@ namespace ClinicMiniProject.ViewModels
                 ? new Command(async () => await Shell.Current.GoToAsync("///NurseHomePage"))
                 : new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
             ChatCommand = new Command(async () => await Shell.Current.GoToAsync("Inquiry"));
-            ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("Profile"));
+            ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
 
             ViewPatientDetailsCommand = new Command<string>(OnViewPatientDetails);
             LoadSchedule();

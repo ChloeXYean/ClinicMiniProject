@@ -24,7 +24,7 @@ namespace ClinicMiniProject.ViewModels
             ViewInquiryDetailsCommand = new Command<string>(OnViewDetails);
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
             NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///InquiryHistoryPage"));
-            NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfilePage"));
+            NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
 
             _ = LoadAsync();
         }
@@ -66,7 +66,7 @@ namespace ClinicMiniProject.ViewModels
             if (string.IsNullOrWhiteSpace(inquiryId))
                 return;
 
-            Shell.Current.GoToAsync($"InquiryDetails?inquiryId={Uri.EscapeDataString(inquiryId)}");
+            Shell.Current.GoToAsync($"///InquiryDetails?inquiryId={Uri.EscapeDataString(inquiryId)}");
         }
 
         private static string BuildSnippet(string text)

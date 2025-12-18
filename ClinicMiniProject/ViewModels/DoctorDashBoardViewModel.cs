@@ -73,15 +73,15 @@ namespace ClinicMiniProject.ViewModels
             _dashboardService = dashboardService;
 
             // --- Navigation Logic ---
-            NavigateToAppointmentScheduleCommand = new Command(async () => await Shell.Current.GoToAsync("AppointmentSchedule"));
-            NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync("ConsultationDetails"));
-            NavigateToAppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("AppointmentHistory"));
-            NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("ReportingManagement"));
+            NavigateToAppointmentScheduleCommand = new Command(async () => await Shell.Current.GoToAsync("///AppointmentSchedulePage"));
+            NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync("///ConsultationDetailsPage"));
+            NavigateToAppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("///AppointmentHistoryPage"));
+            NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("///ReportingManagementPage"));
 
             // Bottom Bar Commands
-            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("InquiryDetailsPage"));
-            NavigateToInquiryHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("InquiryHistoryPage"));
-            NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("ProfilePage"));
+            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///InquiryDetailsPage"));
+            NavigateToInquiryHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("///InquiryHistoryPage"));
+            NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}"));
 
             LogoutCommand = new Command(async () =>

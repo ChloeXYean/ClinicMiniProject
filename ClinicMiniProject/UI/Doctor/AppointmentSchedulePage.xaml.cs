@@ -7,12 +7,6 @@ namespace ClinicMiniProject.UI.Doctor;
 
 public partial class AppointmentSchedulePage : ContentPage
 {
-    public AppointmentSchedulePage(AppointmentScheduleViewModel viewModel)
-    {
-        InitializeComponent();
-        BindingContext = viewModel;
-    }
-
     public AppointmentSchedulePage(IAuthService authService, IAppointmentScheduleService scheduleService, IStaffService staffService = null, string userType = "Doctor")
     {
         InitializeComponent();

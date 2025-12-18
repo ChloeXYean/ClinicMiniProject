@@ -7,15 +7,6 @@ namespace ClinicMiniProject.UI.Doctor;
 
 public partial class ReportingManagementPage : ContentPage
 {
-    public ReportingManagementPage()
-    {
-        InitializeComponent();
-
-		var sp = Application.Current?.Handler?.MauiContext?.Services;
-		var vm = sp?.GetService<ReportingManagementViewModel>();
-		if (vm != null)
-			BindingContext = vm;
-    }
 
     public ReportingManagementPage(string userType = "Doctor")
     {
@@ -28,6 +19,10 @@ public partial class ReportingManagementPage : ContentPage
 			vm.UserType = userType;
 			BindingContext = vm;
 		}
+
+        // Set up BackNavBar
+        BackBar.Title = "Reporting Management";
+        BackBar.BackCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
     }
 
     private async void OnBackClicked(object sender, EventArgs e)
