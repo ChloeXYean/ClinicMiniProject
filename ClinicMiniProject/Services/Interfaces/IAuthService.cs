@@ -8,6 +8,7 @@ namespace ClinicMiniProject.Services.Interfaces
         bool RegisterPatient(Patient patient, out string message);
 
         Staff GetCurrentUser();
+        Patient GetCurrentPatient();
         string GetDoctorName(string doctorId);
         void Logout();
         // ... other existing methods

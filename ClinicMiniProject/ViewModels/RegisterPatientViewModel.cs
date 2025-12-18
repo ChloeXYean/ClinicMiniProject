@@ -11,7 +11,7 @@ namespace ClinicMiniProject.ViewModels
         private readonly NurseController _controller;
         private readonly IStaffService _staffService;
 
-        private string name;
+        private string name = string.Empty;
         public string Name { 
             get => name; 
             set {
@@ -20,7 +20,7 @@ namespace ClinicMiniProject.ViewModels
             } 
         }
 
-        private string icNumber;
+        private string icNumber = string.Empty;
         public string IcNumber { 
             get => icNumber; 
             set {
@@ -29,7 +29,7 @@ namespace ClinicMiniProject.ViewModels
             } 
         }
 
-        private string phNum;
+        private string phNum = string.Empty;
         public string PhoneNumber { 
             get => phNum; 
             set {
@@ -47,8 +47,8 @@ namespace ClinicMiniProject.ViewModels
         };
 
         // Selected Items
-        private Staff selectedDoctor;
-        public Staff SelectedDoctor { 
+        private Staff? selectedDoctor;
+        public Staff? SelectedDoctor { 
             get => selectedDoctor; 
             set {
                 selectedDoctor = value; 
@@ -56,8 +56,8 @@ namespace ClinicMiniProject.ViewModels
             } 
         }
 
-        private string _selectedServiceType;
-        public string SelectedServiceType {
+        private string? _selectedServiceType;
+        public string? SelectedServiceType {
             get => _selectedServiceType; 
             set { 
                 _selectedServiceType = value; 
@@ -94,7 +94,7 @@ namespace ClinicMiniProject.ViewModels
             if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(IcNumber) ||
                 string.IsNullOrWhiteSpace(PhoneNumber) || SelectedServiceType == null)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Please fill in all required fields.", "OK");
+                await Shell.Current.DisplayAlert("Error", "Please fill in all required fields.", "OK");
                 return;
             }
 
@@ -104,12 +104,12 @@ namespace ClinicMiniProject.ViewModels
 
             if (success)
             {
-                await Application.Current.MainPage.DisplayAlert("Success", "Patient registered successfully.", "OK");
+                await Shell.Current.DisplayAlert("Success", "Patient registered successfully.", "OK");
                 await Shell.Current.GoToAsync(".."); // Go back
             }
             else
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Failed to register patient.", "OK");
+                await Shell.Current.DisplayAlert("Error", "Failed to register patient.", "OK");
             }
         }
     }

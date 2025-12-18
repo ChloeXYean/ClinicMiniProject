@@ -120,7 +120,7 @@ namespace ClinicMiniProject.Services
             return extras;
         }
 
-        private static List<string> ParseServices(string specialities)
+        private static List<string> ParseServices(string? specialities)
         {
             if (string.IsNullOrWhiteSpace(specialities))
                 return new List<string>();
