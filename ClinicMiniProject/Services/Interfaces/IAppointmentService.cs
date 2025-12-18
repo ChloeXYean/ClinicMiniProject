@@ -33,5 +33,7 @@ namespace ClinicMiniProject.Services.Interfaces
         Task UpdateAppointmentAsync(Appointment appointment);
 
         Task<Patient?> GetRandomWalkInPatientAsync();
+
+        Task<IEnumerable<Appointment>> GetAppointmentsByDateAsync(DateTime date);
     }
 }
