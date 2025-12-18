@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ClinicMiniProject.ViewModels;
 using ClinicMiniProject.Services;
 using ClinicMiniProject.Services.Interfaces;
+using Microsoft.Maui.Controls;
 
 namespace ClinicMiniProject.UI.Doctor;
 
@@ -21,8 +22,8 @@ public partial class ReportingManagementPage : ContentPage
 		}
 
         // Set up BackNavBar
-        BackBar.Title = "Reporting Management";
-        BackBar.BackCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
+            BackBar.Title = "Reporting Management";
+            BackBar.BackCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
     }
 
     private async void OnBackClicked(object sender, EventArgs e)

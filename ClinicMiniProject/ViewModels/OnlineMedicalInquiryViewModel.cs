@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ClinicMiniProject.Services.Interfaces;
+using Microsoft.Maui.Controls;
 
 namespace ClinicMiniProject.ViewModels
 {
@@ -15,6 +16,8 @@ namespace ClinicMiniProject.ViewModels
         private string _searchQuery = string.Empty;
         private string _selectedStatus = "All";
         private DateTime? _selectedDate;
+        private string _uploadedPhotoPath = string.Empty;
+        private string _photoNotes = string.Empty;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -27,6 +30,8 @@ namespace ClinicMiniProject.ViewModels
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
             NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorInquiryHistory"));
             NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
+            UploadPhotoCommand = new Command(async () => await UploadPhotoAsync());
+            ViewPhotosCommand = new Command(async () => await Shell.Current.GoToAsync("InquiryPhotos"));
 
             _ = LoadAsync();
         }
@@ -61,6 +66,20 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
+        public string UploadedPhotoPath
+        {
+            get => _uploadedPhotoPath;
+            set => SetProperty(ref _uploadedPhotoPath, value);
+        }
+
+        public bool HasPhoto => !string.IsNullOrEmpty(UploadedPhotoPath);
+
+        public string PhotoNotes
+        {
+            get => _photoNotes;
+            set => SetProperty(ref _photoNotes, value);
+        }
+
         public ObservableCollection<string> StatusOptions { get; } = new() { "All", "Pending", "Replied" };
 
         public ObservableCollection<InquiryListItemVm> InquiryList { get; } = new();
@@ -70,6 +89,8 @@ namespace ClinicMiniProject.ViewModels
         public ICommand NavigateToHomeCommand { get; }
         public ICommand NavigateToInquiryCommand { get; }
         public ICommand NavigateToProfileCommand { get; }
+        public ICommand UploadPhotoCommand { get; }
+        public ICommand ViewPhotosCommand { get; }
 
         public async Task LoadAsync()
         {
@@ -135,6 +156,30 @@ namespace ClinicMiniProject.ViewModels
         private void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private async Task UploadPhotoAsync()
+        {
+            try
+            {
+                var result = await FilePicker.PickAsync(new PickOptions
+                {
+                    PickerTitle = "Select photo for inquiry"
+                });
+
+                if (result != null)
+                {
+                    UploadedPhotoPath = result.FullPath;
+                    await Shell.Current.DisplayAlert("Success", "Photo uploaded successfully", "OK");
+                    
+                    // Navigate to photos page
+                    await Shell.Current.GoToAsync("InquiryPhotos");
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Error", $"Failed to upload photo: {ex.Message}", "OK");
+            }
         }
     }
 
