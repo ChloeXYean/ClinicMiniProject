@@ -20,16 +20,30 @@
 
             <Label Text="Online Medical Inquiry" FontSize="20" FontAttributes="Bold" />
 
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                <Entry Grid.Column="0" Placeholder="Search" Text="{Binding SearchQuery, Mode=TwoWay}" />
-                <Button Grid.Column="1" Text="Filter" Command="{Binding FilterCommand}" />
+            <!-- Search and Filter Controls -->
+            <Grid RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                
+                <!-- Search Row -->
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                    <Entry Grid.Column="0" Placeholder="Search" Text="{Binding SearchQuery, Mode=TwoWay}" />
+                    <Button Grid.Column="1" Text="Filter" Command="{Binding FilterCommand}" />
+                </Grid>
+                
+                <!-- Status Filter Row -->
+                <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
+                    <Label Grid.Column="0" Text="Status:" VerticalOptions="Center" />
+                    <Picker Grid.Column="1" 
+                            ItemsSource="{Binding StatusOptions}"
+                            SelectedItem="{Binding SelectedStatus, Mode=TwoWay}"
+                            Title="Select Status" />
+                </Grid>
             </Grid>
 
             <CollectionView ItemsSource="{Binding InquiryList}" SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border StrokeThickness="1" Stroke="#E5E7EB" Padding="12" Margin="0,0,0,10">
-                            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <Border StrokeThickness="1" Stroke="#E5E7EB" Padding="12" Margin="0,0,0,10" BackgroundColor="White">
+                            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" ColumnSpacing="10" RowSpacing="4">
 
                                 <Label Grid.Row="0" Grid.Column="0" Text="{Binding PatientName}" FontAttributes="Bold" FontSize="16" />
 

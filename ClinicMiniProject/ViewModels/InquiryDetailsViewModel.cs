@@ -24,7 +24,7 @@ namespace ClinicMiniProject.ViewModels
             SendResponseCommand = new Command(async () => await SendAsync());
             ViewFullProfileCommand = new Command(OnViewFullProfile);
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
-            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///InquiryHistoryPage"));
+            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorInquiryHistory"));
             NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
         }
 

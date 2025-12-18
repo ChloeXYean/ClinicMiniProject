@@ -13,6 +13,8 @@ namespace ClinicMiniProject.ViewModels
         private readonly IInquiryService _inquiryService;
 
         private string _searchQuery = string.Empty;
+        private string _selectedStatus = "All";
+        private DateTime? _selectedDate;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -23,7 +25,7 @@ namespace ClinicMiniProject.ViewModels
             FilterCommand = new Command(async () => await LoadAsync());
             ViewInquiryDetailsCommand = new Command<string>(OnViewDetails);
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
-            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///InquiryHistoryPage"));
+            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorInquiryHistory"));
             NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
 
             _ = LoadAsync();
@@ -34,6 +36,20 @@ namespace ClinicMiniProject.ViewModels
             get => _searchQuery;
             set => SetProperty(ref _searchQuery, value);
         }
+
+        public string SelectedStatus
+        {
+            get => _selectedStatus;
+            set => SetProperty(ref _selectedStatus, value);
+        }
+
+        public DateTime? SelectedDate
+        {
+            get => _selectedDate;
+            set => SetProperty(ref _selectedDate, value);
+        }
+
+        public ObservableCollection<string> StatusOptions { get; } = new() { "All", "Pending", "Replied" };
 
         public ObservableCollection<InquiryListItemVm> InquiryList { get; } = new();
 
@@ -48,7 +64,18 @@ namespace ClinicMiniProject.ViewModels
             InquiryList.Clear();
 
             var items = await _inquiryService.GetInquiriesAsync(SearchQuery);
-            foreach (var i in items)
+            
+            // Apply filters
+            var filteredItems = items.Where(i =>
+            {
+                // Status filter
+                if (SelectedStatus != "All" && !string.Equals(i.Status, SelectedStatus, StringComparison.OrdinalIgnoreCase))
+                    return false;
+                
+                return true;
+            });
+
+            foreach (var i in filteredItems)
             {
                 InquiryList.Add(new InquiryListItemVm
                 {
@@ -56,7 +83,8 @@ namespace ClinicMiniProject.ViewModels
                     PatientIc = i.PatientIc,
                     PatientName = i.PatientName,
                     SymptomSnippet = BuildSnippet(i.FullSymptomDescription),
-                    Status = i.Status
+                    Status = i.Status,
+                    CreatedDate = DateTime.Now // Temporary fallback
                 });
             }
         }
@@ -101,5 +129,6 @@ namespace ClinicMiniProject.ViewModels
         public string PatientName { get; init; } = string.Empty;
         public string SymptomSnippet { get; init; } = string.Empty;
         public string Status { get; init; } = string.Empty;
+        public DateTime CreatedDate { get; init; }
     }
 }

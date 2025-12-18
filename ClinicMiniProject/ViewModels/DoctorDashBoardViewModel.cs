@@ -79,8 +79,8 @@ namespace ClinicMiniProject.ViewModels
             NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("///ReportingManagementPage"));
 
             // Bottom Bar Commands
-            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///InquiryDetailsPage"));
-            NavigateToInquiryHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("///InquiryHistoryPage"));
+            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
+            NavigateToInquiryHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
             NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}"));
 
