@@ -5,11 +5,7 @@ namespace ClinicMiniProject.UI.Control;
 public partial class BackNavBar : ContentView
 {
     public static readonly BindableProperty BackCommandProperty =
-            BindableProperty.Create(
-                nameof(BackCommand),       // Property Name
-                typeof(ICommand),          // Property Type
-                typeof(BackNavBar),        // Owning Type
-                defaultValue: null);
+            BindableProperty.Create(nameof(BackCommand), typeof(ICommand), typeof(BackNavBar));
 
     public ICommand BackCommand
     {
@@ -17,8 +13,17 @@ public partial class BackNavBar : ContentView
         set => SetValue(BackCommandProperty, value);
     }
 
+    public static readonly BindableProperty TitleProperty =
+        BindableProperty.Create(nameof(Title), typeof(string), typeof(BackNavBar), string.Empty);
+
+    public string Title
+    {
+        get => (string)GetValue(TitleProperty);
+        set => SetValue(TitleProperty, value);
+    }
+
     public BackNavBar()
     {
-        InitializeComponent(); 
+        InitializeComponent();
     }
 }

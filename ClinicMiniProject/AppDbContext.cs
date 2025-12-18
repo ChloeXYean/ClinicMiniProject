@@ -4,7 +4,7 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace ClinicMiniProject
 {
-    public class AppDbContext : DbContext
+    public partial class AppDbContext : DbContext
     {
         public DbSet<Patient> Patients { get; set; } = null!;
         public DbSet<Staff> Staffs { get; set; } = null!;
