@@ -36,7 +36,7 @@
                              WidthRequest="25"
                              HorizontalOptions="Center"
                              Clicked="OnInquiryClicked"/>
-                <Label Text="Inquiry&#x0a;History" 
+                <Label Text="Inquiry&#x0a;" 
                        FontSize="10" 
                        TextColor="Black" 
                        HorizontalTextAlignment="Center"
@@ -50,7 +50,7 @@
                              HorizontalOptions="Center"
                              Clicked="OnProfileClicked"/>
 
-                <Label Text="profile" 
+                <Label Text="Profile" 
                        FontSize="11" 
                        TextColor="Black" 
                        HorizontalTextAlignment="Center"

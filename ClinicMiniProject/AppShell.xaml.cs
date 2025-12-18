@@ -22,7 +22,8 @@ namespace ClinicMiniProject
             Routing.RegisterRoute("AppointmentHistory", typeof(AppointmentHistoryPage));
             Routing.RegisterRoute("ReportingManagement", typeof(ReportingManagementPage));
             Routing.RegisterRoute("Inquiry", typeof(InquiryPage));       // Doctor/Nurse Inquiry View
-            Routing.RegisterRoute("Profile", typeof(ProfilePage));       // Doctor Profile
+            Routing.RegisterRoute("DoctorInquiryHistory", typeof(InquiryHistoryPage)); // Doctor Inquiry History
+            Routing.RegisterRoute("DoctorProfile", typeof(ProfilePage)); // Doctor Profile
             Routing.RegisterRoute("PatientDetails", typeof(PatientDetailsPage)); // Shared Patient Details
             Routing.RegisterRoute("InquiryDetails", typeof(InquiryDetailsPage));
 

@@ -16,11 +16,23 @@
         Shell.FlyoutBehavior="Disabled" 
         Shell.TabBarIsVisible="False" />
 
+    <!-- Doctor Routes -->
     <ShellContent
         Title="Doctor Dashboard"
         ContentTemplate="{DataTemplate doc:DoctorDashboardPage}"
         Route="DoctorDashboardPage" />
 
+    <ShellContent
+        Title="Doctor Inquiry History"
+        ContentTemplate="{DataTemplate doc:InquiryHistoryPage}"
+        Route="DoctorInquiryHistory" />
+
+    <ShellContent
+        Title="Doctor Profile"
+        ContentTemplate="{DataTemplate doc:ProfilePage}"
+        Route="DoctorProfile" />
+
+    <!-- Other Routes -->
     <ShellContent
         Title="Nurse Home"
         ContentTemplate="{DataTemplate nur:NurseHomePage}"
@@ -55,6 +67,11 @@
         Title="Inquiry"
         ContentTemplate="{DataTemplate doc:InquiryPage}"
         Route="Inquiry" />
+
+    <ShellContent
+        Title="Inquiry Details"
+        ContentTemplate="{DataTemplate doc:InquiryDetailsPage}"
+        Route="InquiryDetailsPage" />
 
     <ShellContent
         Title="Patient Details"
