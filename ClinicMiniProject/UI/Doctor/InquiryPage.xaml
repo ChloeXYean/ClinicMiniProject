@@ -24,18 +24,16 @@
             <Grid RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
                 
                 <!-- Search Row -->
-                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                <Grid Grid.Row="0" ColumnDefinitions="*">
                     <Entry Grid.Column="0" Placeholder="Search" Text="{Binding SearchQuery, Mode=TwoWay}" />
-                    <Button Grid.Column="1" Text="Filter" Command="{Binding FilterCommand}" />
                 </Grid>
                 
-                <!-- Status Filter Row -->
+                <!-- Date Filter Row -->
                 <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
-                    <Label Grid.Column="0" Text="Status:" VerticalOptions="Center" />
-                    <Picker Grid.Column="1" 
-                            ItemsSource="{Binding StatusOptions}"
-                            SelectedItem="{Binding SelectedStatus, Mode=TwoWay}"
-                            Title="Select Status" />
+                    <Label Grid.Column="0" Text="Choose Date:" VerticalOptions="Center" />
+                    <DatePicker Grid.Column="1" 
+                               Date="{Binding SelectedDate, Mode=TwoWay}"
+                               Format="dd MMM yyyy" />
                 </Grid>
             </Grid>
 
@@ -43,7 +41,7 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border StrokeThickness="1" Stroke="#E5E7EB" Padding="12" Margin="0,0,0,10" BackgroundColor="White">
-                            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" ColumnSpacing="10" RowSpacing="4">
+                            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" ColumnSpacing="10" RowSpacing="4">
 
                                 <Label Grid.Row="0" Grid.Column="0" Text="{Binding PatientName}" FontAttributes="Bold" FontSize="16" />
 
@@ -53,6 +51,9 @@
                                 </Border>
 
                                 <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding SymptomSnippet}" TextColor="#555" />
+
+                                <Label Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding CreatedDate, StringFormat='Sent: {0:dd MMM yyyy HH:mm}'}" 
+                                       TextColor="#999" FontSize="12" />
 
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding BindingContext.ViewInquiryDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"

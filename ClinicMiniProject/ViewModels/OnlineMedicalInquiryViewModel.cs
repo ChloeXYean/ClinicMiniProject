@@ -40,13 +40,25 @@ namespace ClinicMiniProject.ViewModels
         public string SelectedStatus
         {
             get => _selectedStatus;
-            set => SetProperty(ref _selectedStatus, value);
+            set 
+            {
+                if (SetProperty(ref _selectedStatus, value))
+                {
+                    _ = LoadAsync(); // Auto-filter when status changes
+                }
+            }
         }
 
         public DateTime? SelectedDate
         {
             get => _selectedDate;
-            set => SetProperty(ref _selectedDate, value);
+            set 
+            {
+                if (SetProperty(ref _selectedDate, value))
+                {
+                    _ = LoadAsync(); // Auto-filter when date changes
+                }
+            }
         }
 
         public ObservableCollection<string> StatusOptions { get; } = new() { "All", "Pending", "Replied" };
@@ -72,6 +84,10 @@ namespace ClinicMiniProject.ViewModels
                 if (SelectedStatus != "All" && !string.Equals(i.Status, SelectedStatus, StringComparison.OrdinalIgnoreCase))
                     return false;
                 
+                // Date filter
+                if (SelectedDate.HasValue && i.CreatedAt.Date != SelectedDate.Value.Date)
+                    return false;
+                
                 return true;
             });
 
@@ -84,7 +100,7 @@ namespace ClinicMiniProject.ViewModels
                     PatientName = i.PatientName,
                     SymptomSnippet = BuildSnippet(i.FullSymptomDescription),
                     Status = i.Status,
-                    CreatedDate = DateTime.Now // Temporary fallback
+                    CreatedDate = i.CreatedAt
                 });
             }
         }
