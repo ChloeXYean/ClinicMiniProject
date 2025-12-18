@@ -10,6 +10,7 @@ public partial class DoctorDashboardPage : ContentPage
     {
         InitializeComponent();
         BindingContext = viewModel;
+        _viewModel = viewModel;
     }
 
     private void NavigateToAppointmentScheduleCommand(object sender, EventArgs e)

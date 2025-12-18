@@ -12,11 +12,11 @@ namespace ClinicMiniProject.ViewModels
     {
         private readonly IAuthService _authService;
         private readonly IDoctorDashboardService _dashboardService;
-        private string _greeting;
+        private string _greeting = "Welcome";
         private TodayStatsDto _todayStats = new();
         private UpcomingScheduleDto _upcomingSchedule = new();
-        private string _nextAppointmentTime = string.Empty;
-        private string _doctorName = string.Empty;
+        private string _nextAppointmentTime = "Loading...";
+        private string _doctorName = "Doctor";
 
         public string Greeting
         {
@@ -63,7 +63,7 @@ namespace ClinicMiniProject.ViewModels
         public ICommand ToggleMenuCommand { get; }
         public ICommand NotificationCommand { get; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public DoctorDashboardViewModel(IAuthService authService, IDoctorDashboardService dashboardService)
         {
@@ -84,6 +84,12 @@ namespace ClinicMiniProject.ViewModels
                 _authService.Logout();
                 await Shell.Current.GoToAsync($"///LoginPage");
             });
+            
+            // Initialize missing commands to avoid warnings
+            NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync("ConsultationDetails"));
+            ToggleMenuCommand = new Command(() => { /* TODO: Implement Toggle Menu */ });
+            NotificationCommand = new Command(async () => await Shell.Current.DisplayAlert("Notification", "No new notifications", "OK"));
+            NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
 
             // Initialize Data
             LoadDashboardData();
