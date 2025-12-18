@@ -22,8 +22,8 @@
             <ImageButton Grid.Column="0"
                          x:Name="BackBtn"
                          Source="back.png" 
-                         HeightRequest="5"
-                         WidthRequest="5"
+                         HeightRequest="32"
+                         WidthRequest="32"
                          HorizontalOptions="Start"
                          VerticalOptions="Center"
                          Clicked="OnBackClicked"/>

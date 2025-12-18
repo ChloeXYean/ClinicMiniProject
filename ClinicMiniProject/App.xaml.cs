@@ -1,9 +1,14 @@
-﻿MainPage = new ContentPage
+﻿using ClinicMiniProject.UI;
+using Microsoft.Maui.Controls;
+
+namespace ClinicMiniProject
 {
-    Content = new Label
+    public partial class App : Application
     {
-        Text = "APP LOADED",
-        HorizontalOptions = LayoutOptions.Center,
-        VerticalOptions = LayoutOptions.Center
+        public App()
+        {
+            InitializeComponent();
+            MainPage = new AppShell();
+        }
     }
-};
+}

@@ -11,9 +11,9 @@
 
     <Grid RowDefinitions="Auto, *, Auto, Auto">
         <!-- Calendar Section (Top Half) -->
-        <Grid Grid.Row="0" RowDefinitions="Auto, Auto, *" Padding="10">
+        <Grid Grid.Row="0" RowDefinitions="Auto, Auto, *" Padding="10" BackgroundColor="#FFFEFA">
             <!-- Header (Month Selector) -->
-            <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Margin="0,0,0,10">
+            <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Margin="0,0,0,10" BackgroundColor="#CAE1FD">
                 <Button Text="&lt;" Command="{Binding PreviousMonthCommand}" BackgroundColor="Transparent" TextColor="#5FA8FF" FontSize="20"/>
                 <Label Grid.Column="1" Text="{Binding CurrentMonthName}" HorizontalOptions="Center" VerticalOptions="Center" FontSize="18" FontAttributes="Bold" TextColor="#333"/>
                 <Button Grid.Column="2" Text="&gt;" Command="{Binding NextMonthCommand}" BackgroundColor="Transparent" TextColor="#5FA8FF" FontSize="20"/>
@@ -61,43 +61,57 @@
         </Grid>
 
         <!-- Middle Section: Service and Time -->
-        <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="20">
-            <!-- Service Type Selection -->
-            <Border Stroke="#DDDDDD" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="0">
+        <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="15">
+
+            <Border Stroke="#DDDDDD"
+            StrokeThickness="1"
+            StrokeShape="RoundRectangle 10">
                 <Picker Title="Select Service Type"
-                        ItemsSource="{Binding ServiceTypes}"
-                        SelectedItem="{Binding SelectedService}"
-                        TextColor="#333"
-                        TitleColor="Gray"
-                        FontSize="16"
-                        Margin="10,0"/>
+                ItemsSource="{Binding ServiceTypes}"
+                SelectedItem="{Binding SelectedService}"
+                TextColor="#333"
+                TitleColor="Gray"
+                FontSize="16"/>
             </Border>
 
-            <!-- Time Slot Selection -->
-            <Label Text="Available Time Slots" FontSize="16" FontAttributes="Bold" TextColor="#333" Margin="0,10,0,5"/>
-            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                <CollectionView ItemsSource="{Binding TimeSlots}" HeightRequest="50">
+            <Label Text="Available Time Slots"
+           FontSize="16"
+           FontAttributes="Bold"
+           TextColor="#333"/>
+
+            <ScrollView Orientation="Horizontal"
+                HorizontalScrollBarVisibility="Never">
+                <CollectionView ItemsSource="{Binding TimeSlots}"
+                        HeightRequest="50">
                     <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
+                        <LinearItemsLayout Orientation="Horizontal"
+                                   ItemSpacing="10"/>
                     </CollectionView.ItemsLayout>
+
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Frame Padding="15,10" 
-                                   CornerRadius="20" 
-                                   BackgroundColor="{Binding BackgroundColor}" 
-                                   BorderColor="#5FA8FF"
-                                   HasShadow="False"
-                                   Opacity="{Binding Opacity}"
-                                   IsEnabled="{Binding IsEnabled}">
+                            <Frame Padding="15,10"
+                           CornerRadius="20"
+                           BackgroundColor="{Binding BackgroundColor}"
+                           BorderColor="#5FA8FF"
+                           HasShadow="False"
+                           Opacity="{Binding Opacity}"
+                           IsEnabled="{Binding IsEnabled}">
                                 <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AppointmentBookingViewModel}}, Path=SelectTimeCommand}" CommandParameter="{Binding .}" />
+                                    <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AppointmentBookingViewModel}}, Path=SelectTimeCommand}"
+                                CommandParameter="{Binding .}" />
                                 </Frame.GestureRecognizers>
-                                <Label Text="{Binding DisplayTime}" TextColor="{Binding TextColor}" FontAttributes="Bold"/>
+
+                                <Label Text="{Binding DisplayTime}"
+                               TextColor="{Binding TextColor}"
+                               FontAttributes="Bold"/>
                             </Frame>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
             </ScrollView>
+
         </VerticalStackLayout>
 
         <!-- Confirm Button -->
