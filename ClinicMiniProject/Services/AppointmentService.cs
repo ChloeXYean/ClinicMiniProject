@@ -285,6 +285,11 @@ namespace ClinicMiniProject.Services
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByDateAsync(DateTime date)
+        {
+            return await _repo.GetAppointmentsByDateAsync(date);
+        }
+
         //public async Task<Patient?> GetRandomWalkInPatientAsync()
         //{
         //    return await (
@@ -295,5 +300,7 @@ namespace ClinicMiniProject.Services
         //        orderby a.bookedAt
         //        select p).FirstOrDefaultAsync();
         //}
+
+
     }
 }
