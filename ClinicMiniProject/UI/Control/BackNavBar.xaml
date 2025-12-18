@@ -27,14 +27,10 @@
                          HeightRequest="3"
                          WidthRequest="3"
                          HorizontalOptions="Start"
-                         VerticalOptions="Center">
-                    <ImageButton.Command>
-                    <Binding Path="BackCommand" Source="{x:Reference thisControl}" />
-                    </ImageButton.Command>
-                </ImageButton>
+                         Command="{Binding BackCommand, Source={x:Reference thisControl}}"/>
                 <Label Grid.Column="1"
                    x:Name="TitleLabel"
-                   Text="Page Title"
+                   Text="{Binding Title, Source={x:Reference thisControl}}"
                    FontSize="20"
                    FontAttributes="Bold"
                    TextColor="Black"

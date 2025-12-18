@@ -111,7 +111,7 @@ namespace ClinicMiniProject.Controller
 
             // 2. Filter for Walk-In only
             var walkIns = appointments
-                .Where(a => a.service_type != "Online" && a.status == "Pending") // Adjust status check as needed
+                .Where(a => a.status == "Pending") // Adjust status check as needed
                 .ToList();
 
             // 3. Convert DB Model -> UI DTO
