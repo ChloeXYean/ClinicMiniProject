@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ClinicMiniProject.Dtos;
 using ClinicMiniProject.Services.Interfaces;
+using ClinicMiniProject.UI.Doctor;
 
 namespace ClinicMiniProject.ViewModels
 {
@@ -78,10 +79,10 @@ namespace ClinicMiniProject.ViewModels
             NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("ReportingManagement"));
 
             // Bottom Bar Commands
-            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("InquiryHistory"));
-            NavigateToInquiryHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("InquiryHistory"));
-            NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("DoctorProfile"));
-            NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("DoctorDashboardPage"));
+            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("InquiryDetailsPage"));
+            NavigateToInquiryHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("InquiryHistoryPage"));
+            NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("ProfilePage"));
+            NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}"));
 
             LogoutCommand = new Command(async () =>
             {
