@@ -16,6 +16,19 @@ namespace ClinicMiniProject
             //Database.EnsureCreated();
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                string serverIp = "ballast.proxy.rlwy.net";
+                var connStr =
+                    $"Server={serverIp};" + 
+                    "Port=19463;" +
+                    "Database=testdb;" +
+                    "Uid=root;" +
+                    "Pwd=NrIvCewJcTGAPqmOXyoziksWgwoQmaQd;" +
+                    "SslMode=Required;" +
+                    "Charset=utf8mb4;";
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
         //    if (!optionsBuilder.IsConfigured)
