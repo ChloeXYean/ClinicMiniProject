@@ -19,7 +19,7 @@ public partial class RegisterPatientPage : ContentPage
 
     private void OnRegisterClicked(object sender, EventArgs e)
     {
-        _viewModel.BackCommand.Execute(null);
+        _viewModel.RegisterCommand.Execute(null);
     }
 
 }

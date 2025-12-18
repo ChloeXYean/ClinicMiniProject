@@ -2,13 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
-             x:Class="ClinicMiniProject.UI.Doctor.ProfilePage"
-             Title="Profile">
+             x:Class="ClinicMiniProject.UI.Nurse.NurseProfilePage"
+             Title="Nurse Profile">
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
 
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Padding="20,15" BackgroundColor="#6EA8FE">
             <ImageButton Grid.Column="0" Source="menu.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent" Clicked="OnBackClicked" />
-            <Label Grid.Column="1" Text="Professional Profile" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
+            <Label Grid.Column="1" Text="Nurse Profile" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
             <ImageButton Grid.Column="2" Source="profile.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent"
                          Command="{Binding ToggleEditModeCommand}" />
         </Grid>
@@ -49,10 +49,10 @@
                             </Border.VisualStateManager.VisualStateGroups>
                         </Border>
 
-                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding DoctorId, StringFormat='Doctor ID: {0}'}" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding NurseId, StringFormat='Nurse ID: {0}'}" />
 
-                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding DoctorName, StringFormat='Dr. {0}'}" FontAttributes="Bold" IsVisible="{Binding IsReadOnlyMode}" />
-                        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding DoctorName, Mode=TwoWay}" IsVisible="{Binding IsEditMode}" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding NurseName}" FontAttributes="Bold" IsVisible="{Binding IsReadOnlyMode}" />
+                        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding NurseName, Mode=TwoWay}" IsVisible="{Binding IsEditMode}" />
 
                         <Label Grid.Row="2" Grid.Column="1" Text="{Binding PhoneNumber, StringFormat='Phone Number: {0}'}" IsVisible="{Binding IsReadOnlyMode}" />
                         <Entry Grid.Row="2" Grid.Column="1" Text="{Binding PhoneNumber, Mode=TwoWay}" Keyboard="Telephone" IsVisible="{Binding IsEditMode}" />
@@ -76,46 +76,9 @@
                         <RoundRectangle CornerRadius="16" />
                     </Border.StrokeShape>
                     <VerticalStackLayout Spacing="10">
-                        <Label Text="Services Provided:" FontAttributes="Bold" />
-
-                        <CollectionView ItemsSource="{Binding ServicesProvided}" SelectionMode="None">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Padding="8">
-                                        <Label Grid.Column="0" Text="{Binding Name}" />
-                                        <ImageButton Grid.Column="1" Source="bell.png" HeightRequest="18" WidthRequest="18" BackgroundColor="Transparent"
-                                                     Command="{Binding BindingContext.RemoveServiceCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                     CommandParameter="{Binding .}"
-                                                     IsVisible="{Binding BindingContext.IsEditMode, Source={RelativeSource AncestorType={x:Type ContentPage}}}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-
-                        <Button Text="+ Add Service" Command="{Binding AddServiceCommand}" IsVisible="{Binding IsEditMode}">
-                            <Button.VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup Name="CommonStates">
-                                    <VisualState Name="Normal">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#6EA8FE" />
-                                            <Setter Property="TextColor" Value="White" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState Name="PointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#5A90E6" />
-                                            <Setter Property="Scale" Value="1.02" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState Name="Pressed">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#4A7BC8" />
-                                            <Setter Property="Scale" Value="0.98" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </Button.VisualStateManager.VisualStateGroups>
-                        </Button>
+                        <Label Text="Department" FontAttributes="Bold" />
+                        <Label Text="{Binding Department}" IsVisible="{Binding IsReadOnlyMode}" />
+                        <Entry Text="{Binding Department, Mode=TwoWay}" IsVisible="{Binding IsEditMode}" />
                     </VerticalStackLayout>
                 </Border>
 

@@ -42,7 +42,9 @@ namespace ClinicMiniProject
             builder.Services.AddScoped<IPatientInfoService, PatientInfoService>();
             builder.Services.AddScoped<IReportingService, ReportingService>();
             builder.Services.AddScoped<IDoctorProfileService, DoctorProfileService>();
+            builder.Services.AddScoped<INurseProfileService, NurseProfileService>();
             builder.Services.AddScoped<IStaffService, StaffService>();
+            builder.Services.AddScoped<IInquiryService, InquiryService>();
             builder.Services.AddScoped<PatientService>();
 
             builder.Services.AddScoped<NurseController>();
@@ -69,6 +71,9 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<NurseHomePage>();
             builder.Services.AddTransient<NurseHomeViewModel>();
 
+            builder.Services.AddTransient<NurseProfilePage>();
+            builder.Services.AddTransient<NurseProfileViewModel>();
+
             builder.Services.AddTransient<RegisterPatientPage>();
             builder.Services.AddTransient<RegisterPatientViewModel>();
 
@@ -84,9 +89,26 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<AppointmentSchedulePage>();
             builder.Services.AddTransient<AppointmentScheduleViewModel>();
 
+            builder.Services.AddTransient<AppointmentHistoryPage>();
+            
+            builder.Services.AddTransient<InquiryPage>();
+            builder.Services.AddTransient<OnlineMedicalInquiryViewModel>();
+            
+            builder.Services.AddTransient<InquiryDetailsPage>();
+            builder.Services.AddTransient<InquiryDetailsViewModel>();
 
+            // Patient Pages
+            builder.Services.AddTransient<PatientHomePage>();
+            builder.Services.AddTransient<PatientHomeViewModel>();
 
-
+            builder.Services.AddTransient<InquiryHistory>();
+            builder.Services.AddTransient<InquiryHistory_DetailedView>();
+            builder.Services.AddTransient<OnlineInquiryPatient>();
+            builder.Services.AddTransient<AppointmentHistory_NoHistory>();
+            builder.Services.AddTransient<PatientConsultationDetailsPage>();
+            builder.Services.AddTransient<PatientAppointmentHistoryPage>();
+            builder.Services.AddTransient<BookAnAppointment>();
+            builder.Services.AddTransient<AppointmentBooking_Patient>();
 
             //#if DEBUG
             //            builder.Logging.AddDebug();

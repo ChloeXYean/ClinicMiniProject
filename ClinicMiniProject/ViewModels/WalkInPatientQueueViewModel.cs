@@ -18,7 +18,7 @@ namespace ClinicMiniProject.ViewModels
 
         private async void OnViewDetails()
         {
-            await Application.Current.MainPage.DisplayAlert("Info", "Navigating to queue details...", "OK");
+            await Shell.Current.GoToAsync("PatientDetails");
         }
     }
 }

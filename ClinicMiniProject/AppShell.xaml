@@ -31,4 +31,39 @@
         ContentTemplate="{DataTemplate pat:PatientHomePage}"
         Route="PatientHomePage" />
 
+    <ShellContent
+        Title="Appointment Schedule"
+        ContentTemplate="{DataTemplate doc:AppointmentSchedulePage}"
+        Route="AppointmentSchedulePage" />
+
+    <ShellContent
+        Title="Appointment History"
+        ContentTemplate="{DataTemplate doc:AppointmentHistoryPage}"
+        Route="AppointmentHistoryPage" />
+
+    <ShellContent
+        Title="Reporting Management"
+        ContentTemplate="{DataTemplate doc:ReportingManagementPage}"
+        Route="ReportingManagementPage" />
+
+    <ShellContent
+        Title="Walk-in Queue"
+        ContentTemplate="{DataTemplate nur:WalkInPatientQueuePage}"
+        Route="WalkInPatientQueuePage" />
+
+    <ShellContent
+        Title="Inquiry"
+        ContentTemplate="{DataTemplate doc:InquiryPage}"
+        Route="Inquiry" />
+
+    <ShellContent
+        Title="Patient Details"
+        ContentTemplate="{DataTemplate nur:PatientDetailsPage}"
+        Route="PatientDetails" />
+
+    <ShellContent
+        Title="Nurse Profile"
+        ContentTemplate="{DataTemplate nur:NurseProfilePage}"
+        Route="NurseProfile" />
+
 </Shell>

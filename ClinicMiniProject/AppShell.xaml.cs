@@ -19,10 +19,8 @@ namespace ClinicMiniProject
 
             // --- Shared / Doctor Routes (Using simple string keys to match ViewModel) ---
             Routing.RegisterRoute("AppointmentSchedule", typeof(AppointmentSchedulePage));
-            Routing.RegisterRoute("DoctorConsultationDetails", typeof(ConsultationDetailsPage));
-            Routing.RegisterRoute("PatientConsultationDetails", typeof (PatientConsultationDetailsPage));
-            Routing.RegisterRoute("DoctorAppointmentHistory", typeof(AppointmentHistoryPage));
-            Routing.RegisterRoute("PatientAppointmentHistory", typeof(PatientAppointmentHistoryPage));
+            Routing.RegisterRoute("ConsultationDetails", typeof(ConsultationDetailsPage));
+            Routing.RegisterRoute("AppointmentHistory", typeof(AppointmentHistoryPage));
             Routing.RegisterRoute("ReportingManagement", typeof(ReportingManagementPage));
             Routing.RegisterRoute("Inquiry", typeof(InquiryPage));       // Doctor/Nurse Inquiry View
             Routing.RegisterRoute("Profile", typeof(ProfilePage));       // Doctor Profile
@@ -37,9 +35,14 @@ namespace ClinicMiniProject
 
             // --- Patient Specific Routes ---
             Routing.RegisterRoute(nameof(PatientHomePage), typeof(PatientHomePage));
-            // Assuming these class names exist based on your file uploads
-            Routing.RegisterRoute("InquiryHistoryPage", typeof(InquiryHistory));
-            Routing.RegisterRoute("InquiryDetialsPage", typeof(InquiryHistory_DetailedView));
+            Routing.RegisterRoute("InquiryHistory", typeof(InquiryHistory));
+            Routing.RegisterRoute("InquiryDetailsView", typeof(InquiryHistory_DetailedView));
+            Routing.RegisterRoute("OnlineInquiry", typeof(OnlineInquiryPatient));
+            Routing.RegisterRoute("AppointmentHistory_NoHistory", typeof(AppointmentHistory_NoHistory));
+            Routing.RegisterRoute("PatientConsultationDetails", typeof(PatientConsultationDetailsPage));
+            Routing.RegisterRoute("PatientAppointmentHistory", typeof(PatientAppointmentHistoryPage));
+            Routing.RegisterRoute("BookAnAppointment", typeof(BookAnAppointment));
+            Routing.RegisterRoute("AppointmentBooking", typeof(AppointmentBooking_Patient));
         }
 
         protected override async void OnAppearing()
