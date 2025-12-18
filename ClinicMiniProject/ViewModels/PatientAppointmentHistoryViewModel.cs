@@ -19,8 +19,15 @@ namespace ClinicMiniProject.ViewModels
             {
                 _appointments = value;
                 OnPropertyChanged();
+                
+                // Update visibility properties
+                OnPropertyChanged(nameof(HasNoAppointments));
+                OnPropertyChanged(nameof(HasAppointments));
             }
         }
+
+        public bool HasNoAppointments => Appointments == null || Appointments.Count == 0;
+        public bool HasAppointments => Appointments != null && Appointments.Count > 0;
 
         public ICommand LoadAppointmentsCommand { get; }
         public ICommand BackCommand { get; }

@@ -82,13 +82,13 @@ namespace ClinicMiniProject.ViewModels
                 }
                 else
                 {
-                    await Shell.Current.GoToAsync("AppointmentHistory_NoHistory");
+                    await Shell.Current.GoToAsync("PatientAppointmentHistory");
                 }
             }
             catch
             {
-                // Fallback to No History on error
-                await Shell.Current.GoToAsync("AppointmentHistory_NoHistory");
+                // Fallback to unified page on error
+                await Shell.Current.GoToAsync("PatientAppointmentHistory");
             }
         }
     }

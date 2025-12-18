@@ -37,8 +37,6 @@ namespace ClinicMiniProject
             Routing.RegisterRoute("InquiryHistory", typeof(InquiryHistory));
             Routing.RegisterRoute("InquiryDetailsView", typeof(InquiryHistory_DetailedView));
             Routing.RegisterRoute("OnlineInquiry", typeof(OnlineInquiryPatient));
-            Routing.RegisterRoute("AppointmentHistory_NoHistory", typeof(AppointmentHistory_NoHistory));
-            Routing.RegisterRoute("PatientConsultationDetails", typeof(PatientConsultationDetailsPage));
             Routing.RegisterRoute("PatientAppointmentHistory", typeof(PatientAppointmentHistoryPage));
             Routing.RegisterRoute("BookAnAppointment", typeof(AppointmentBooking_Patient));
             Routing.RegisterRoute("AppointmentBooking", typeof(AppointmentBooking_Patient));
