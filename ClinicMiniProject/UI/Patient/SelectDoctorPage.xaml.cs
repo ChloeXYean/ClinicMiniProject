@@ -4,9 +4,9 @@ namespace ClinicMiniProject.UI.Patient;
 
 public partial class SelectDoctorPage : ContentPage
 {
-	public SelectDoctorPage()
+	public SelectDoctorPage(SelectDoctorViewModel viewModel)
 	{
 		InitializeComponent();
-        BindingContext = new SelectDoctorViewModel(); // Ensure ViewModel is wired up
+		BindingContext = viewModel;
 	}
 }

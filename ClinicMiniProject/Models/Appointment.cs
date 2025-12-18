@@ -17,7 +17,7 @@ namespace ClinicMiniProject.Models
         [Column("bookedAt")]
         public DateTime bookedAt { get; set; } = DateTime.Now;
 
-        [Column("appointmentAt")]
+        [Column("appointedAt")]
         [Required]
         public DateTime? appointedAt { get; set; }
 

@@ -15,7 +15,6 @@ namespace ClinicMiniProject
         {
             //Database.EnsureCreated();
         }
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -56,8 +55,7 @@ namespace ClinicMiniProject
         {
             modelBuilder.Entity<Staff>()
                 .HasOne(s => s.Availability)
-                //.WithOne(d => d.Staff)
-                .WithOne()
+                .WithOne(d => d.Staff)
                 .HasForeignKey<DocAvailable>(d => d.staff_ID);
 
             // Ensure one-to-one relationship between Staff and DocAvailable

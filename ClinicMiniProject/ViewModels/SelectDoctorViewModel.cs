@@ -10,6 +10,8 @@ namespace ClinicMiniProject.ViewModels
     [QueryProperty(nameof(SelectedService), "SelectedService")]
     public class SelectDoctorViewModel : BindableObject
     {
+        private readonly AppDbContext _context;
+
         private DateTime _selectedDate;
         public DateTime SelectedDate
         {
@@ -60,91 +62,162 @@ namespace ClinicMiniProject.ViewModels
         public ICommand SelectDoctorCommand { get; }
         public ICommand GoBackCommand { get; }
 
-        private AppDbContext? _dbContext; 
+        private AppDbContext? _dbContext;
 
-        public SelectDoctorViewModel()
+        public SelectDoctorViewModel(AppDbContext context)
         {
+            _context = context;
             AvailableDoctors = new ObservableCollection<Staff>();
             SelectDoctorCommand = new Command<Staff>(async (doctor) => await SelectDoctor(doctor));
             GoBackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
         }
-        
-        public SelectDoctorViewModel(AppDbContext dbContext) : this()
-        {
-            _dbContext = dbContext;
-        }
 
+        //public async void LoadDoctors()
+        //{
+        //    if (SelectedDate == default) return;
+
+        //    try
+        //    {
+        //        await MainThread.InvokeOnMainThreadAsync(async () =>
+        //        {
+        //            AvailableDoctors.Clear();
+
+        //            var dayOfWeek = SelectedDate.DayOfWeek;
+        //            var appointmentDateTime = SelectedDate.Date + SelectedTime;
+
+        //            // 2. Use the injected _context
+        //            var doctors = await _context.Staffs
+        //                .Include(s => s.Availability)
+        //                .Where(s => s.isDoctor)
+        //                .ToListAsync();
+
+        //            foreach (var doc in doctors)
+        //            {
+        //                // DEBUGGING: Check if data exists
+        //                if (doc.Availability == null)
+        //                {
+        //                    System.Diagnostics.Debug.WriteLine($"[Warning] Doctor {doc.staff_name} has NO availability set in DB.");
+        //                    continue;
+        //                }
+
+        //                if (!doc.Availability.IsAvailable(dayOfWeek)) continue;
+
+        //                bool conflict = await _context.Appointments
+        //                    .AnyAsync(a => a.staff_ID == doc.staff_ID
+        //                                   && a.appointedAt == appointmentDateTime
+        //                                   && a.status != "Cancelled");
+
+        //                if (!conflict)
+        //                {
+        //                    AvailableDoctors.Add(doc);
+        //                }
+        //            }
+
+        //            // Alert if empty (Helps you debug)
+        //            if (AvailableDoctors.Count == 0)
+        //            {
+        //                System.Diagnostics.Debug.WriteLine("No doctors found for this criteria.");
+        //            }
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await Shell.Current.DisplayAlert("Error", $"Failed to load doctors: {ex.Message}", "OK");
+        //    }
+        //}
         public async Task LoadDoctors()
         {
-            // Delay slightly to ensure both QueryProperties are set (Date and Time)
-            // Or just check validity
             if (SelectedDate == default) return;
-            
+
+            // Ensure DB Context exists
             if (_dbContext == null)
             {
-               var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-               // Note: Ideally we get connection string from elsewhere, but failing that we rely on "OnConfiguring" internals 
-               // or we instantiate it such that it configures itself.
-               _dbContext = new AppDbContext(optionsBuilder.Options);
+                var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+                _dbContext = new AppDbContext(optionsBuilder.Options);
             }
 
-            // Need to marshal to MainThread if modifying ObservableCollection from background task
-            await MainThread.InvokeOnMainThreadAsync(async () => 
+            // Run on Main Thread safely
+            await MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                AvailableDoctors.Clear();
-
-                DayOfWeek dayOfWeek = SelectedDate.DayOfWeek;
-
-                var doctors = await _dbContext.Staffs
-                    .Include(s => s.Availability)
-                    .Where(s => s.isDoctor)
-                    .ToListAsync();
-
-                var available = new List<Staff>();
-
-                foreach (var doc in doctors)
+                try
                 {
-                    bool isDayAvailable = false;
-                    if (doc.Availability != null)
+                    AvailableDoctors.Clear();
+
+                    // 1. TEST CONNECTION FIRST
+                    if (!_dbContext.Database.CanConnect())
                     {
-                        isDayAvailable = doc.Availability.IsAvailable(dayOfWeek);
+                        await Shell.Current.DisplayAlert("Error", "Cannot connect to Database. Check Internet.", "OK");
+                        return;
                     }
 
-                    if (!isDayAvailable) continue;
+                    DayOfWeek dayOfWeek = SelectedDate.DayOfWeek;
 
-                    DateTime appointmentDateTime = SelectedDate.Date + SelectedTime;
-                    
-                    var conflict = await _dbContext.Appointments
-                        .AnyAsync(a => a.staff_ID == doc.staff_ID 
-                                       && a.appointedAt == appointmentDateTime 
-                                       && a.status != "Cancelled");
+                    // 2. FETCH DATA
+                    var doctors = await _dbContext.Staffs
+                        .Include(s => s.Availability)
+                        .Where(s => s.isDoctor)
+                        .ToListAsync();
 
-                    if (!conflict)
+                    if (doctors.Count == 0)
                     {
-                        available.Add(doc);
+                        Console.WriteLine("DEBUG: Connected, but no doctors found in DB.");
+                    }
+
+                    foreach (var doc in doctors)
+                    {
+                        // 3. CHECK NULL AVAILABILITY
+                        if (doc.Availability == null)
+                        {
+                            Console.WriteLine($"Skipping {doc.staff_name} - No Availability Record");
+                            continue;
+                        }
+
+                        if (!doc.Availability.IsAvailable(dayOfWeek)) continue;
+
+                        DateTime appointmentDateTime = SelectedDate.Date + SelectedTime;
+
+                        var conflict = await _dbContext.Appointments
+                            .AnyAsync(a => a.staff_ID == doc.staff_ID
+                                           && a.appointedAt == appointmentDateTime
+                                           && a.status != "Cancelled");
+
+                        if (!conflict)
+                        {
+                            AvailableDoctors.Add(doc);
+                        }
                     }
                 }
-
-                foreach (var doc in available)
+                catch (Exception ex)
                 {
-                    AvailableDoctors.Add(doc);
+                    // This catches the real error and shows it
+                    await Shell.Current.DisplayAlert("Crash Details", ex.Message, "OK");
                 }
             });
         }
-
         private async Task SelectDoctor(Staff doctor)
         {
             if (doctor == null) return;
 
-            bool confirm = await Shell.Current.DisplayAlert("Confirm Booking", 
-                $"Book appointment with {doctor.staff_name} on {SelectedDate:d} at {DateTime.Today.Add(SelectedTime):h:mm tt}?", 
+            bool confirm = await Shell.Current.DisplayAlert("Confirm Booking",
+                $"Book appointment with {doctor.staff_name} on {SelectedDate:d} at {DateTime.Today.Add(SelectedTime):h:mm tt}?",
                 "Yes", "No");
 
             if (confirm)
             {
-                // TODO: Save to DB
-                // var newAppointment = ... 
-                
+                // Create the appointment object
+                var newAppointment = new Appointment
+                {
+                    patient_IC = "123456121234", // TODO: Get logged-in user's IC
+                    staff_ID = doctor.staff_ID,
+                    appointedAt = SelectedDate.Date + SelectedTime,
+                    bookedAt = DateTime.Now,
+                    status = "Pending",
+                    service_type = SelectedService ?? "General Consultation"
+                };
+
+                _context.Appointments.Add(newAppointment);
+                await _context.SaveChangesAsync();
+
                 await Shell.Current.DisplayAlert("Success", "Appointment Request Sent!", "OK");
                 await Shell.Current.GoToAsync("///PatientHomePage");
             }

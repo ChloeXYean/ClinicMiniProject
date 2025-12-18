@@ -1,12 +1,22 @@
-<<<<<<< HEAD
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using ClinicMiniProject.Models;
 using ClinicMiniProject.Services.Interfaces;
 using Microsoft.Maui.Controls;
 
-namespace ClinicMiniProject.ViewModels
-{
+namespace ClinicMiniProject.ViewModels {
+
+    public class AppointmentHistoryItem
+    {
+        public string Time { get; set; }
+        public string Date { get; set; }
+        public string Details { get; set; }
+        public string DoctorName { get; set; }
+        public string Status { get; set; }
+        public Color StatusColor { get; set; } // Text Color (e.g. Black or specific)
+        public Color BadgeColor { get; set; } // Background of the status pill
+        public Color CardBackgroundColor { get; set; } // Background of the entire card
+    }
     public class PatientAppointmentHistoryViewModel : BindableObject
     {
         private readonly IAppointmentService _appointmentService;
@@ -34,7 +44,7 @@ namespace ClinicMiniProject.ViewModels
 
             LoadAppointmentsCommand = new Command(async () => await LoadAppointments());
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
-            
+
             // Auto load on init
             Task.Run(LoadAppointments);
         }
@@ -51,10 +61,10 @@ namespace ClinicMiniProject.ViewModels
             {
                 // Fetch all appointments (or filter by patient logic if available in service)
                 var allAppointments = await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(null, DateTime.MinValue, DateTime.MaxValue);
-                
+
                 // Filter by patient ID
                 var myAppointments = allAppointments
-                    .Where(a => a.patient_IC == userIc) 
+                    .Where(a => a.patient_IC == userIc)
                     .OrderByDescending(a => a.appointedAt)
                     .ToList();
 
@@ -105,27 +115,4 @@ namespace ClinicMiniProject.ViewModels
         }
     }
 
-    public class AppointmentHistoryItem
-    {
-        public string Time { get; set; }
-        public string Date { get; set; }
-        public string Details { get; set; }
-        public string DoctorName { get; set; }
-        public string Status { get; set; }
-        public Color StatusColor { get; set; } // Text Color (e.g. Black or specific)
-        public Color BadgeColor { get; set; } // Background of the status pill
-        public Color CardBackgroundColor { get; set; } // Background of the entire card
-=======
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ClinicMiniProject.ViewModels
-{
-    class PatientAppointmentHistoryViewModel
-    {
->>>>>>> 26f0c4f7b24a60606bdf02dc1d82cbbf1a720039
-    }
 }
