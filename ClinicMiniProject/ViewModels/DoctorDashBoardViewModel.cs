@@ -72,6 +72,7 @@ namespace ClinicMiniProject.ViewModels
 
             // --- Navigation Logic ---
             NavigateToAppointmentScheduleCommand = new Command(async () => await Shell.Current.GoToAsync("AppointmentSchedule"));
+            NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync("ConsultationDetails"));
             NavigateToAppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("AppointmentHistory"));
             NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("ReportingManagement"));
 
