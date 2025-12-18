@@ -112,6 +112,9 @@
 	  <Compile Update="UI\Patient\OnlineInquiryPatient.xaml.cs">
 	    <DependentUpon>OnlineInquiryPatient.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="UI\Patient\EndDoctorConsultationPage.xaml.cs">
+	    <DependentUpon>EndDoctorConsultationPage.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -170,9 +173,6 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="UI\Patient\AppointmentSchedule.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="UI\Patient\BookAnAppointment.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="UI\Patient\PatientConsultationDetailsPage.xaml">

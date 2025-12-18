@@ -23,7 +23,7 @@ namespace ClinicMiniProject.ViewModels
         public ICommand NavigateToOnlineInquiryCommand { get; }
         public ICommand NotificationCommand { get; }
 
-        public string Username => _authService.GetCurrentUser()?.staff_name ?? "Patient";
+        public string Username => _authService.GetCurrentPatient()?.patient_name ?? _authService.GetCurrentUser()?.staff_name ?? "Patient";
 
         public PatientHomeViewModel(IAppointmentService appointmentService, IAuthService authService)
         {
@@ -56,8 +56,11 @@ namespace ClinicMiniProject.ViewModels
 
         private async Task OnNavigateToHistory()
         {
-            var patient = _authService.GetCurrentUser();
-            if (patient == null) return;
+            var patient = _authService.GetCurrentPatient();
+            var staff = _authService.GetCurrentUser();
+            string userIc = patient?.patient_IC ?? staff?.staff_ID;
+
+            if (string.IsNullOrEmpty(userIc)) return;
 
             // Check if patient has any appointments (Completed, Pending, etc.)
             // We pass the patient's ID to the service.
@@ -71,11 +74,11 @@ namespace ClinicMiniProject.ViewModels
                 var history = await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(null, DateTime.MinValue, DateTime.MaxValue);
 
                 // Filter for this specific patient locally if the service doesn't support direct patient filtering yet
-                var myHistory = history.Where(a => a.patient_IC == patient.staff_ID).ToList(); // Assuming staff_ID holds IC for patient login context
+                var myHistory = history.Where(a => a.patient_IC == userIc).ToList();
 
                 if (myHistory.Any())
                 {
-                    await Shell.Current.GoToAsync("AppointmentHistory");
+                    await Shell.Current.GoToAsync("PatientAppointmentHistory");
                 }
                 else
                 {

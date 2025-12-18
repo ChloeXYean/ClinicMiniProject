@@ -10,11 +10,14 @@ namespace ClinicMiniProject.Services
     {
         private readonly AppDbContext _context;
         private static Staff? _currentStaff;
+        private static Patient? _currentPatient;
 
         public AuthService(AppDbContext appDbContext)
         {
             _context = appDbContext;
         }
+        
+        // ... RegisterPatient omitted ...
 
         public bool RegisterPatient(Patient patient, out string message)
         {
@@ -66,15 +69,11 @@ namespace ClinicMiniProject.Services
                 return null;
             }
 
-            try
+            var patient = _context.Patients.FirstOrDefault(p => p.patient_IC == patient_IC && p.password == password);
+            if (patient != null) 
             {
-                var patient = _context.Patients.FirstOrDefault(p => p.patient_IC == patient_IC && p.password == password);
-                if (patient != null) return patient;
-            }
-            catch (InvalidCastException ex)
-            {
-                message = $"Database type mismatch: {ex.Message}. The database may have patient_IC as a numeric type.";
-                return null;
+                _currentPatient = patient;
+                return patient;
             }
 
             var staff = _context.Staffs.FirstOrDefault(s => s.staff_ID == patient_IC && s.password == password);
@@ -83,7 +82,7 @@ namespace ClinicMiniProject.Services
                 _currentStaff = staff;
                 return staff;
             } 
-
+            
             message = "Account not found. Please try again or create a new account.";
             return null;
         }
@@ -91,6 +90,11 @@ namespace ClinicMiniProject.Services
         public Staff GetCurrentUser()
         {
             return _currentStaff;
+        }
+
+        public Patient GetCurrentPatient()
+        {
+            return _currentPatient;
         }
 
         public string GetDoctorName(string doctorId)
@@ -102,6 +106,7 @@ namespace ClinicMiniProject.Services
         public void Logout()
         {
             _currentStaff = null;
+            _currentPatient = null;
         }
 
         // TODO: testing only later need to delete

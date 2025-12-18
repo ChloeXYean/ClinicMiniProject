@@ -12,28 +12,28 @@ namespace ClinicMiniProject.ViewModels
     {
         private readonly NurseController _controller;
 
-        private string date;
+        private string date = string.Empty;
         public string AppDate
         {
             get => date;
             set => SetProperty(ref date, value); //Update UI + refresh 
         }
 
-        private string time;
+        private string time = string.Empty;
         public string AppTime
         {
             get => time;
             set => SetProperty(ref time, value);
         }
 
-        private string doctor;
+        private string doctor = string.Empty;
         public string AppDoc
         {
             get => doctor;
             set => SetProperty(ref doctor, value);
         }
 
-        private string pendingCount;
+        private string pendingCount = "0";
         public string PendingCount
         {
             get => pendingCount;
@@ -96,16 +96,16 @@ namespace ClinicMiniProject.ViewModels
         }
 
         //Get notified once UI change
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         //Tell UI changed 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         //Update 
-        protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
+        protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string? propertyName = null)
         {
             if (Equals(storage, value)) return false;
             storage = value;

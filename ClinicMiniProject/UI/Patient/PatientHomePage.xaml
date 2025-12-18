@@ -13,11 +13,13 @@
 
                 <!-- Top Bar -->
                 <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
+                    <!--control:BackNavBar x:Name="BackBar" Grid.Row="0" /-->
                     <Label Text="☰" FontSize="24" TextColor="#333" VerticalOptions="Center">
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding ProfileCommand}"/>
                         </Label.GestureRecognizers>
                     </Label>
+                    
 
                     <Label Text="{Binding Username, StringFormat='Hi, {0}'}" 
                            FontSize="18" 
