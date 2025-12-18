@@ -1,8 +1,8 @@
 namespace ClinicMiniProject.UI.Patient;
 
-public partial class AppointmentHistoryPage : ContentPage
+public partial class PatientAppointmentHistoryPage : ContentPage
 {
-	public AppointmentHistoryPage()
+	public PatientAppointmentHistoryPage()
 	{
 		InitializeComponent();
 	}

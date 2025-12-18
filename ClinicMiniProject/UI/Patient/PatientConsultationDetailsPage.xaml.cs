@@ -1,8 +1,8 @@
 namespace ClinicMiniProject.UI.Patient;
 
-public partial class ConsultationDetailsPage : ContentPage
+public partial class PatientConsultationDetailsPage : ContentPage
 {
-	public ConsultationDetailsPage()
+	public PatientConsultationDetailsPage()
 	{
 		InitializeComponent();
 	}
