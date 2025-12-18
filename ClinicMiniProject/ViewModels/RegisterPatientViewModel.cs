@@ -42,70 +42,46 @@ namespace ClinicMiniProject.ViewModels
         public ObservableCollection<Staff> Doctors { get; set; } = new();
         public List<string> ServiceTypes { get; set; } = new()
         {
-            "General Consultation", "Follow up treatment", "Test Result Discussion",
-            "Vaccination/Injection", "Blood test", "Blood pressure test", "Sugar test"
+            "General Consultation","Vaccination/Injection" ,"Follow up treatment", "Test Result Discussion", "Medical Checkup"
+            ,"Follow-up'", "Online"
         };
 
-        // Selected Items
-        private Staff selectedDoctor;
-        public Staff SelectedDoctor { 
-            get => selectedDoctor; 
-            set {
-                selectedDoctor = value; 
-                OnPropertyChanged(); 
-            } 
-        }
-
         private string _selectedServiceType;
-        public string SelectedServiceType {
-            get => _selectedServiceType; 
-            set { 
-                _selectedServiceType = value; 
-                OnPropertyChanged(); 
+        public string SelectedServiceType
+        {
+            get => _selectedServiceType;
+            set
+            {
+                _selectedServiceType = value; OnPropertyChanged();
             }
         }
 
         public ICommand RegisterCommand { get; }
         public ICommand BackCommand { get; }
 
-        public RegisterPatientViewModel(NurseController controller, IStaffService staffService)
+        public RegisterPatientViewModel(NurseController controller)
         {
             _controller = controller;
-            _staffService = staffService;
-
             RegisterCommand = new Command(OnRegisterClicked);
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
-
-            LoadDoctors();
         }
-
-        private void LoadDoctors()
-        {
-            var doctorList = _staffService.GetAllDocs();
-            Doctors.Clear();
-            foreach (var doc in doctorList)
-            {
-                Doctors.Add(doc);
-            }
-        }
-
         private async void OnRegisterClicked()
         {
             if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(IcNumber) ||
-                string.IsNullOrWhiteSpace(PhoneNumber) || SelectedServiceType == null)
+                string.IsNullOrWhiteSpace(PhoneNumber) || string.IsNullOrEmpty(SelectedServiceType))
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "Please fill in all required fields.", "OK");
                 return;
             }
 
             bool success = await _controller.RegisterWalkInPatient(
-                Name, IcNumber, PhoneNumber, SelectedDoctor?.staff_ID
+                Name, IcNumber, PhoneNumber, SelectedServiceType
             );
 
             if (success)
             {
                 await Application.Current.MainPage.DisplayAlert("Success", "Patient registered successfully.", "OK");
-                await Shell.Current.GoToAsync(".."); // Go back
+                await Shell.Current.GoToAsync("WalkInPatientQueuePage"); // Go back
             }
             else
             {

@@ -15,50 +15,31 @@
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Patient Full Name" FontAttributes="Bold" FontSize="16" TextColor="Black" />
                     <Border BackgroundColor="#F0F0F0" StrokeThickness="0" StrokeShape="RoundRectangle 10" HeightRequest="70">
-                        <Entry x:Name="NameEntry" Placeholder="Enter full name" Margin="15,0" VerticalOptions="Center" TextColor="Black" />
+                        <Entry x:Name="NameEntry" Placeholder="Enter full name" Text="{Binding Name}" Margin="15,0" VerticalOptions="Center" TextColor="Black" />
                     </Border>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="8">
                     <Label Text="IC Number" FontAttributes="Bold" FontSize="16" TextColor="Black" />
                     <Border BackgroundColor="#F0F0F0" StrokeThickness="0" StrokeShape="RoundRectangle 10" HeightRequest="70">
-                        <Entry x:Name="IcEntry" Placeholder="e.g., 901212-14-5566" Margin="15,0" VerticalOptions="Center" Keyboard="Numeric" TextColor="Black"/>
+                        <Entry x:Name="IcEntry" Placeholder="e.g., 901212-14-5566" Text="{Binding IcNumber}" Margin="15,0" VerticalOptions="Center" Keyboard="Numeric" TextColor="Black"/>
                     </Border>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Phone Number" FontAttributes="Bold" FontSize="16" TextColor="Black" />
                     <Border BackgroundColor="#F0F0F0" StrokeThickness="0" StrokeShape="RoundRectangle 10" HeightRequest="70">
-                        <Entry x:Name="PhoneEntry" Placeholder="e.g., +60 12-345 6789" Margin="15,0" VerticalOptions="Center" Keyboard="Telephone" TextColor="Black"/>
+                        <Entry x:Name="PhoneEntry" Text="{Binding PhoneNumber}" Placeholder="e.g., +60 12-345 6789" Margin="15,0" VerticalOptions="Center" Keyboard="Telephone" TextColor="Black"/>
                     </Border>
                 </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Select Doctor (Optional)"
-                       FontAttributes="Bold"
-                       FontSize="16"
-                       TextColor="Black" />
-
-                    <Border BackgroundColor="#F0F0F0"
-                        StrokeThickness="0"
-                        StrokeShape="RoundRectangle 10"
-                        HeightRequest="70">
-
-                        <Picker x:Name="DoctorPicker"
-                            Title="Auto-assign if not selected"
-                            Margin="15,0"
-                            VerticalOptions="Center"
-                            HorizontalOptions="Fill"
-                            TextColor="Black"/>
-                    </Border>
-                </VerticalStackLayout>
-
 
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Select Service Type" FontAttributes="Bold" FontSize="16" TextColor="Black" />
 
                     <Border BackgroundColor="#6EA8FE" StrokeThickness="0" StrokeShape="RoundRectangle 10" HeightRequest="70">
                         <Picker x:Name="ServiceTypePicker"
+                                ItemsSource="{Binding ServiceTypes}"
+                                SelectedItem="{Binding SelectedServiceType}"
                                 Title="Select a service"
                                 TextColor="White"
                                 TitleColor="#E0E0E0"
@@ -76,7 +57,7 @@
                         CornerRadius="10"
                         HeightRequest="55"
                         Margin="0,20,0,0"
-                        Clicked="OnRegisterClicked" />
+                        Command="{Binding RegisterCommand}" />
 
             </VerticalStackLayout>
         </ScrollView>

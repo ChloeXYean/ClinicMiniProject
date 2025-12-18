@@ -35,7 +35,7 @@ namespace ClinicMiniProject.Controller
             return appointments.ToList();
         }
 
-        public async Task<bool> RegisterWalkInPatient(string fullName,string ic,string phone, string? preferredDoctorId = null)
+        public async Task<bool> RegisterWalkInPatient(string fullName,string ic,string phone,string serviceType)
         { //Reason idk need or not 
             try
             {
@@ -49,7 +49,12 @@ namespace ClinicMiniProject.Controller
 
                 _patientService.AddPatient(patient);
 
-                string doctorId = preferredDoctorId ?? "DOC001"; // TODO: real logic
+                var doctors = _staffService.GetAllDocs();
+                string doctorId = "DOC001"; //Fallback
+                if (doctors != null && doctors.Count > 0)
+                {
+                    doctorId = doctors.First().staff_ID;
+                }
 
                 var slot = _appointmentService.AssignWalkInTimeSlot(doctorId,DateTime.Today);
 
@@ -60,15 +65,16 @@ namespace ClinicMiniProject.Controller
                     appointedAt = slot,
                     bookedAt = DateTime.Now,
                     status = slot.HasValue ? "Pending" : "NoSlot",
-                    //reason = serviceType
+                    service_type = serviceType
                 };
 
                 _appointmentService.AddAppointment(appointment);
 
                 return true;
             }
-            catch
+            catch (Exception ex) 
             {
+                Console.WriteLine(ex.ToString());
                 return false;
             }
         }

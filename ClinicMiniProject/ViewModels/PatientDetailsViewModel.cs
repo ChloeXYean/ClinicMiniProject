@@ -31,6 +31,25 @@ namespace ClinicMiniProject.ViewModels
             } 
         }
 
+        private PatientQueueDto _patient;
+        public PatientQueueDto Patient
+        {
+           get => _patient;
+            set
+            {
+                _patient = value;
+                OnPropertyChanged();
+                if (_patient != null)
+                {
+                    PatientName = _patient.PatientName;
+                    //RegisteredTime = _patient.RegisteredTime;
+                    QueueNo = _patient.QueueId;
+                    icNumber = _patient.ICNumber;
+                }
+            }
+                
+        }
+
         // --- Commands ---
         public ICommand BackCommand { get; }
         public ICommand UpdateCommand { get; }
@@ -39,7 +58,7 @@ namespace ClinicMiniProject.ViewModels
         {
 
             PatientName = "Loading...";
-            QueueId = "--";
+            QueueNo = "--";
             IcNumber = "--";
 
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));

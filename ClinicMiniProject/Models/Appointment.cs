@@ -27,17 +27,11 @@ namespace ClinicMiniProject.Models
         [Column("patient_IC")]
         public string patient_IC { get; set; }
 
+        [Column("service_type")]
+        public string service_type { get; set; } = "General Consultation";
+
         [Column("status")]
         public string status { get; set; } = "Pending";
-        //public string consultation_status { get; set; }
-        //public string payment_status { get; set; }
-        //public string pickup_status { get; set; }
-
-        //[Column("payment_status")]
-        //public string payment_status { get; set; } = string.Empty;
-
-        //[Column("pickup_status")]
-        //public string pickup_status { get; set; } = string.Empty;
 
         public Staff Staff { get; set; } = null!;
         public Patient Patient { get; set; } = null!;

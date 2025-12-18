@@ -16,34 +16,37 @@ namespace ClinicMiniProject
             //Database.EnsureCreated();
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                string serverIp = "ballast.proxy.rlwy.net";
-                var connStr =
-                    $"Server={serverIp};" + 
-                    "Port=19463;" +
-                    "Database=testdb;" +
-                    "Uid=root;" +
-                    "Pwd=NrIvCewJcTGAPqmOXyoziksWgwoQmaQd;" +
-                    "SslMode=Required;" +
-                    "Charset=utf8mb4;";
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
         //    if (!optionsBuilder.IsConfigured)
         //    {
-        //        //string server = Environment.GetEnvironmentVariable("DB_SERVER_IP") ?? "localhost";
-        //        //string connStr = $"Server={server};Port=3306;Database=testdb;Uid=root;Pwd=123456;Charset=utf8mb4;";
-        //        string connStr = $"Server=localhost;Port=3306;Database=testdb;Uid=root;Pwd=123456;Charset=utf8mb4;";
+        //        string serverIp = "ballast.proxy.rlwy.net";
+        //        var connStr =
+        //            $"Server={serverIp};" +
+        //            "Port=19463;" +
+        //            "Database=testdb;" +
+        //            "Uid=root;" +
+        //            "Pwd=NrIvCewJcTGAPqmOXyoziksWgwoQmaQd;" +
+        //            "SslMode=Required;" +
+        //            "Charset=utf8mb4;";
+        //        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //        //{
+        //        //    if (!optionsBuilder.IsConfigured)
+        //        //    {
+        //        //        //string server = Environment.GetEnvironmentVariable("DB_SERVER_IP") ?? "localhost";
+        //        //        //string connStr = $"Server={server};Port=3306;Database=testdb;Uid=root;Pwd=123456;Charset=utf8mb4;";
+        //        //        string connStr = $"Server=localhost;Port=3306;Database=testdb;Uid=root;Pwd=123456;Charset=utf8mb4;";
 
-        //        optionsBuilder.UseMySql(
-        //            connStr,
-        //            ServerVersion.AutoDetect(connStr),
-        //            options => options.EnableRetryOnFailure()
-        //        );
+        //        //        optionsBuilder.UseMySql(
+        //        //            connStr,
+        //        //            ServerVersion.AutoDetect(connStr),
+        //        //            options => options.EnableRetryOnFailure()
+        //        //        );
+        //        //    }
+        //        //}
         //    }
         //}
+        public AppDbContext() { }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -86,8 +89,7 @@ namespace ClinicMiniProject
         {
             modelBuilder.Entity<Staff>()
                 .HasOne(s => s.Availability)
-                //.WithOne(d => d.Staff)
-                .WithOne()
+                .WithOne(d => d.Staff)
                 .HasForeignKey<DocAvailable>(d => d.staff_ID);
 
             // Ensure one-to-one relationship between Staff and DocAvailable
