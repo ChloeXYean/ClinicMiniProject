@@ -5,6 +5,9 @@ using System.Windows.Input;
 
 namespace ClinicMiniProject.ViewModels
 {
+    [QueryProperty(nameof(SelectedDate), "SelectedDate")]
+    [QueryProperty(nameof(SelectedTime), "SelectedTime")]
+    [QueryProperty(nameof(SelectedService), "SelectedService")]
     public class SelectDoctorViewModel : BindableObject
     {
         private readonly AppDbContext _context;
@@ -16,9 +19,8 @@ namespace ClinicMiniProject.ViewModels
             set
             {
                 _selectedDate = value;
-                System.Diagnostics.Debug.WriteLine($"SelectedDate set to: {value}");
                 OnPropertyChanged();
-                // Don't call LoadDoctors here - let it be called manually for testing
+                Task.Run(LoadDoctors); // Trigger load when property is set by QueryProperty
             }
         }
 
@@ -29,8 +31,9 @@ namespace ClinicMiniProject.ViewModels
             set
             {
                 _selectedTime = value;
-                System.Diagnostics.Debug.WriteLine($"SelectedTime set to: {value}");
                 OnPropertyChanged();
+                // LoadDoctors will be triggered by Date set, but if only Time changes...
+                // Usually QueryProperty sets them one by one. Calling LoadDoctors twice is fine or manage state.
             }
         }
 
@@ -41,7 +44,6 @@ namespace ClinicMiniProject.ViewModels
             set
             {
                 _selectedService = value;
-                System.Diagnostics.Debug.WriteLine($"SelectedService set to: {value}");
                 OnPropertyChanged();
             }
         }
@@ -62,68 +64,62 @@ namespace ClinicMiniProject.ViewModels
 
         public SelectDoctorViewModel(AppDbContext context)
         {
-            try
-            {
-                System.Diagnostics.Debug.WriteLine("SelectDoctorViewModel constructor started");
-                
-                if (context == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("ERROR: AppDbContext is null in constructor");
-                    throw new ArgumentNullException(nameof(context));
-                }
-                
-                _context = context;
-                AvailableDoctors = new ObservableCollection<Staff>();
-                SelectDoctorCommand = new Command<Staff>(async (doctor) => await SelectDoctor(doctor));
-                GoBackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
-                
-                System.Diagnostics.Debug.WriteLine("SelectDoctorViewModel constructor completed successfully");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"ERROR in SelectDoctorViewModel constructor: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-                throw;
-            }
+            _context = context;
+            AvailableDoctors = new ObservableCollection<Staff>();
+            SelectDoctorCommand = new Command<Staff>(async (doctor) => await SelectDoctor(doctor));
+            GoBackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
         }
 
         public async void LoadDoctors()
         {
-            System.Diagnostics.Debug.WriteLine("LoadDoctors called manually");
-            
-            if (SelectedDate == default) 
-            {
-                System.Diagnostics.Debug.WriteLine("SelectedDate is default, returning");
-                return;
-            }
+            if (SelectedDate == default) return;
 
             try
             {
                 await MainThread.InvokeOnMainThreadAsync(async () =>
                 {
                     AvailableDoctors.Clear();
-                    System.Diagnostics.Debug.WriteLine("AvailableDoctors cleared");
 
-                    // Just get all doctors for testing
+                    var dayOfWeek = SelectedDate.DayOfWeek;
+                    var appointmentDateTime = SelectedDate.Date + SelectedTime;
+
+                    // 2. Use the injected _context
                     var doctors = await _context.Staffs
+                        .Include(s => s.Availability)
                         .Where(s => s.isDoctor)
                         .ToListAsync();
 
-                    System.Diagnostics.Debug.WriteLine($"Found {doctors.Count} doctors");
-
                     foreach (var doc in doctors)
                     {
-                        AvailableDoctors.Add(doc);
-                        System.Diagnostics.Debug.WriteLine($"Added doctor: {doc.staff_name}");
+                        // DEBUGGING: Check if data exists
+                        if (doc.Availability == null)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[Warning] Doctor {doc.staff_name} has NO availability set in DB.");
+                            continue;
+                        }
+
+                        if (!doc.Availability.IsAvailable(dayOfWeek)) continue;
+
+                        bool conflict = await _context.Appointments
+                            .AnyAsync(a => a.staff_ID == doc.staff_ID
+                                           && a.appointedAt == appointmentDateTime
+                                           && a.status != "Cancelled");
+
+                        if (!conflict)
+                        {
+                            AvailableDoctors.Add(doc);
+                        }
                     }
 
-                    System.Diagnostics.Debug.WriteLine($"AvailableDoctors collection now has {AvailableDoctors.Count} items");
+                    // Alert if empty (Helps you debug)
+                    if (AvailableDoctors.Count == 0)
+                    {
+                        System.Diagnostics.Debug.WriteLine("No doctors found for this criteria.");
+                    }
                 });
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"ERROR in LoadDoctors: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
                 await Shell.Current.DisplayAlert("Error", $"Failed to load doctors: {ex.Message}", "OK");
             }
         }
@@ -133,11 +129,25 @@ namespace ClinicMiniProject.ViewModels
             if (doctor == null) return;
 
             bool confirm = await Shell.Current.DisplayAlert("Confirm Booking",
-                $"Book appointment with {doctor.staff_name}?",
+                $"Book appointment with {doctor.staff_name} on {SelectedDate:d} at {DateTime.Today.Add(SelectedTime):h:mm tt}?",
                 "Yes", "No");
 
             if (confirm)
             {
+                // Create the appointment object
+                var newAppointment = new Appointment
+                {
+                    patient_IC = "123456121234", // TODO: Get logged-in user's IC
+                    staff_ID = doctor.staff_ID,
+                    appointedAt = SelectedDate.Date + SelectedTime,
+                    bookedAt = DateTime.Now,
+                    status = "Pending",
+                    service_type = SelectedService ?? "General Consultation"
+                };
+
+                _context.Appointments.Add(newAppointment);
+                await _context.SaveChangesAsync();
+
                 await Shell.Current.DisplayAlert("Success", "Appointment Request Sent!", "OK");
                 await Shell.Current.GoToAsync("///PatientHomePage");
             }

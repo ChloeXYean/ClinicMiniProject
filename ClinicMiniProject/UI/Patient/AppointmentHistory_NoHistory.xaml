@@ -9,7 +9,7 @@
     <Grid RowDefinitions="Auto, *">
 
         <!-- Custom Header -->
-        <control:BackNavBar Grid.Row="0" Title="Appointment History" BackCommand="{Binding BackCommand}"/>
+        <control:BackNavBar x:Name="BackBar" Grid.Row="0" Title="Appointment History" BackCommand="{Binding BackCommand}"/>
 
         <VerticalStackLayout Grid.Row="1" 
                              HorizontalOptions="Center"
