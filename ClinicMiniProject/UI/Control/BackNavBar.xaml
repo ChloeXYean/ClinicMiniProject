@@ -24,13 +24,8 @@
                 <ImageButton Grid.Column="0"
                          x:Name="BackBtn"
                          Source="back.png" 
-<<<<<<< HEAD
                          HeightRequest="32"
                          WidthRequest="32"
-=======
-                         HeightRequest="3"
-                         WidthRequest="3"
->>>>>>> 26f0c4f7b24a60606bdf02dc1d82cbbf1a720039
                          HorizontalOptions="Start"
                          Command="{Binding BackCommand, Source={x:Reference thisControl}}"/>
                 <Label Grid.Column="1"

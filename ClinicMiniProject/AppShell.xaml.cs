@@ -15,6 +15,7 @@ namespace ClinicMiniProject
 
             // --- Authentication ---
             // Root routes defined in AppShell.xaml don't need RegisterRoute
+            Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
 
             // --- Shared / Doctor Routes (Using simple string keys to match ViewModel) ---
             Routing.RegisterRoute("AppointmentSchedule", typeof(AppointmentSchedulePage));
