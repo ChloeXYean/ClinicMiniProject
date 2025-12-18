@@ -134,22 +134,43 @@ namespace ClinicMiniProject.ViewModels
 
             if (confirm)
             {
-                // Create the appointment object
-                var newAppointment = new Appointment
+                try
                 {
-                    patient_IC = "123456121234", // TODO: Get logged-in user's IC
-                    staff_ID = doctor.staff_ID,
-                    appointedAt = SelectedDate.Date + SelectedTime,
-                    bookedAt = DateTime.Now,
-                    status = "Pending",
-                    service_type = SelectedService ?? "General Consultation"
-                };
+                    // Create the appointment object
+                    var newAppointment = new Appointment
+                    {
+                        patient_IC = "123456121234", // TODO: Get logged-in user's IC
+                        staff_ID = doctor.staff_ID,
+                        appointedAt = SelectedDate.Date + SelectedTime,
+                        bookedAt = DateTime.Now,
+                        status = "Pending",
+                        service_type = SelectedService ?? "General Consultation"
+                    };
 
-                _context.Appointments.Add(newAppointment);
-                await _context.SaveChangesAsync();
+                    System.Diagnostics.Debug.WriteLine($"Creating appointment: Doctor={doctor.staff_ID}, Date={newAppointment.appointedAt}, Patient={newAppointment.patient_IC}");
 
-                await Shell.Current.DisplayAlert("Success", "Appointment Request Sent!", "OK");
-                await Shell.Current.GoToAsync("///PatientHomePage");
+                    _context.Appointments.Add(newAppointment);
+                    int result = await _context.SaveChangesAsync();
+
+                    System.Diagnostics.Debug.WriteLine($"Save result: {result} rows affected");
+
+                    await Shell.Current.DisplayAlert("Success", "Appointment Request Sent!", "OK");
+                    await Shell.Current.GoToAsync("///PatientHomePage");
+                }
+                catch (DbUpdateException dbEx)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Database update error: {dbEx.Message}");
+                    if (dbEx.InnerException != null)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Inner exception: {dbEx.InnerException.Message}");
+                    }
+                    await Shell.Current.DisplayAlert("Error", $"Failed to save appointment: {dbEx.Message}", "OK");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"General error: {ex.Message}");
+                    await Shell.Current.DisplayAlert("Error", $"Failed to create appointment: {ex.Message}", "OK");
+                }
             }
         }
     }
