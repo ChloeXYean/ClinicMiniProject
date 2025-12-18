@@ -25,7 +25,6 @@ namespace ClinicMiniProject.Controller
 
         public async Task<List<Appointment>> ViewAppointmentList(DateTime selectedDate)
         {
-            // filter by staff or role
             var start = selectedDate.Date;
             var end = start.AddDays(1);
 
@@ -35,50 +34,69 @@ namespace ClinicMiniProject.Controller
             return appointments.ToList();
         }
 
-        public async Task<bool> RegisterWalkInPatient(string fullName,string ic,string phone,string serviceType)
-        { //Reason idk need or not 
+        public async Task<string> RegisterWalkInPatient(string fullName, string ic, string phone, string serviceType)
+        {
             try
             {
-                var patient = new Patient
+                var existingPatient = _patientService.GetPatientByIC(ic);
+                if (existingPatient == null)
                 {
-                    patient_IC = ic,
-                    patient_name = fullName,
-                    patient_contact = phone,
-                    isAppUser = false
-                };
-
-                _patientService.AddPatient(patient);
-
-                var doctors = _staffService.GetAllDocs();
-                string doctorId = "DOC001"; //Fallback
-                if (doctors != null && doctors.Count > 0)
-                {
-                    doctorId = doctors.First().staff_ID;
+                    var patient = new Patient
+                    {
+                        patient_IC = ic,
+                        patient_name = fullName,
+                        patient_contact = phone,
+                        isAppUser = false
+                    };
+                    _patientService.AddPatient(patient);
                 }
 
-                var slot = _appointmentService.AssignWalkInTimeSlot(doctorId,DateTime.Today);
+                var doctors = _staffService.GetAllDocs();
+
+                if (doctors == null || doctors.Count == 0)
+                {
+                    return "Unavailable: No doctors found in the system.";
+                }
+
+                string assignedDoctorId = null;
+                DateTime? assignedSlot = null;
+
+                foreach (var doc in doctors)
+                {
+                    var slot = _appointmentService.AssignWalkInTimeSlot(doc.staff_ID, DateTime.Today);
+
+                    if (slot.HasValue)
+                    {
+                        assignedDoctorId = doc.staff_ID;
+                        assignedSlot = slot;
+                        break;
+                    }
+                }
+
+                if (assignedDoctorId == null || assignedSlot == null)
+                {
+                    return "Unavailable: All doctors are fully booked today.";
+                }
 
                 var appointment = new Appointment
                 {
                     patient_IC = ic,
-                    staff_ID = doctorId,
-                    appointedAt = slot,
+                    staff_ID = assignedDoctorId,
+                    appointedAt = assignedSlot,
                     bookedAt = DateTime.Now,
-                    status = slot.HasValue ? "Pending" : "NoSlot",
+                    status = "Pending",
                     service_type = serviceType
                 };
 
                 _appointmentService.AddAppointment(appointment);
 
-                return true;
+                return "Success";
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-                return false;
+                return $"Error: {ex.Message}";
             }
         }
-
         public async Task<List<Appointment>> GetCompletedConsultationsAsync(string doctorId)
         {
             var appointments = await _appointmentService.GetUpcomingAppointmentsAsync(doctorId);

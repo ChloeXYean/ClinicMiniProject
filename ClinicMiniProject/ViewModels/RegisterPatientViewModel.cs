@@ -74,14 +74,14 @@ namespace ClinicMiniProject.ViewModels
                 return;
             }
 
-            bool success = await _controller.RegisterWalkInPatient(
-                Name, IcNumber, PhoneNumber, SelectedServiceType
-            );
+            string result = await _controller.RegisterWalkInPatient(
+                    Name, IcNumber, PhoneNumber, SelectedServiceType
+                );
 
-            if (success)
+            if (result == "Success")
             {
                 await Application.Current.MainPage.DisplayAlert("Success", "Patient registered successfully.", "OK");
-                await Shell.Current.GoToAsync("WalkInPatientQueuePage"); // Go back
+                await Shell.Current.GoToAsync("WalkInPatientQueuePage");    
             }
             else
             {
