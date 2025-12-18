@@ -4,7 +4,7 @@ namespace ClinicMiniProject.ViewModels
 {
     public class PatientDetailsViewModel : BindableObject
     {
-        private string patientName;
+        private string patientName = string.Empty;
         public string PatientName { 
             get => patientName; 
             set { 
@@ -13,7 +13,7 @@ namespace ClinicMiniProject.ViewModels
             } 
         }
 
-        private string queueNo;
+        private string queueNo = string.Empty;
         public string QueueNo { 
             get => queueNo; 
             set { queueNo = value; 
@@ -21,7 +21,7 @@ namespace ClinicMiniProject.ViewModels
             } 
         }
 
-        private string icNumber;
+        private string icNumber = string.Empty;
         public string IcNumber { 
             get => icNumber; 
             set { icNumber = value; 
@@ -46,7 +46,7 @@ namespace ClinicMiniProject.ViewModels
 
         private async void OnUpdate()
         {
-            await Application.Current.MainPage.DisplayAlert("Action", "Opening Edit Form...", "OK");
+            await Shell.Current.DisplayAlert("Action", "Opening Edit Form...", "OK");
         }
     }
 }
