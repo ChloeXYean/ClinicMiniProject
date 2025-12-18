@@ -21,25 +21,25 @@ namespace ClinicMiniProject
             if (!optionsBuilder.IsConfigured)
             {
 
-                //string serverIp = "ballast.proxy.rlwy.net";
-                //var connStr =
-                //    $"Server={serverIp};" +
-                //    "Port=19463;" +
-                //    "Database=testdb;" +
-                //    "Uid=root;" +
-                //    "Pwd=NrIvCewJcTGAPqmOXyoziksWgwoQmaQd;" +
-                //    "SslMode=Required;" +
-                //    "Charset=utf8mb4;";
-
-                string serverIp = "localhost";
+                string serverIp = "ballast.proxy.rlwy.net";
                 var connStr =
                     $"Server={serverIp};" +
-                    "Port=3306;" +
+                    "Port=19463;" +
                     "Database=testdb;" +
                     "Uid=root;" +
-                    "Pwd=123456;" +
-                    "SslMode=None;" +
+                    "Pwd=NrIvCewJcTGAPqmOXyoziksWgwoQmaQd;" +
+                    "SslMode=Required;" +
                     "Charset=utf8mb4;";
+
+                //string serverIp = "localhost";
+                //var connStr =
+                //    $"Server={serverIp};" +
+                //    "Port=3306;" +
+                //    "Database=testdb;" +
+                //    "Uid=root;" +
+                //    "Pwd=123456;" +
+                //    "SslMode=None;" +
+                //    "Charset=utf8mb4;";
 
                 optionsBuilder.UseMySql(
                     connStr,
