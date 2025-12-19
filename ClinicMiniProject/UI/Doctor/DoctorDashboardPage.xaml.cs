@@ -10,5 +10,6 @@ public partial class DoctorDashboardPage : ContentPage
     {
         InitializeComponent();
         BindingContext = viewModel;
+        _viewModel = viewModel;
     }
 }

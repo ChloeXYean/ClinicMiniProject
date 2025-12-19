@@ -85,5 +85,14 @@ namespace ClinicMiniProject.Services
             inquiry.DoctorResponse = doctorResponse;
             inquiry.Status = "Replied";
         }
+
+        public async Task<bool> CreateInquiryAsync(InquiryDto inquiry)
+        {
+            await Task.Yield();
+            if (inquiry == null) return false;
+
+            _inquiries.Add(inquiry);
+            return true;
+        }
     }
 }

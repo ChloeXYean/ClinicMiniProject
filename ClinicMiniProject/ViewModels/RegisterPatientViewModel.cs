@@ -11,7 +11,7 @@ namespace ClinicMiniProject.ViewModels
         private readonly NurseController _controller;
         private readonly IStaffService _staffService;
 
-        private string name;
+        private string name = string.Empty;
         public string Name { 
             get => name; 
             set {
@@ -20,7 +20,7 @@ namespace ClinicMiniProject.ViewModels
             } 
         }
 
-        private string icNumber;
+        private string icNumber = string.Empty;
         public string IcNumber { 
             get => icNumber; 
             set {
@@ -29,7 +29,7 @@ namespace ClinicMiniProject.ViewModels
             } 
         }
 
-        private string phNum;
+        private string phNum = string.Empty;
         public string PhoneNumber { 
             get => phNum; 
             set {
@@ -75,7 +75,7 @@ namespace ClinicMiniProject.ViewModels
             if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(IcNumber) ||
                 string.IsNullOrWhiteSpace(PhoneNumber) || string.IsNullOrEmpty(SelectedServiceType))
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Please fill in all required fields.", "OK");
+                await Shell.Current.DisplayAlert("Error", "Please fill in all required fields.", "OK");
                 return;
             }
 
@@ -90,7 +90,7 @@ namespace ClinicMiniProject.ViewModels
             }
             else
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Failed to register patient.", "OK");
+                await Shell.Current.DisplayAlert("Error", "Failed to register patient.", "OK");
             }
         }
     }
