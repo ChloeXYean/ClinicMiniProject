@@ -3,17 +3,10 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="ClinicMiniProject.UI.Patient.OnlineInquiryPatient"
-	Shell.NavBarIsVisible="False"
+	Title="Online Medical Inquiry"
     BackgroundColor="#F6F7F9">
 
     <VerticalStackLayout Padding="20" Spacing="16">
-
-        <Border BackgroundColor="#5DA9FF" Padding="16">
-            <Label Text="Online Medical Inquiry"
-                   FontSize="18"
-                   FontAttributes="Bold"
-                   TextColor="White" />
-        </Border>
 
         <Label Text="For non-emergency cases only"
                TextColor="Red"

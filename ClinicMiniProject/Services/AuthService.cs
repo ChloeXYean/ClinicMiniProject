@@ -228,11 +228,6 @@ namespace ClinicMiniProject.Services
                 return null;
             }
 
-            if (!ValidatePassword(password, out message))
-            {
-                return null;
-            }
-
             var patient = _context.Patients.FirstOrDefault(p => p.patient_IC == patient_IC && p.password == password);
             if (patient != null)
             {
