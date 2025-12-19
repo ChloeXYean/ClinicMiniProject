@@ -6,6 +6,22 @@ namespace ClinicMiniProject.ViewModels
     [QueryProperty(nameof(Patient), "SelectedPatient")]
     public class PatientDetailsViewModel : BindableObject
     {
+        private PatientQueueDto patient = new();
+        public PatientQueueDto Patient 
+        { 
+            get => patient; 
+            set { 
+                patient = value; 
+                OnPropertyChanged();
+                if (patient != null)
+                {
+                    PatientName = patient.PatientName ?? "Unknown";
+                    QueueNo = patient.QueueId ?? "--";
+                    IcNumber = patient.ICNumber ?? "--";
+                }
+            } 
+        }
+
         private string patientName = string.Empty;
         public string PatientName { 
             get => patientName; 

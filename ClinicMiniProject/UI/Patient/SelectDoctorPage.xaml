@@ -4,6 +4,7 @@
              xmlns:vm="clr-namespace:ClinicMiniProject.ViewModels"
              x:Class="ClinicMiniProject.UI.Patient.SelectDoctorPage"
              BackgroundColor="White"
+             Shell.NavBarIsVisible="False"
              Title="Select Doctor">
 
     <Grid RowDefinitions="Auto, Auto, *">

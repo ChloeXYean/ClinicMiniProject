@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ClinicMiniProject.Dtos;
 using ClinicMiniProject.Services.Interfaces;
+using ClinicMiniProject.UI.Doctor;
 
 namespace ClinicMiniProject.ViewModels
 {
@@ -59,6 +60,7 @@ namespace ClinicMiniProject.ViewModels
         public ICommand NavigateToHomeCommand { get; }
         public ICommand NavigateToInquiryCommand { get; }
         public ICommand NavigateToProfileCommand { get; }
+        public ICommand NavigateToInquiryHistoryCommand { get; }
 
         public ICommand ToggleMenuCommand { get; }
         public ICommand NotificationCommand { get; }
@@ -71,13 +73,16 @@ namespace ClinicMiniProject.ViewModels
             _dashboardService = dashboardService;
 
             // --- Navigation Logic ---
-            NavigateToAppointmentScheduleCommand = new Command(async () => await Shell.Current.GoToAsync("AppointmentSchedule"));
-            NavigateToAppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("AppointmentHistory"));
-            NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("ReportingManagement"));
+            NavigateToAppointmentScheduleCommand = new Command(async () => await Shell.Current.GoToAsync("///AppointmentSchedulePage"));
+            NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync("///ConsultationDetailsPage"));
+            NavigateToAppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("///AppointmentHistoryPage"));
+            NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("///ReportingManagementPage"));
 
             // Bottom Bar Commands
-            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("Inquiry"));
-            NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("Profile"));
+            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
+            NavigateToInquiryHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
+            NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
+            NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}"));
 
             LogoutCommand = new Command(async () =>
             {
