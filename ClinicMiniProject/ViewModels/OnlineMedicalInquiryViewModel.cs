@@ -105,9 +105,9 @@ namespace ClinicMiniProject.ViewModels
                 if (SelectedStatus != "All" && !string.Equals(i.Status, SelectedStatus, StringComparison.OrdinalIgnoreCase))
                     return false;
 
-                // Date filter
-                if (SelectedDate.HasValue && i.CreatedAt.Date != SelectedDate.Value.Date)
-                    return false;
+                //// Date filter
+                //if (SelectedDate.HasValue && i.CreatedAt.Date != SelectedDate.Value.Date)
+                //    return false;
 
                 return true;
             });
@@ -121,7 +121,7 @@ namespace ClinicMiniProject.ViewModels
                     PatientName = i.PatientName,
                     SymptomSnippet = BuildSnippet(i.FullSymptomDescription),
                     Status = i.Status,
-                    CreatedDate = i.CreatedAt
+                    //CreatedDate = i.CreatedAt
                 });
             }
         }
