@@ -63,7 +63,6 @@
 	  <None Remove="Resources\AppIcon\appointment.png" />
 	  <None Remove="Resources\AppIcon\back.png" />
 	  <None Remove="Resources\AppIcon\bell.png" />
-	  <None Remove="Resources\AppIcon\consultation.png" />
 	  <None Remove="Resources\AppIcon\history.png" />
 	  <None Remove="Resources\AppIcon\home.png" />
 	  <None Remove="Resources\AppIcon\inquiry.png" />
@@ -91,7 +90,6 @@
 	  <MauiImage Include="Resources\AppIcon\appointment.png" />
 	  <MauiImage Include="Resources\AppIcon\back.png" />
 	  <MauiImage Include="Resources\AppIcon\bell.png" />
-	  <MauiImage Include="Resources\AppIcon\consultation.png" />
 	  <MauiImage Include="Resources\AppIcon\history.png" />
 	  <MauiImage Include="Resources\AppIcon\home.png" />
 	  <MauiImage Include="Resources\AppIcon\inquiry.png" />

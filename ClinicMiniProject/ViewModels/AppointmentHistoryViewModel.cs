@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ClinicMiniProject.ViewModels
 {
-    public class AppointmentHistoryViewModel
+    class AppointmentHistoryViewModel
     {
     }
 }

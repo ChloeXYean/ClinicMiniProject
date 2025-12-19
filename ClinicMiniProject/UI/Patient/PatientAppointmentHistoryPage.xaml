@@ -26,74 +26,46 @@
             <ImageButton Grid.Column="1" Source="filter_icon.png" WidthRequest="24" HeightRequest="24" Margin="10,0,0,0" VerticalOptions="Center"/>
         </Grid>
 
-        <!-- Conditional Display: No History OR Appointment List -->
-        <Grid Grid.Row="2">
-            <!-- No History Display -->
-            <VerticalStackLayout IsVisible="{Binding HasNoAppointments}" 
-                                 HorizontalOptions="Center"
-                                 VerticalOptions="Center"
-                                 Spacing="20">
+        <!-- List -->
+        <CollectionView Grid.Row="2" ItemsSource="{Binding Appointments}" Margin="20,0">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="15"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BackgroundColor="{Binding CardBackgroundColor}"
+                           CornerRadius="15"
+                           HasShadow="True"
+                           Padding="15"
+                           BorderColor="Transparent">
+                        <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, Auto" RowSpacing="5">
+                            
+                            <!-- Row 0: Time and Date -->
+                            <Label Grid.Row="0" Grid.Column="0" Text="{Binding Time}" FontAttributes="Bold" FontSize="14" TextColor="Black"/>
+                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding Date}" FontSize="12" TextColor="Gray"/>
 
-                <Image Source="calendar_icon.png"
-                       WidthRequest="120"
-                       HeightRequest="120"
-                       HorizontalOptions="Center" />
+                            <!-- Row 1: Details -->
+                            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Details}" FontSize="12" TextColor="Gray"/>
 
-                <Label Text="No History"
-                       FontSize="24"
-                       FontAttributes="Bold"
-                       TextColor="Black"
-                       HorizontalOptions="Center" />
+                            <!-- Row 2: Doctor and Status -->
+                            <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Spacing="5" VerticalOptions="Center">
+                                <Image Source="doctor_icon_small.png" WidthRequest="16" HeightRequest="16" VerticalOptions="Center"/> 
+                                <Label Text="{Binding DoctorName}" FontAttributes="Bold" FontSize="14" TextColor="Black" VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
 
-                <Label Text="Your past appointment will be shown here"
-                       FontSize="14"
-                       TextColor="Black"
-                       HorizontalOptions="Center" />
-            </VerticalStackLayout>
-
-            <!-- Appointment List -->
-            <CollectionView ItemsSource="{Binding Appointments}" 
-                            Margin="20,0"
-                            IsVisible="{Binding HasAppointments}">
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="15"/>
-                </CollectionView.ItemsLayout>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Frame BackgroundColor="{Binding CardBackgroundColor}"
-                               CornerRadius="15"
-                               HasShadow="True"
-                               Padding="15"
-                               BorderColor="Transparent">
-                            <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, Auto" RowSpacing="5">
-                                
-                                <!-- Row 0: Time and Date -->
-                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding Time}" FontAttributes="Bold" FontSize="14" TextColor="Black"/>
-                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding Date}" FontSize="12" TextColor="Gray"/>
-
-                                <!-- Row 1: Details -->
-                                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Details}" FontSize="12" TextColor="Gray"/>
-
-                                <!-- Row 2: Doctor and Status -->
-                                <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Spacing="5" VerticalOptions="Center">
-                                    <Image Source="doctor_icon_small.png" WidthRequest="16" HeightRequest="16" VerticalOptions="Center"/> 
-                                    <Label Text="{Binding DoctorName}" FontAttributes="Bold" FontSize="14" TextColor="Black" VerticalOptions="Center"/>
-                                </HorizontalStackLayout>
-
-                                <Frame Grid.Row="2" Grid.Column="1" 
-                                       BackgroundColor="{Binding BadgeColor}" 
-                                       CornerRadius="10" 
-                                       Padding="10,4" 
-                                       HasShadow="False"
-                                       VerticalOptions="Center"
-                                       HorizontalOptions="End">
-                                    <Label Text="{Binding Status}" FontSize="12" FontAttributes="Bold" TextColor="{Binding StatusColor}"/>
-                                </Frame>
-                            </Grid>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </Grid>
+                            <Frame Grid.Row="2" Grid.Column="1" 
+                                   BackgroundColor="{Binding BadgeColor}" 
+                                   CornerRadius="10" 
+                                   Padding="10,4" 
+                                   HasShadow="False"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="End">
+                                <Label Text="{Binding Status}" FontSize="12" FontAttributes="Bold" TextColor="{Binding StatusColor}"/>
+                            </Frame>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </Grid>
 </ContentPage>

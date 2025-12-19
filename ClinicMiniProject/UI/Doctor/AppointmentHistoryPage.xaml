@@ -2,7 +2,6 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
-             Shell.NavBarIsVisible="False"
              x:Class="ClinicMiniProject.UI.Doctor.AppointmentHistoryPage">
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
         <control:TopNavBar x:Name="TopBar" Grid.Row="0" />

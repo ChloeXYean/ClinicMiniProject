@@ -2,7 +2,6 @@
 using ClinicMiniProject.UI.Doctor;
 using ClinicMiniProject.UI.Nurse;
 using ClinicMiniProject.UI.Patient;
-using Microsoft.Maui.Controls;
 
 namespace ClinicMiniProject
 {
@@ -16,7 +15,6 @@ namespace ClinicMiniProject
 
             // --- Authentication ---
             // Root routes defined in AppShell.xaml don't need RegisterRoute
-            Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
 
             // --- Shared / Doctor Routes (Using simple string keys to match ViewModel) ---
             Routing.RegisterRoute("AppointmentSchedule", typeof(AppointmentSchedulePage));
@@ -24,8 +22,7 @@ namespace ClinicMiniProject
             Routing.RegisterRoute("AppointmentHistory", typeof(AppointmentHistoryPage));
             Routing.RegisterRoute("ReportingManagement", typeof(ReportingManagementPage));
             Routing.RegisterRoute("Inquiry", typeof(InquiryPage));       // Doctor/Nurse Inquiry View
-            Routing.RegisterRoute("DoctorInquiryHistory", typeof(InquiryHistoryPage)); // Doctor Inquiry History
-            Routing.RegisterRoute("DoctorProfile", typeof(ProfilePage)); // Doctor Profile
+            Routing.RegisterRoute("Profile", typeof(ProfilePage));       // Doctor Profile
             Routing.RegisterRoute("PatientDetails", typeof(PatientDetailsPage)); // Shared Patient Details
             Routing.RegisterRoute("InquiryDetails", typeof(InquiryDetailsPage));
 
@@ -38,6 +35,7 @@ namespace ClinicMiniProject
             Routing.RegisterRoute("InquiryHistory", typeof(InquiryHistory));
             Routing.RegisterRoute("InquiryDetailsView", typeof(InquiryHistory_DetailedView));
             Routing.RegisterRoute("OnlineInquiry", typeof(OnlineInquiryPatient));
+            Routing.RegisterRoute("AppointmentHistory_NoHistory", typeof(AppointmentHistory_NoHistory));
             Routing.RegisterRoute("PatientConsultationDetails", typeof(PatientConsultationDetailsPage));
             Routing.RegisterRoute("PatientAppointmentHistory", typeof(PatientAppointmentHistoryPage));
             Routing.RegisterRoute("BookAnAppointment", typeof(AppointmentBooking_Patient));

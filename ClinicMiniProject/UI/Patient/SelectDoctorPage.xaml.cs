@@ -1,6 +1,4 @@
 using ClinicMiniProject.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui.Controls;
 
 namespace ClinicMiniProject.UI.Patient;
 

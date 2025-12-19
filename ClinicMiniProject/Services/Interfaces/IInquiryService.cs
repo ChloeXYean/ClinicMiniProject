@@ -21,7 +21,6 @@ namespace ClinicMiniProject.Services.Interfaces
 
         public string FullSymptomDescription { get; init; } = string.Empty;
         public string Status { get; set; } = "Pending";
-        public DateTime CreatedAt { get; init; } = DateTime.Now;
 
         public string? Image1 { get; init; }
         public string? Image2 { get; init; }

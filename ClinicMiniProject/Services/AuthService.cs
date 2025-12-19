@@ -39,24 +39,16 @@ namespace ClinicMiniProject.Services
                 return false;
             }
 
-            try
+            bool exists = _context.Patients.Any(p => p.patient_IC == patient.patient_IC);
+            if (exists)
             {
-                bool exists = _context.Patients.Any(p => p.patient_IC == patient.patient_IC);
-                if (exists)
-                {
-                    message = "IC already registered. Please login to your account.";
-                    return false;
-                }
-
-                _context.Patients.Add(patient);
-                _context.SaveChanges();
-                return true;
-            }
-            catch (InvalidCastException ex)
-            {
-                message = $"Database type mismatch during registration: {ex.Message}. The database may have patient_IC as a numeric type.";
+                message = "IC already registered. Please login to your account.";
                 return false;
             }
+
+            _context.Patients.Add(patient);
+            _context.SaveChanges();
+            return true;
         }
 
         public object Login(string patient_IC, string password, out string message)
@@ -76,7 +68,8 @@ namespace ClinicMiniProject.Services
                 return patient;
             }
 
-            var staff = _context.Staffs.FirstOrDefault(s => s.staff_ID == patient_IC && s.password == password);
+            //var staff = _context.Staffs.FirstOrDefault(s => s.staff_ID == patient_IC && s.staff_password == password);
+            var staff = _context.Staffs.FirstOrDefault(s => s.staff_ID == patient_IC);
             if (staff != null)
             {
                 _currentStaff = staff;
