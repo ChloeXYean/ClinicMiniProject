@@ -109,6 +109,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="UI\Patient\EditPatientProfilePage.xaml.cs">
+	    <DependentUpon>EditPatientProfilePage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="UI\Patient\PatientAppointmentHistoryPage.xaml.cs">
 	    <DependentUpon>PatientAppointmentHistoryPage.xaml</DependentUpon>
 	  </Compile>
@@ -179,6 +182,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="UI\Patient\AppointmentSchedule.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Patient\EditPatientProfilePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="UI\Patient\PatientConsultationDetailsPage.xaml">

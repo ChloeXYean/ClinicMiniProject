@@ -10,18 +10,4 @@ public partial class PatientAppointmentHistoryPage : ContentPage
 		InitializeComponent();
 		BindingContext = viewModel;
 	}
-
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        if (BindingContext is PatientAppointmentHistoryViewModel vm)
-        {
-            vm.LoadAppointmentsCommand.Execute(null);
-        }
-    }
-
-    private async void OnBackClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync("///PatientHomePage");
-    }
 }

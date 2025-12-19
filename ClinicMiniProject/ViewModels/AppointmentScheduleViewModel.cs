@@ -10,10 +10,13 @@ using ClinicMiniProject.Models;
 
 namespace ClinicMiniProject.ViewModels
 {
+    [QueryProperty(nameof(UserType), "UserType")]
+
     public sealed class AppointmentScheduleViewModel : INotifyPropertyChanged
     {
         private readonly IAuthService _authService;
         private readonly IAppointmentScheduleService _scheduleService;
+        private readonly IStaffService _staffService;
 
         private DateTime _selectedDate = DateTime.Today;
         private AppointmentScheduleGridDto _grid = new() { Date = DateTime.Today };
@@ -47,30 +50,45 @@ namespace ClinicMiniProject.ViewModels
             set => SetProperty(ref _doctors, value);
         }
 
-        public ICommand HomeCommand { get; }
+        public string UserType
+        {
+            set
+            {
+                IsNurseMode = value == "Nurse";
+
+                if (IsNurseMode)
+                {
+                    LoadDoctors();
+                }
+
+                (HomeCommand as Command)?.ChangeCanExecute();
+                HomeCommand = IsNurseMode
+                    ? new Command(async () => await Shell.Current.GoToAsync("///NurseHomePage"))
+                    : new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
+                OnPropertyChanged(nameof(HomeCommand));
+
+                // 4. Load the schedule
+                LoadSchedule();
+            }
+        }
+            
+        public ICommand HomeCommand { get; set; }
         public ICommand ChatCommand { get; }
         public ICommand ProfileCommand { get; }
         public ICommand ViewPatientDetailsCommand { get; }
 
-        public AppointmentScheduleViewModel(IAuthService authService, IAppointmentScheduleService scheduleService, IStaffService staffService = null, string userType = "Doctor")
+        public AppointmentScheduleViewModel(IAuthService authService, IAppointmentScheduleService scheduleService, IStaffService staffService)
         {
             _authService = authService;
             _scheduleService = scheduleService;
-            IsNurseMode = userType == "Nurse";
+            _staffService = staffService;
 
-            if (IsNurseMode && staffService != null)
-            {
-                LoadDoctors(staffService);
-            }
+            // Default commands (will be updated by UserType setter)
+            HomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
 
-            HomeCommand = IsNurseMode 
-                ? new Command(async () => await Shell.Current.GoToAsync("///NurseHomePage"))
-                : new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
             ChatCommand = new Command(async () => await Shell.Current.GoToAsync("Inquiry"));
             ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
-
             ViewPatientDetailsCommand = new Command<string>(OnViewPatientDetails);
-            LoadSchedule();
         }
 
         public DateTime SelectedDate
@@ -135,11 +153,11 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
-        private void LoadDoctors(IStaffService staffService)
+        private void LoadDoctors()
         {
             try
             {
-                var doctorList = staffService.GetAllDocs();
+                var doctorList = _staffService.GetAllDocs();
                 Doctors.Clear();
                 foreach (var doc in doctorList)
                 {

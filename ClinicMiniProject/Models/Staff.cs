@@ -24,10 +24,6 @@ namespace ClinicMiniProject.Models
         [Required, StringLength(15)]
         public string staff_contact { get; set; } = string.Empty;
 
-        [Column("specialities")]
-        [StringLength(100)]
-        public string? specialities { get; set; }
-
         [Column("isDoctor")]
         [Required]
         public bool isDoctor { get; set; }

@@ -1,15 +1,16 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ClinicMiniProject.Services.Interfaces;
+using Microsoft.Maui.Controls;
 
 namespace ClinicMiniProject.ViewModels
 {
+    [QueryProperty(nameof(UserType), "UserType")]
     public class ReportingManagementViewModel : INotifyPropertyChanged
     {
         private readonly IAuthService _authService;
@@ -19,13 +20,15 @@ namespace ClinicMiniProject.ViewModels
         private DateTime _selectedDate = DateTime.Today;
         private string _reportPeriodType = "Day";
         private string _selectedServiceType = "General Consultation";
+
         private string _userType = "Doctor";
+
         private ReportingSummaryDto? _summary;
         private int _totalOnlineInquiries;
         private int _repliedInquiries;
         private bool _hasReport;
 
-
+        // --- PROPERTIES ---
         public DateTime ReportSelectedDate
         {
             get => _selectedDate;
@@ -50,7 +53,14 @@ namespace ClinicMiniProject.ViewModels
         public string UserType
         {
             get => _userType;
-            set => SetProperty(ref _userType, value);
+            set
+            {
+                if (SetProperty(ref _userType, value))
+                {
+                    //Auto-refresh when user type changes
+                    Task.Run(GenerateAsync); 
+                }
+            }
         }
 
         public string SelectedServiceType
@@ -68,16 +78,13 @@ namespace ClinicMiniProject.ViewModels
                 {
                     OnPropertyChanged(nameof(ReportDateRange));
                     OnPropertyChanged(nameof(ReportTimePeriod));
-
                     OnPropertyChanged(nameof(TotalConsultedCount));
                     OnPropertyChanged(nameof(WalkInConsultationCount));
                     OnPropertyChanged(nameof(OnlineConsultationCount));
-
                     OnPropertyChanged(nameof(GeneralConsultationCount));
                     OnPropertyChanged(nameof(FollowUpTreatmentCount));
                     OnPropertyChanged(nameof(TestResultDiscussionCount));
                     OnPropertyChanged(nameof(VaccinationInjectionCount));
-
                     OnPropertyChanged(nameof(TotalMedicalScreeningCount));
                     OnPropertyChanged(nameof(BloodTestCount));
                     OnPropertyChanged(nameof(BloodPressureCount));
@@ -92,29 +99,8 @@ namespace ClinicMiniProject.ViewModels
             set => SetProperty(ref _hasReport, value);
         }
 
-        public ICommand GenerateReportCommand { get; }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        public ReportingManagementViewModel(IAuthService authService, IReportingService reportingService, IInquiryService inquiryService)
-        {
-            _authService = authService;
-            _reportingService = reportingService;
-            _inquiryService = inquiryService;
-
-            GenerateReportCommand = new Command(async () => await GenerateAsync());
-        }
-
-        public string ReportDateRange
-        {
-            get
-            {
-                if (Summary == null)
-                    return string.Empty;
-                return $"Date: {Summary.Start:dd MMM yyyy} - {Summary.End.AddDays(-1):dd MMM yyyy}";
-            }
-        }
-
+        // --- DISPLAY HELPERS ---
+        public string ReportDateRange => Summary == null ? string.Empty : $"Date: {Summary.Start:dd MMM yyyy} - {Summary.End.AddDays(-1):dd MMM yyyy}";
         public string ReportTimePeriod => $"Time Period: {ReportPeriodType}";
 
         public int TotalConsultedCount => Summary?.TotalConsulted ?? 0;
@@ -126,9 +112,9 @@ namespace ClinicMiniProject.ViewModels
         public int TestResultDiscussionCount => Summary?.ServiceType.TestResultDiscussion ?? 0;
         public int VaccinationInjectionCount => Summary?.ServiceType.VaccinationOrInjection ?? 0;
 
-        public int TotalMedicalScreeningCount => Summary?.ServiceType.TotalMedicalScreening.BloodTest
-                                              + Summary?.ServiceType.TotalMedicalScreening.BloodPressure
-                                              + Summary?.ServiceType.TotalMedicalScreening.SugarTest ?? 0;
+        public int TotalMedicalScreeningCount => (Summary?.ServiceType.TotalMedicalScreening.BloodTest ?? 0)
+                                              + (Summary?.ServiceType.TotalMedicalScreening.BloodPressure ?? 0)
+                                              + (Summary?.ServiceType.TotalMedicalScreening.SugarTest ?? 0);
 
         public int BloodTestCount => Summary?.ServiceType.TotalMedicalScreening.BloodTest ?? 0;
         public int BloodPressureCount => Summary?.ServiceType.TotalMedicalScreening.BloodPressure ?? 0;
@@ -146,12 +132,21 @@ namespace ClinicMiniProject.ViewModels
             private set => SetProperty(ref _repliedInquiries, value);
         }
 
+        public ICommand GenerateReportCommand { get; }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public ReportingManagementViewModel(IAuthService authService, IReportingService reportingService, IInquiryService inquiryService)
+        {
+            _authService = authService;
+            _reportingService = reportingService;
+            _inquiryService = inquiryService;
+
+            GenerateReportCommand = new Command(async () => await GenerateAsync());
+        }
+
         public async Task GenerateAsync()
         {
-            var doctor = _authService.GetCurrentUser();
-            if (doctor == null)
-                return;
-
             var start = ReportSelectedDate.Date;
             DateTime end;
 
@@ -160,11 +155,27 @@ namespace ClinicMiniProject.ViewModels
             else if (string.Equals(ReportPeriodType, "Month", StringComparison.OrdinalIgnoreCase))
                 end = start.AddMonths(1);
             else
-                end = start.AddDays(1);
+                end = start.AddDays(1); // Default to Day
 
-            Summary = await _reportingService.GetDoctorReportingAsync(doctor.staff_ID, start, end);
+           
+            string? doctorId = null;
+
+            if (UserType == "Nurse")
+            {
+                doctorId = "";
+            }
+            else
+            {
+                // DOCTOR: Only get my own appointments
+                var doctor = _authService.GetCurrentUser();
+                if (doctor == null) return;
+                doctorId = doctor.staff_ID;
+            }
+
+            Summary = await _reportingService.GetDoctorReportingAsync(doctorId, start, end);
 
             var inquiries = await _inquiryService.GetInquiriesAsync(null);
+
             TotalOnlineInquiries = inquiries.Count;
             RepliedInquiriesCount = inquiries.Count(i => string.Equals(i.Status, "Replied", StringComparison.OrdinalIgnoreCase));
 
@@ -173,9 +184,7 @@ namespace ClinicMiniProject.ViewModels
 
         protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")
         {
-            if (Equals(backingStore, value))
-                return false;
-
+            if (Equals(backingStore, value)) return false;
             backingStore = value;
             OnPropertyChanged(propertyName);
             return true;

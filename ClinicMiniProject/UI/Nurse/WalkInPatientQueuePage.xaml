@@ -10,11 +10,13 @@
              Title="WalkInPatientQueuePage"
              BackgroundColor="White"
              NavigationPage.HasNavigationBar="False">
-    
+
     <Grid RowDefinitions="Auto, *">
 
-        <controls:BackNavBar BackCommand="{Binding BackCommand}" Title="Walk In Queue" />
-        
+        <controls:BackNavBar Title="Patient Details" 
+                             BackCommand="{Binding BackCommand}" 
+                             Grid.Row="0"/>
+
         <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="20">
 
             <Label Text="Date: 12 November 2025" 
@@ -22,7 +24,8 @@
                    FontSize="14" 
                    Margin="5,0,0,0"/>
 
-            <CollectionView x:Name="WalkInPatientList">
+            <CollectionView x:Name="WalkInPatientList" 
+                ItemsSource="{Binding QueueList}">
 
                 <CollectionView.ItemsLayout>
                     <LinearItemsLayout Orientation="Vertical" ItemSpacing="15" />

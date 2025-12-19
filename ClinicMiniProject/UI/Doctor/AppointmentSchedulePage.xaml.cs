@@ -1,16 +1,12 @@
 using ClinicMiniProject.ViewModels;
-using ClinicMiniProject.Services;
-using ClinicMiniProject.Services.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace ClinicMiniProject.UI.Doctor;
 
 public partial class AppointmentSchedulePage : ContentPage
 {
-    public AppointmentSchedulePage(IAuthService authService, IAppointmentScheduleService scheduleService, IStaffService staffService = null, string userType = "Doctor")
+    public AppointmentSchedulePage(AppointmentScheduleViewModel viewModel)
     {
         InitializeComponent();
-        var viewModel = new AppointmentScheduleViewModel(authService, scheduleService, staffService, userType);
         BindingContext = viewModel;
     }
 

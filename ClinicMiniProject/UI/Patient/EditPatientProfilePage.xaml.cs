@@ -1,9 +1,10 @@
 using ClinicMiniProject.ViewModels;
+
 namespace ClinicMiniProject.UI.Patient;
 
-public partial class AppointmentBooking_Patient : ContentPage
+public partial class EditPatientProfilePage : ContentPage
 {
-    public AppointmentBooking_Patient(PatientAppointmentBookingViewModel viewModel)
+    public EditPatientProfilePage(EditPatientProfileViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;

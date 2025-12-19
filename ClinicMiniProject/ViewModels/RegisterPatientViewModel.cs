@@ -37,24 +37,16 @@ namespace ClinicMiniProject.ViewModels
                 OnPropertyChanged(); 
             } 
         }
-
-        // Dropdown Data Sources
-        public ObservableCollection<Staff> Doctors { get; set; } = new();
         public List<string> ServiceTypes { get; set; } = new()
-        {
-            "General Consultation", "Follow up treatment", "Test Result Discussion",
-            "Vaccination/Injection", "Blood test", "Blood pressure test", "Sugar test"
-        };
-
-        // Selected Items
-        private Staff? selectedDoctor;
-        public Staff? SelectedDoctor { 
-            get => selectedDoctor; 
-            set {
-                selectedDoctor = value; 
-                OnPropertyChanged(); 
-            } 
-        }
+{
+    "General Consultation",
+    "Vaccination/Injection",
+    "Follow Up Treatment",
+    "Test Result Discussion",
+    "Medical Checkup",
+    "Follow-up",
+    "Online"
+};
 
         private string? _selectedServiceType;
         public string? SelectedServiceType {
@@ -68,44 +60,30 @@ namespace ClinicMiniProject.ViewModels
         public ICommand RegisterCommand { get; }
         public ICommand BackCommand { get; }
 
-        public RegisterPatientViewModel(NurseController controller, IStaffService staffService)
+        public RegisterPatientViewModel(NurseController controller)
         {
             _controller = controller;
-            _staffService = staffService;
-
             RegisterCommand = new Command(OnRegisterClicked);
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
-
-            LoadDoctors();
-        }
-
-        private void LoadDoctors()
-        {
-            var doctorList = _staffService.GetAllDocs();
-            Doctors.Clear();
-            foreach (var doc in doctorList)
-            {
-                Doctors.Add(doc);
-            }
         }
 
         private async void OnRegisterClicked()
         {
             if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(IcNumber) ||
-                string.IsNullOrWhiteSpace(PhoneNumber) || SelectedServiceType == null)
+                string.IsNullOrWhiteSpace(PhoneNumber) || string.IsNullOrEmpty(SelectedServiceType))
             {
-                await Shell.Current.DisplayAlert("Error", "Please fill in all required fields.", "OK");
+                await Application.Current.MainPage.DisplayAlert("Error", "Please fill in all required fields.", "OK");
                 return;
             }
 
-            bool success = await _controller.RegisterWalkInPatient(
-                Name, IcNumber, PhoneNumber, SelectedDoctor?.staff_ID
-            );
+            string result = await _controller.RegisterWalkInPatient(
+               Name, IcNumber, PhoneNumber, SelectedServiceType
+           );
 
-            if (success)
+            if (result == "Success")
             {
-                await Shell.Current.DisplayAlert("Success", "Patient registered successfully.", "OK");
-                await Shell.Current.GoToAsync(".."); // Go back
+                await Application.Current.MainPage.DisplayAlert("Success", "Patient registered successfully.", "OK");
+                await Shell.Current.GoToAsync("WalkInPatientQueuePage");
             }
             else
             {
