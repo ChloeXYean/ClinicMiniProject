@@ -9,8 +9,8 @@
     <Grid RowDefinitions="Auto, Auto, *">
         
         <!-- Custom Header -->
-        <control:BackNavBar Grid.Row="0" Title="Appointment History" BackClicked="OnBackClicked" />
-
+        <control:BackNavBar Grid.Row="0" Title="Appointment History" BackCommand="{Binding BackCommand}" />
+        
         <!-- Search Bar Area -->
         <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Padding="20,10">
             <Frame BackgroundColor="#F0F0F0" CornerRadius="20" Padding="10" HasShadow="False" HorizontalOptions="Fill" Grid.Column="0">
