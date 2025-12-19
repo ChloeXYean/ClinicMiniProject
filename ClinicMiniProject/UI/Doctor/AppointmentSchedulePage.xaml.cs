@@ -1,19 +1,16 @@
 using ClinicMiniProject.ViewModels;
-using ClinicMiniProject.Services;
-using ClinicMiniProject.Services.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace ClinicMiniProject.UI.Doctor;
 
 public partial class AppointmentSchedulePage : ContentPage
 {
-    public AppointmentSchedulePage(IAuthService authService, IAppointmentScheduleService scheduleService, IStaffService staffService = null, string userType = "Doctor")
+    public AppointmentSchedulePage(AppointmentScheduleViewModel viewModel)
     {
         InitializeComponent();
-        var viewModel = new AppointmentScheduleViewModel(authService, scheduleService, staffService, userType);
         BindingContext = viewModel;
     }
 
+    // You can keep this, or use the Command in the ViewModel (better)
     private async void OnBackClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("..");
