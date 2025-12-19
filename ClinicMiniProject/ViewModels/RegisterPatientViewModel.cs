@@ -3,6 +3,7 @@ using System.Windows.Input;
 using ClinicMiniProject.Controller;
 using ClinicMiniProject.Models;
 using ClinicMiniProject.Services;
+using ClinicMiniProject.Services.Interfaces;
 
 namespace ClinicMiniProject.ViewModels
 {
@@ -37,6 +38,16 @@ namespace ClinicMiniProject.ViewModels
                 OnPropertyChanged(); 
             } 
         }
+
+        private bool isEmergency = false;
+        public bool IsEmergency {
+            get => isEmergency; 
+            set {
+                isEmergency = value; 
+                OnPropertyChanged(); 
+            } 
+        }
+
         public List<string> ServiceTypes { get; set; } = new()
 {
     "General Consultation",
@@ -69,6 +80,7 @@ namespace ClinicMiniProject.ViewModels
 
         private async void OnRegisterClicked()
         {
+            // Basic field validation
             if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(IcNumber) ||
                 string.IsNullOrWhiteSpace(PhoneNumber) || string.IsNullOrEmpty(SelectedServiceType))
             {
@@ -76,8 +88,23 @@ namespace ClinicMiniProject.ViewModels
                 return;
             }
 
+            // IC number validation
+            var authService = new Services.AuthService(null);
+            if (!authService.ValidateICNumber(IcNumber, out string icMessage))
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", icMessage, "OK");
+                return;
+            }
+
+            // Phone number validation
+            if (!authService.ValidatePhoneNumber(PhoneNumber, out string phoneMessage))
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", phoneMessage, "OK");
+                return;
+            }
+
             string result = await _controller.RegisterWalkInPatient(
-               Name, IcNumber, PhoneNumber, SelectedServiceType
+               Name, IcNumber, PhoneNumber, SelectedServiceType, IsEmergency
            );
 
             if (result == "Success")

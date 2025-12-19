@@ -3,15 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Doctor.InquiryHistoryPage"
-             BackgroundColor="#F8F9FD" 
-             Shell.NavBarIsVisible="False">
+             BackgroundColor="#F8F9FD" >
 
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
-        <control:TopNavBar Grid.Row="0"
-                          UserName="{Binding DoctorName}"
-                          MenuCommand="{Binding ToggleMenuCommand}"
-                          BellCommand="{Binding NotificationCommand}" />
-
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="20">
                 <Label Text="Inquiry History" 

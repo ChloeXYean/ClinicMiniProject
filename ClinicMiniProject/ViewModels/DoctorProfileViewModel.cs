@@ -91,6 +91,7 @@ namespace ClinicMiniProject.ViewModels
         public ICommand ChangeProfilePictureCommand { get; }
         public ICommand AddServiceCommand { get; }
         public ICommand RemoveServiceCommand { get; }
+        public ICommand EditProfileCommand { get; }
         public ICommand LogoutCommand { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -106,6 +107,7 @@ namespace ClinicMiniProject.ViewModels
             ChangeProfilePictureCommand = new Command(async () => await ChangeProfilePictureAsync());
             AddServiceCommand = new Command(async () => await AddServiceAsync());
             RemoveServiceCommand = new Command<ServiceItem>(OnRemoveService);
+            EditProfileCommand = new Command(async () => await Shell.Current.GoToAsync("EditDoctorProfile"));
             LogoutCommand = new Command(async () =>
             {
                 _authService.Logout();
@@ -126,7 +128,8 @@ namespace ClinicMiniProject.ViewModels
             DoctorId = dto.DoctorId;
             Name = dto.Name;
             PhoneNo = dto.PhoneNo;
-            WorkingHoursText = dto.WorkingHoursText;
+            // Set default working hours to 9am-9pm if not set
+            WorkingHoursText = string.IsNullOrEmpty(dto.WorkingHoursText) ? "9:00 AM - 9:00 PM" : dto.WorkingHoursText;
             ProfileImageUri = dto.ProfileImageUri;
 
             ServicesProvided.Clear();

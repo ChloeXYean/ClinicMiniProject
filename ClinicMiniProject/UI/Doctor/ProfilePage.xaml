@@ -3,15 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Doctor.ProfilePage"
-			 Shell.NavBarIsVisible="False"
-             Title="Profile">
+             Title="Doctor's Profile">
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
 
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Padding="20,15" BackgroundColor="#6EA8FE">
-            <ImageButton Grid.Column="0" Source="menu.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent" Clicked="OnBackClicked" />
-            <Label Grid.Column="1" Text="Profile" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
-            <ImageButton Grid.Column="2" Source="profile.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent"
-                         Command="{Binding ToggleEditModeCommand}" />
+           
         </Grid>
 
         <ScrollView Grid.Row="1">
@@ -152,6 +148,36 @@
                     </Border.StrokeShape>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Account Settings" FontAttributes="Bold" FontSize="16" TextColor="#333" />
+                        <Button Text="Edit Profile" 
+                                Command="{Binding EditProfileCommand}" 
+                                BackgroundColor="#2D5AF0" 
+                                TextColor="White"
+                                HeightRequest="48"
+                                CornerRadius="8"
+                                Margin="0,0,0,10">
+                            <Button.VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup Name="CommonStates">
+                                    <VisualState Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#2D5AF0" />
+                                            <Setter Property="Scale" Value="1.0" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#1E4BC6" />
+                                            <Setter Property="Scale" Value="1.02" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#153FA0" />
+                                            <Setter Property="Scale" Value="0.98" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </Button.VisualStateManager.VisualStateGroups>
+                        </Button>
                         <Button Text="Logout" 
                                 Command="{Binding LogoutCommand}" 
                                 BackgroundColor="#FF4444" 

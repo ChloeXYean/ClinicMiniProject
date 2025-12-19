@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ClinicMiniProject.Models;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace ClinicMiniProject.Services
@@ -197,15 +198,15 @@ namespace ClinicMiniProject.Services
             }
         }
 
-        public object Login(string patient_IC, string password, out string message)
+        public async Task<object> LoginAsync(string patient_IC, string password)
         {
-            message = "";
+            string message = "";
 
             // Validate IC number/ID first
             if (string.IsNullOrWhiteSpace(patient_IC))
             {
                 message = "IC number/ID cannot be empty.";
-                return null;
+                throw new InvalidOperationException(message);
             }
 
             // Validate IC number format for patients
@@ -225,17 +226,17 @@ namespace ClinicMiniProject.Services
             if (string.IsNullOrWhiteSpace(password))
             {
                 message = "Password cannot be empty.";
-                return null;
+                throw new InvalidOperationException(message);
             }
 
-            var patient = _context.Patients.FirstOrDefault(p => p.patient_IC == patient_IC && p.password == password);
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.patient_IC == patient_IC && p.password == password);
             if (patient != null)
             {
                 _currentPatient = patient;
                 return patient;
             }
 
-            var staff = _context.Staffs.FirstOrDefault(s => s.staff_ID == patient_IC && s.password == password);
+            var staff = await _context.Staffs.FirstOrDefaultAsync(s => s.staff_ID == patient_IC && s.password == password);
             if (staff != null)
             {
                 _currentStaff = staff;
@@ -243,7 +244,27 @@ namespace ClinicMiniProject.Services
             }
 
             message = "Account not found. Please try again or create a new account.";
-            return null;
+            throw new InvalidOperationException(message);
+        }
+
+        // Keep the old synchronous method for backward compatibility
+        public object Login(string patient_IC, string password, out string message)
+        {
+            message = "";
+            try
+            {
+                return LoginAsync(patient_IC, password).GetAwaiter().GetResult();
+            }
+            catch (InvalidOperationException ex)
+            {
+                message = ex.Message;
+                return null;
+            }
+            catch (Exception)
+            {
+                message = "An error occurred during login. Please try again.";
+                return null;
+            }
         }
 
         public Staff GetCurrentUser()
