@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
@@ -60,8 +60,111 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
+	  <None Remove="Resources\AppIcon\appointment.png" />
+	  <None Remove="Resources\AppIcon\back.png" />
+	  <None Remove="Resources\AppIcon\bell.png" />
+	  <None Remove="Resources\AppIcon\history.png" />
+	  <None Remove="Resources\AppIcon\home.png" />
+	  <None Remove="Resources\AppIcon\inquiry.png" />
+	  <None Remove="Resources\AppIcon\menu.png" />
+	  <None Remove="Resources\AppIcon\profile.png" />
+	  <None Remove="Resources\AppIcon\profilepicture.png" />
+	  <None Remove="Resources\AppIcon\report.png" />
+	  <None Remove="Resources\AppIcon\time.png" />
+	  <None Remove="Resources\AppIcon\user.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.6">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.6" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30" />
+		<PackageReference Include="MySql.Data" Version="9.5.0" />
+		<PackageReference Include="MySqlConnector" Version="2.5.0" />
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Backend\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiImage Include="Resources\AppIcon\appointment.png" />
+	  <MauiImage Include="Resources\AppIcon\back.png" />
+	  <MauiImage Include="Resources\AppIcon\bell.png" />
+	  <MauiImage Include="Resources\AppIcon\history.png" />
+	  <MauiImage Include="Resources\AppIcon\home.png" />
+	  <MauiImage Include="Resources\AppIcon\inquiry.png" />
+	  <MauiImage Include="Resources\AppIcon\menu.png" />
+	  <MauiImage Include="Resources\AppIcon\profile.png" />
+	  <MauiImage Include="Resources\AppIcon\profilepicture.png" />
+	  <MauiImage Include="Resources\AppIcon\report.png" />
+	  <MauiImage Include="Resources\AppIcon\time.png" />
+	  <MauiImage Include="Resources\AppIcon\user.png" />
+	  <MauiImage Include="Resources\AppIcon\walkin.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="UI\Control\BackNavBar.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Control\BottomNavBar.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Control\TopNavBar.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Doctor\DoctorDashboardPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Doctor\AppointmentSchedulePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Doctor\ConsultationDetailsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Doctor\AppointmentHistoryPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Doctor\ReportingManagementPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Doctor\InquiryPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Doctor\ProfilePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Doctor\InquiryDetailsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\LoginPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Nurse\EndConsultationPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Nurse\NurseHomePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Nurse\PatientDetailsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Nurse\RegisterPatientPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Nurse\WalkInPatientQueuePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Patient\PatientHomePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\RegisterPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 </Project>

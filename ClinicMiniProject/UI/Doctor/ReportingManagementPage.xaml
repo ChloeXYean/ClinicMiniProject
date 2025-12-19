@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ClinicMiniProject.UI.Doctor.ReportingManagementPage"
+             Title="ReportingManagement">
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Padding="20,15" BackgroundColor="#6EA8FE">
+            <ImageButton Grid.Column="0" Source="menu.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent" Clicked="OnBackClicked" />
+            <Label Grid.Column="1" Text="Reporting Management" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="14">
+
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Date Range Selector" FontAttributes="Bold" />
+                        <DatePicker Date="{Binding ReportSelectedDate, Mode=TwoWay}" />
+
+                        <Label Text="Time Period" FontAttributes="Bold" />
+                        <HorizontalStackLayout Spacing="16">
+                            <RadioButton Content="Day" GroupName="Period" IsChecked="True" CheckedChanged="OnDayChecked" />
+                            <RadioButton Content="Week" GroupName="Period" CheckedChanged="OnWeekChecked" />
+                            <RadioButton Content="Month" GroupName="Period" CheckedChanged="OnMonthChecked" />
+                        </HorizontalStackLayout>
+
+                        <Label Text="Select Service Type" FontAttributes="Bold" />
+                        <Picker ItemsSource="{Binding AvailableServiceTypes}" SelectedItem="{Binding SelectedServiceType, Mode=TwoWay}" />
+
+                        <Button Text="Generate Report" Command="{Binding GenerateReportCommand}" HeightRequest="48" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border BackgroundColor="#F5F7FF" StrokeThickness="0" Padding="16" IsVisible="{Binding HasReport}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Report Results" FontAttributes="Bold" FontSize="18" />
+
+                        <Label Text="{Binding ReportDateRange}" />
+                        <Label Text="{Binding ReportTimePeriod}" />
+
+                        <Label Text="Core Consultation Summary" FontAttributes="Bold" />
+                        <Label Text="{Binding TotalConsultedCount, StringFormat='Total Consulted: {0}'}" />
+                        <Label Text="{Binding WalkInConsultationCount, StringFormat='Walk-in Consultation: {0}'}" />
+                        <Label Text="{Binding OnlineConsultationCount, StringFormat='Online Consultation: {0}'}" />
+
+                        <Label Text="Service Type Breakdown" FontAttributes="Bold" />
+                        <Label Text="{Binding GeneralConsultationCount, StringFormat='General Consultation: {0}'}" />
+                        <Label Text="{Binding FollowUpTreatmentCount, StringFormat='Follow up treatment: {0}'}" />
+                        <Label Text="{Binding TestResultDiscussionCount, StringFormat='Test Result Discussion: {0}'}" />
+                        <Label Text="{Binding VaccinationInjectionCount, StringFormat='Vaccination/Injection: {0}'}" />
+
+                        <Label Text="Medical Screening Breakdown" FontAttributes="Bold" />
+                        <Label Text="{Binding TotalMedicalScreeningCount, StringFormat='Total Medical Screening: {0}'}" />
+                        <Label Text="{Binding BloodTestCount, StringFormat='Blood Test: {0}'}" />
+                        <Label Text="{Binding BloodPressureCount, StringFormat='Blood Pressure: {0}'}" />
+                        <Label Text="{Binding SugarTestCount, StringFormat='Sugar Test: {0}'}" />
+
+                        <Label Text="Online Inquiry Summary" FontAttributes="Bold" />
+                        <Label Text="{Binding TotalOnlineInquiries, StringFormat='Total Inquiries: {0}'}" />
+                        <Label Text="{Binding RepliedInquiriesCount, StringFormat='Replied: {0}'}" />
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="2" HeightRequest="0" />
+    </Grid>
+</ContentPage>

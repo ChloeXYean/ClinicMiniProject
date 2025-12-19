@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
+             x:Class="ClinicMiniProject.UI.Doctor.ProfilePage"
+             Title="Profile">
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Padding="20,15" BackgroundColor="#6EA8FE">
+            <ImageButton Grid.Column="0" Source="menu.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent" Clicked="OnBackClicked" />
+            <Label Grid.Column="1" Text="Professional Profile" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
+            <ImageButton Grid.Column="2" Source="profile.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent"
+                         Command="{Binding ToggleEditModeCommand}" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="14">
+
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" RowDefinitions="Auto,Auto,Auto" RowSpacing="10">
+
+                        <Border Grid.RowSpan="3" Grid.Column="0" StrokeThickness="0" BackgroundColor="#F5F7FF" HeightRequest="86" WidthRequest="86">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="43" />
+                            </Border.StrokeShape>
+                            <Image Source="{Binding ProfileImageUri}" Aspect="AspectFill" />
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ChangeProfilePictureCommand}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding DoctorId, StringFormat='Doctor ID: {0}'}" />
+
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding DoctorName, StringFormat='Dr. {0}'}" FontAttributes="Bold" IsVisible="{Binding IsReadOnlyMode}" />
+                        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding DoctorName, Mode=TwoWay}" IsVisible="{Binding IsEditMode}" />
+
+                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding PhoneNumber, StringFormat='Phone Number: {0}'}" IsVisible="{Binding IsReadOnlyMode}" />
+                        <Entry Grid.Row="2" Grid.Column="1" Text="{Binding PhoneNumber, Mode=TwoWay}" Keyboard="Telephone" IsVisible="{Binding IsEditMode}" />
+
+                    </Grid>
+                </Border>
+
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Working Hours" FontAttributes="Bold" />
+                        <Label Text="{Binding WorkingHours}" IsVisible="{Binding IsReadOnlyMode}" />
+                        <Entry Text="{Binding WorkingHours, Mode=TwoWay}" IsVisible="{Binding IsEditMode}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Services Provided:" FontAttributes="Bold" />
+
+                        <CollectionView ItemsSource="{Binding ServicesProvided}" SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Padding="8">
+                                        <Label Grid.Column="0" Text="{Binding Name}" />
+                                        <ImageButton Grid.Column="1" Source="bell.png" HeightRequest="18" WidthRequest="18" BackgroundColor="Transparent"
+                                                     Command="{Binding BindingContext.RemoveServiceCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                     CommandParameter="{Binding .}"
+                                                     IsVisible="{Binding BindingContext.IsEditMode, Source={RelativeSource AncestorType={x:Type ContentPage}}}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <Button Text="+ Add Service" Command="{Binding AddServiceCommand}" IsVisible="{Binding IsEditMode}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Button Text="Save Changes" Command="{Binding SaveProfileCommand}" HeightRequest="52" IsVisible="{Binding IsEditMode}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <control:BottomNavBar x:Name="BottomBar" Grid.Row="2" SelectedTab="Profile" />
+    </Grid>
+</ContentPage>

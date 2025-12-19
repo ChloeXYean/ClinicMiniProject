@@ -1,81 +1,104 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ClinicMiniProject.Models;
+﻿using ClinicMiniProject.Models;
+using ClinicMiniProject.Services.Interfaces;
+using ClinicMiniProject.Services;
+
 
 namespace ClinicMiniProject.Controller
 {
-    internal class NurseController
+    public class NurseController
     {
-        public List<Appointment> appointments = new List<Appointment>();
-        public List<Patient> patients = new List<Patient>();
-        public List<Appointment> ViewAppointmentList(DateTime selectedDate)
+        private readonly IAppointmentService _appointmentService;
+        private readonly PatientService _patientService;
+        private readonly IStaffService _staffService;
+
+        public NurseController(
+            IAppointmentService appointmentService,
+            PatientService patientService,
+            IStaffService staffService)
         {
-            return appointments.FindAll(a => a.appointedAt.Date == selectedDate).OrderBy(a => a.appointedAt).ToList();
+            _appointmentService = appointmentService;
+            _patientService = patientService;
+            _staffService = staffService;
         }
 
-        //View appointment history 
-        public List<Appointment> ViewAppointmentHistory(Patient patient)
+
+        public async Task<List<Appointment>> ViewAppointmentList(DateTime selectedDate)
         {
-            
-            return appointments.FindAll(a => a.patient_IC == patient.patient_IC).OrderByDescending(a => a.appointedAt).ToList();
+            // filter by staff or role
+            var start = selectedDate.Date;
+            var end = start.AddDays(1);
+
+            var appointments = await _appointmentService
+                .GetAppointmentsByStaffAndDateRangeAsync("", start, end);
+
+            return appointments.ToList();
         }
 
-
-        //TODO: Need to modify this method to integrate with SystemUtils for timeslot assignment
-        public void ManageEmergencyAppointment(Appointment emergencyAppointment)
-        {
-            emergencyAppointment.appointment_status = "Emergency";
-            emergencyAppointment.bookedAt = DateTime.Now;
-            foreach (var apt in appointments)
+        public async Task<bool> RegisterWalkInPatient(string fullName,string ic,string phone, string? preferredDoctorId = null)
+        { //Reason idk need or not 
+            try
             {
-                if (apt.appointedAt == emergencyAppointment.appointedAt && apt.appointment_ID != emergencyAppointment.appointment_ID)
+                var patient = new Patient
                 {
-                    apt.appointment_status = "Rescheduled";
-                    //Neeed to send msg to the patiet that got emergency case
-                    apt.appointedAt = apt.appointedAt.AddMinutes(30); // Reschedule by 30 minutes for simplicity
-                }
-            }
-            appointments.Add(emergencyAppointment);
-        }
+                    patient_IC = ic,
+                    patient_name = fullName,
+                    patient_contact = phone,
+                    isAppUser = false
+                };
 
-        public void RegisterWalkInPatient(Patient patient)
-        {
-            var existingPatient = patients.Find(p => p.patient_IC == patient.patient_IC);
-            if (existingPatient == null)
-            {
-                //Validate patient details here 
-                patients.Add(patient);
-            }
-            else
-            {
-                //ady registered
-            }
-        }
+                _patientService.AddPatient(patient);
 
-        public List<Appointment> EndDocConsultation() 
-        {
-            return appointments.FindAll(a => a.appointment_status == "Completed").OrderByDescending(a => a.appointedAt).ToList();
-        }
+                string doctorId = preferredDoctorId ?? "DOC001"; // TODO: real logic
 
-        public void UpdatePaymentStatus(Appointment apt)
-        {
-            apt.payment_status = "Done";
-        }
+                var slot = _appointmentService.AssignWalkInTimeSlot(doctorId,DateTime.Today);
 
-        public Patient ViewPatientDetails(string patientIC)
-        {
-            var patient = patients.FirstOrDefault(p => p.patient_IC != patientIC);
-            if (patient == null)
+                var appointment = new Appointment
                 {
-                throw new ArgumentException("Patient not found.");
-            }
-            return patient;
+                    patient_IC = ic,
+                    staff_ID = doctorId,
+                    appointedAt = slot,
+                    bookedAt = DateTime.Now,
+                    status = slot.HasValue ? "Pending" : "NoSlot",
+                    //reason = serviceType
+                };
 
+                _appointmentService.AddAppointment(appointment);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
+        public async Task<List<Appointment>> GetCompletedConsultationsAsync(string doctorId)
+        {
+            var appointments = await _appointmentService.GetUpcomingAppointmentsAsync(doctorId);
 
+            return appointments.Where(a => a.status == "Completed").OrderByDescending(a => a.appointedAt).ToList();
+        }
+
+        public Patient? ViewPatientDetails(string patientIC)
+        {
+            return _patientService.GetPatientByIC(patientIC);
+        }
+
+        public async Task<List<Appointment>> GetUpcomingAppointment()
+        {
+            var now = DateTime.Now;
+
+            var appointments = await _appointmentService
+                .GetAppointmentsByStaffAndDateRangeAsync(
+                    staffId: "",          
+                    startDate: now,
+                    endDate: now.AddDays(30) 
+                );
+
+            return appointments
+                .Where(a => a.status == "Pending" || a.status == "Scheduled")
+                .OrderBy(a => a.appointedAt)
+                .ToList();
+        }
     }
 }

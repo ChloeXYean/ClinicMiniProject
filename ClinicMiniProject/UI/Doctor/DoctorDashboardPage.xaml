@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
+             x:Class="ClinicMiniProject.UI.Doctor.DoctorDashboardPage"
+             Title="DoctorDashboardPage">
+
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
+        <control:TopNavBar Grid.Row="0"
+                          UserName="{Binding DoctorName}"
+                          MenuCommand="{Binding ToggleMenuCommand}"
+                          BellCommand="{Binding NotificationCommand}" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="16">
+
+                <Border BackgroundColor="#F5F7FF" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Today Overview:" FontSize="20" FontAttributes="Bold" />
+
+                        <Label Text="{Binding CurrentDate, StringFormat='Date: {0}'}" FontSize="14" />
+                        <Label Text="{Binding TodayStats.TotalConsulted, StringFormat='Total Consulted: {0}'}" FontSize="14" />
+                        <Label Text="{Binding TodayStats.OnlineConsulted, StringFormat='Online: {0}'}" FontSize="14" />
+                        <Label Text="{Binding TodayStats.WalkInConsulted, StringFormat='Walk-in: {0}'}" FontSize="14" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border BackgroundColor="#F5F7FF" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Upcoming Schedule:" FontSize="20" FontAttributes="Bold" />
+
+                        <Label Text="{Binding UpcomingSchedule.PendingAppointments, StringFormat='Pending Appointment: {0}'}" FontSize="14" />
+                        <Label Text="{Binding UpcomingSchedule.OnlinePending, StringFormat='Online: {0}'}" FontSize="14" />
+                        <Label Text="{Binding UpcomingSchedule.WalkInPending, StringFormat='Walk-in: {0}'}" FontSize="14" />
+
+                        <Label Text="{Binding NextAppointmentTime, StringFormat='Next Appointment: {0}'}"
+                               FontSize="14"
+                               TextColor="#D61F1F"
+                               FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="16" RowSpacing="16">
+
+                    <Border Grid.Row="0" Grid.Column="0" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="14">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                            <Image Source="home.png" HeightRequest="42" WidthRequest="42" />
+                            <Button Text="Appointment Schedule" Command="{Binding NavigateToAppointmentScheduleCommand}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Row="0" Grid.Column="1" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="14">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                            <Image Source="profile.png" HeightRequest="42" WidthRequest="42" />
+                            <Button Text="Consultation Details" Command="{Binding NavigateToConsultationDetailsCommand}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Row="1" Grid.Column="0" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="14">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                            <Image Source="inquiry.png" HeightRequest="42" WidthRequest="42" />
+                            <Button Text="Appointment History" Command="{Binding NavigateToAppointmentHistoryCommand}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Row="1" Grid.Column="1" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="14">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                            <Image Source="bell.png" HeightRequest="42" WidthRequest="42" />
+                            <Button Text="Reporting Management" Command="{Binding NavigateToReportingManagementCommand}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <control:BottomNavBar Grid.Row="2"
+                             SelectedTab="Home"
+                             HomeCommand="{Binding NavigateToHomeCommand}"
+                             ChatCommand="{Binding NavigateToInquiryCommand}"
+                             ProfileCommand="{Binding NavigateToProfileCommand}" />
+    </Grid>
+</ContentPage>

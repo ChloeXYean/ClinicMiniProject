@@ -10,9 +10,15 @@ namespace ClinicMiniProject.Repository
     public interface IAppointmentRepository
     {
         List<Appointment> GetAppointmentsByDate(DateTime date);
-        List<Appointment> GetAppointmentsByPatient(string patientIC);
-        List<Appointment> GetAppointmentsById(int id);
+        List<Appointment> GetAppointmentsById(string id);
+        List<Appointment> GetAppointmentsByPatientIC(string patientIC);
 
-        void UpdateAppointmentStatus(int appointmentId, string status);
+        void AddAppointment(Appointment appointment);
+
+        void UpdateAppointmentStatus(string appointmentId, string status);
+
+        IQueryable<Appointment> GetQueryable();
+
+
     }
 }
