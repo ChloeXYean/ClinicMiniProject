@@ -2,6 +2,7 @@
 using ClinicMiniProject.UI.Doctor;
 using ClinicMiniProject.UI.Nurse;
 using ClinicMiniProject.UI.Patient;
+using Microsoft.Maui.Controls;
 
 namespace ClinicMiniProject
 {
@@ -19,7 +20,6 @@ namespace ClinicMiniProject
             // --- Shared / Doctor Routes (Using simple string keys to match ViewModel) ---
             Routing.RegisterRoute("AppointmentSchedule", typeof(AppointmentSchedulePage));
             Routing.RegisterRoute("ConsultationDetails", typeof(ConsultationDetailsPage));
-            Routing.RegisterRoute("AppointmentHistory", typeof(AppointmentHistoryPage));
             Routing.RegisterRoute("ReportingManagement", typeof(ReportingManagementPage));
             Routing.RegisterRoute("Inquiry", typeof(InquiryPage));       // Doctor/Nurse Inquiry View
             Routing.RegisterRoute("Profile", typeof(ProfilePage));       // Doctor Profile
@@ -35,7 +35,6 @@ namespace ClinicMiniProject
             Routing.RegisterRoute("InquiryHistory", typeof(InquiryHistory));
             Routing.RegisterRoute("InquiryDetailsView", typeof(InquiryHistory_DetailedView));
             Routing.RegisterRoute("OnlineInquiry", typeof(OnlineInquiryPatient));
-            Routing.RegisterRoute("AppointmentHistory_NoHistory", typeof(AppointmentHistory_NoHistory));
             Routing.RegisterRoute("PatientConsultationDetails", typeof(PatientConsultationDetailsPage));
             Routing.RegisterRoute("PatientAppointmentHistory", typeof(PatientAppointmentHistoryPage));
             Routing.RegisterRoute("BookAnAppointment", typeof(AppointmentBooking_Patient));

@@ -109,10 +109,7 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<PatientAppointmentHistoryPage>();
             builder.Services.AddTransient<PatientAppointmentHistoryViewModel>();
             builder.Services.AddTransient<AppointmentBooking_Patient>();
-            builder.Services.AddTransient<AppointmentBooking_Patient>();
 
-
-            builder.Services.AddTransient<AppointmentHistoryViewModel>();
             builder.Services.AddTransient<PatientAppointmentHistoryViewModel>();
             builder.Services.AddTransient<BookAnAppointmentViewModel>();
             builder.Services.AddTransient<PatientAppointmentBookingViewModel>();

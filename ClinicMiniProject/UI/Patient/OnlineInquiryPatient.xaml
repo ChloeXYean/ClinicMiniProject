@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="ClinicMiniProject.UI.Patient.OnlineInquiryPatient"
+	Shell.NavBarIsVisible="False"
     BackgroundColor="#F6F7F9">
 
     <VerticalStackLayout Padding="20" Spacing="16">
@@ -27,12 +29,34 @@
                 AutoSize="TextChanges"
                 HeightRequest="100"
                 BackgroundColor="White" />
-        
+
         <Label Text="Upload Photo (Optional)" FontAttributes="Bold" />
         <Button Text="Upload Photo"
                 BackgroundColor="#E3F0FF"
                 TextColor="#1E88E5"
                 CornerRadius="12" />
+
+        <Frame BackgroundColor="White"
+                BorderColor="LightGray"
+                Padding="16"
+                Margin="0,0,16,0">
+            <Grid RowDefinitions="Auto, *" ColumnDefinitions="*, Auto">
+                <Editor Grid.Row="0" Grid.Column="0"
+                        Placeholder="Add notes about the photo (optional)..."
+                        AutoSize="TextChanges"
+                        HeightRequest="60"
+                        BackgroundColor="White"
+                        Text="{Binding PhotoNotes}" />
+                <Button Grid.Row="0" Grid.Column="1"
+                        Text="Upload"
+                        BackgroundColor="#E3F0FF"
+                        TextColor="#1E88E5"
+                        CornerRadius="8"
+                        WidthRequest="80"
+                        HeightRequest="40"
+                        Command="{Binding UploadPhotoCommand}" />
+            </Grid>
+        </Frame>
 
         <Border HeightRequest="120"
                 BackgroundColor="White"
@@ -41,8 +65,16 @@
                 StrokeShape="RoundRectangle 12">
             <Label Text="No photo uploaded"
                    TextColor="Gray"
+                Padding="16"
+                Margin="0,0,16,0">
+                <Image Source="{Binding UploadedPhotoPath}"
+                   Aspect="AspectFill"
                    HorizontalOptions="Center"
                    VerticalOptions="Center" />
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ViewPhotosCommand}" />
+                </Image.GestureRecognizers>
+                </Image>
         </Border>
 
         <Button Text="Submit"
