@@ -180,5 +180,16 @@ namespace ClinicMiniProject.Controller
                 return false;
             }
         }
+
+        public async Task<List<Appointment>> GetAllAppointmentsHistory()
+        {
+            var start = DateTime.Now.AddMonths(-12);
+            var end = DateTime.Now.AddMonths(6);
+
+            var appointments = await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync("", start,end);
+
+            return appointments.OrderByDescending(x => x.appointedAt).ToList();
+        }
+
     }
 }

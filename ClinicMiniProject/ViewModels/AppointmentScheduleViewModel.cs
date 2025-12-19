@@ -10,6 +10,7 @@ using ClinicMiniProject.Models;
 
 namespace ClinicMiniProject.ViewModels
 {
+    [QueryProperty(nameof(UserType),"UserType")]
     public sealed class AppointmentScheduleViewModel : INotifyPropertyChanged
     {
         private readonly IAuthService _authService;
@@ -47,16 +48,24 @@ namespace ClinicMiniProject.ViewModels
             set => SetProperty(ref _doctors, value);
         }
 
+        public string UserType
+        {
+            set
+            {
+                IsNurseMode = value == "Nurse";
+                LoadSchedule();
+            }
+        }
+
         public ICommand HomeCommand { get; }
         public ICommand ChatCommand { get; }
         public ICommand ProfileCommand { get; }
         public ICommand ViewPatientDetailsCommand { get; }
 
-        public AppointmentScheduleViewModel(IAuthService authService, IAppointmentScheduleService scheduleService, IStaffService staffService = null, string userType = "Doctor")
+        public AppointmentScheduleViewModel(IAuthService authService, IAppointmentScheduleService scheduleService, IStaffService staffService = null)
         {
             _authService = authService;
             _scheduleService = scheduleService;
-            IsNurseMode = userType == "Nurse";
 
             if (IsNurseMode && staffService != null)
             {
