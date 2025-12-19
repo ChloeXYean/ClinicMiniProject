@@ -6,8 +6,6 @@ namespace ClinicMiniProject.UI.Doctor;
 [QueryProperty(nameof(AppointmentId), "appointmentId")]
 public partial class ConsultationDetailsPage : ContentPage
 {
-    private readonly ConsultationDetailsViewModel _viewModel;
-
     private string _appointmentId = string.Empty;
 
     public string AppointmentId
@@ -21,10 +19,13 @@ public partial class ConsultationDetailsPage : ContentPage
         }
     }
 
-    public ConsultationDetailsPage(ConsultationDetailsViewModel viewModel)
+    public ConsultationDetailsPage()
     {
         InitializeComponent();
-        BindingContext = _viewModel = viewModel;
+        var sp = Application.Current?.Handler?.MauiContext?.Services;
+        var vm = sp?.GetService<ConsultationDetailsViewModel>();
+        if (vm != null)
+            BindingContext = vm;
     }
 
     private async void OnBackClicked(object sender, EventArgs e)

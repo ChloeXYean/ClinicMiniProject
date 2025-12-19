@@ -65,7 +65,6 @@
                 </Image.GestureRecognizers>
             </Image>
         </Border>
-
         <Button Text="Submit"
                 BackgroundColor="#5DA9FF"
                 TextColor="White"

@@ -62,6 +62,28 @@ namespace ClinicMiniProject.UI
                 await DisplayAlert("Error", message, "OK");
         }
 
+        private void OnShowPasswordClicked(object sender, EventArgs e)
+        {
+            // Toggle the IsPassword property
+            var passwordEntry = FindByName("PasswordEntry") as Entry;
+            var showPasswordBtn = FindByName("ShowPasswordBtn") as ImageButton;
+            
+            if (passwordEntry != null && showPasswordBtn != null)
+            {
+                passwordEntry.IsPassword = !passwordEntry.IsPassword;
+
+                // Change the icon based on the state
+                if (passwordEntry.IsPassword)
+                {
+                    showPasswordBtn.Source = "eye_off.png"; // Icon for hidden state
+                }
+                else
+                {
+                    showPasswordBtn.Source = "eye_on.png";  // Icon for visible state
+                }
+            }
+        }
+
         private async void OnGoToRegister(object sender, EventArgs e)
         {
             await Shell.Current.GoToAsync(nameof(RegisterPage));
