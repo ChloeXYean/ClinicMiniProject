@@ -15,38 +15,38 @@ namespace ClinicMiniProject
         {
             //Database.EnsureCreated();
         }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-{
-                // local database
-                /*string serverIp = "localhost";
-                    var connStr =
-                    $"Server={serverIp};" + // Use the variable here
-                    "Port=3306;" +
+            {
+
+                string serverIp = "ballast.proxy.rlwy.net";
+                var connStr =
+                    $"Server={serverIp};" +
+                    "Port=19463;" +
                     "Database=testdb;" +
                     "Uid=root;" +
-                    "Pwd=123456;" +
-                    "SslMode=None;" +
-                    "Charset=utf8mb4;"; */
+                    "Pwd=NrIvCewJcTGAPqmOXyoziksWgwoQmaQd;" +
+                    "SslMode=Required;" +
+                    "Charset=utf8mb4;";
 
-                //Online db
-                string serverip = "ballast.proxy.rlwy.net";
-                var connStr =
-                    $"server={serverip};" + // use the variable here
-                    "port=19463;" +
-                    "database=testdb;" +
-                    "uid=root;" +
-                    "pwd=NrIvCewJcTGAPqmOXyoziksWgwoQmaQd;" +
-                    "sslmode=Required;" +
-                    "charset=utf8mb4;";
-
+                //string serverIp = "localhost";
+                //var connStr =
+                //    $"Server={serverIp};" +
+                //    "Port=3306;" +
+                //    "Database=testdb;" +
+                //    "Uid=root;" +
+                //    "Pwd=123456;" +
+                //    "SslMode=None;" +
+                //    "Charset=utf8mb4;";
 
                 optionsBuilder.UseMySql(
                     connStr,
                     new MySqlServerVersion(new Version(9, 0, 0)),
                     options => options.EnableRetryOnFailure()
                 );
+
             }
         }
 
@@ -56,6 +56,7 @@ namespace ClinicMiniProject
             modelBuilder.Entity<Staff>()
                 .HasOne(s => s.Availability)
                 .WithOne(d => d.Staff)
+                //.WithOne()
                 .HasForeignKey<DocAvailable>(d => d.staff_ID);
 
             // Ensure one-to-one relationship between Staff and DocAvailable
