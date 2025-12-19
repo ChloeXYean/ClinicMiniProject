@@ -16,7 +16,7 @@ public partial class AppointmentSchedulePage : ContentPage
     public AppointmentSchedulePage(IAuthService authService, IAppointmentScheduleService scheduleService, IStaffService staffService = null, string userType = "Doctor")
     {
         InitializeComponent();
-        var viewModel = new AppointmentScheduleViewModel(authService, scheduleService, staffService, userType);
+        var viewModel = new AppointmentScheduleViewModel(authService, scheduleService, staffService);
         BindingContext = viewModel;
     }
 
