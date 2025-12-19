@@ -41,40 +41,13 @@ namespace ClinicMiniProject.Services
             return false;
         }
 
-        public List<ClinicMiniProject.Models.Appointment> GetQueueByStatus(string status)
+        public List<Appointment> GetQueueByStatus(string status)
         {
             return appointments.Where(a => a.status == status).OrderBy(a => a.appointedAt).ToList();
         }
 
-        public int GetConsultationQueue(ClinicMiniProject.Models.Appointment appt)
-        {
-            return appointments.Count(a =>
-                a.staff_ID == appt.staff_ID &&
-                a.appointedAt < appt.appointedAt &&
-                a.status == "Pending"
-            );
-        }
 
-        public int GetPaymentQueue(ClinicMiniProject.Models.Appointment appt)
-        {
-            return appointments.Count(a =>
-                a.status == "Completed" &&
-                a.appointedAt < appt.appointedAt &&
-                a.status == "Pending"
-            );
-        }
-
-        public int GetPickupQueue(ClinicMiniProject.Models.Appointment appt)
-        {
-            return appointments.Count(a =>
-                a.status == "Completed" &&
-                a.status == "Completed" &&
-                a.appointedAt < appt.appointedAt &&
-                a.status == "Pending"
-            );
-        }
-
-        public List<ClinicMiniProject.Models.Appointment> GetAllAppointments()
+        public List<Appointment> GetAllAppointments()
         {
             return appointments;
         }

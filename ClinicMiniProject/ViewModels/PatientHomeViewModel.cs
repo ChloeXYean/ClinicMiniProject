@@ -1,4 +1,5 @@
 ﻿using ClinicMiniProject.Services.Interfaces;
+using ClinicMiniProject.Services;
 using ClinicMiniProject.UI.Patient;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace ClinicMiniProject.ViewModels
     {
         private readonly IAppointmentService _appointmentService;
         private readonly IAuthService _authService;
+        private readonly PatientService _patientService;
 
         public ICommand HomeCommand { get; }
         public ICommand InquiryHistoryCommand { get; }
@@ -23,12 +25,48 @@ namespace ClinicMiniProject.ViewModels
         public ICommand NavigateToOnlineInquiryCommand { get; }
         public ICommand NotificationCommand { get; }
 
+        private bool _hasUpcomingAppointment;
+        public bool HasUpcomingAppointment
+        {
+            get => _hasUpcomingAppointment;
+            set { _hasUpcomingAppointment = value; OnPropertyChanged(); }
+        }
+
+        private string _appointmentDate;
+        public string AppointmentDate
+        {
+            get => _appointmentDate;
+            set { _appointmentDate = value; OnPropertyChanged(); }
+        }
+
+        private string _appointmentTime;
+        public string AppointmentTime
+        {
+            get => _appointmentTime;
+            set { _appointmentTime = value; OnPropertyChanged(); }
+        }
+
+        private string _doctorName;
+        public string DoctorName
+        {
+            get => _doctorName;
+            set { _doctorName = value; OnPropertyChanged(); }
+        }
+
+        private string _queueSequence;
+        public string QueueSequence
+        {
+            get => _queueSequence;
+            set { _queueSequence = value; OnPropertyChanged(); }
+        }
+
         public string Username => _authService.GetCurrentPatient()?.patient_name ?? _authService.GetCurrentUser()?.staff_name ?? "Patient";
 
-        public PatientHomeViewModel(IAppointmentService appointmentService, IAuthService authService)
+        public PatientHomeViewModel(IAppointmentService appointmentService, IAuthService authService, PatientService patientService)
         {
             _appointmentService = appointmentService;
             _authService = authService;
+            _patientService = patientService;
 
             HomeCommand = new Command((async () => await Shell.Current.GoToAsync("")));
 
@@ -47,11 +85,52 @@ namespace ClinicMiniProject.ViewModels
 
             NavigateToAppointmentHistoryCommand = new Command(async () => await OnNavigateToHistory());
 
-            NavigateToOnlineInquiryCommand = new Command(async () => 
+            NavigateToOnlineInquiryCommand = new Command(async () =>
                 await Shell.Current.GoToAsync("OnlineInquiry"));
 
-            NotificationCommand = new Command(async () => 
+            NotificationCommand = new Command(async () =>
                 await Shell.Current.DisplayAlert("Notification", "You have no new notifications.", "OK"));
+
+            _ = LoadUpcomingAppointment();
+        }
+
+        private async Task LoadUpcomingAppointment()
+        {
+            var patient = _authService.GetCurrentPatient();
+            if (patient == null)
+            {
+                System.Diagnostics.Debug.WriteLine("[PatientHomeViewModel] No current patient found in AuthService.");
+                return;
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[PatientHomeViewModel] Loading upcoming appointment for patient: {patient.patient_name} (IC: {patient.patient_IC})");
+
+            try
+            {
+                var upcoming = await _patientService.GetUpcomingAppointmentEntityAsync(patient.patient_IC);
+                if (upcoming != null)
+                {
+                    HasUpcomingAppointment = true;
+                    AppointmentDate = upcoming.appointedAt?.ToString("dd MMM yyyy") ?? "N/A";
+                    AppointmentTime = upcoming.appointedAt?.ToString("HH:mm") ?? "N/A";
+                    DoctorName = upcoming.Staff?.staff_name ?? "Doctor";
+
+                    int ahead = await _patientService.GetConsultationQueueAsync(upcoming);
+                    QueueSequence = ahead.ToString();
+
+                    System.Diagnostics.Debug.WriteLine($"[PatientHomeViewModel] Loaded appointment: {AppointmentDate} at {AppointmentTime} with {DoctorName}");
+                }
+                else
+                {
+                    HasUpcomingAppointment = false;
+                    System.Diagnostics.Debug.WriteLine("[PatientHomeViewModel] No upcoming appointment returned from service.");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[PatientHomeViewModel] Error loading upcoming appointment: {ex.Message}");
+                HasUpcomingAppointment = false;
+            }
         }
 
         private async Task OnNavigateToHistory()
@@ -62,32 +141,15 @@ namespace ClinicMiniProject.ViewModels
 
             if (string.IsNullOrEmpty(userIc)) return;
 
-            // Check if patient has any appointments (Completed, Pending, etc.)
-            // We pass the patient's ID to the service.
-            // Note: We might need to ensure GetAppointmentsByStaffAndDateRangeAsync or a similar method supports Patient ID 
-            // OR use a specific GetPatientHistory method. 
-            // For now, I'll assume we fetch "All" for this user.
-
             try
             {
-                // Logic: Try to fetch history. If count > 0 -> HistoryPage, else -> NoHistoryPage
                 var history = await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(null, DateTime.MinValue, DateTime.MaxValue);
-
-                // Filter for this specific patient locally if the service doesn't support direct patient filtering yet
                 var myHistory = history.Where(a => a.patient_IC == userIc).ToList();
 
-                if (myHistory.Any())
-                {
-                    await Shell.Current.GoToAsync("PatientAppointmentHistory");
-                }
-                else
-                {
-                    await Shell.Current.GoToAsync("PatientAppointmentHistory");
-                }
+                await Shell.Current.GoToAsync("PatientAppointmentHistory");
             }
             catch
             {
-                // Fallback to unified page on error
                 await Shell.Current.GoToAsync("PatientAppointmentHistory");
             }
         }

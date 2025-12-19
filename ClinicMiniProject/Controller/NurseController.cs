@@ -144,17 +144,18 @@ namespace ClinicMiniProject.Controller
 
             foreach (var app in walkIns)
             {
+                var patient = _patientService.GetPatientByIC(app.patient_IC);
+
                 queueList.Add(new PatientQueueDto
                 {
-                    // MAPPING: Use the real DB columns here
-                    PatientName = app.patient_IC, // Or fetch the name using PatientService if you only have IC
+                    PatientName = patient?.patient_name ?? "Unknown",
+                    QueueId = app.appointment_ID,
+                    ICNumber = app.patient_IC,
+                    RegisteredTime = app.appointedAt?.ToString("hh:mm tt") ?? "--",
+                    PhoneNumber = patient?.patient_contact ?? "N/A",
 
-                    // QUEUE ID LOGIC:
-                    // If you have a specific queue_number column, use it. 
-                    // Otherwise, format the Appointment ID or create a fake one based on order.
-                    QueueId = $"Q-{app.appointment_ID.Substring(0, 4)}",
-
-                    ICNumber = app.patient_IC
+                    // --- FETCH REAL REASON FROM APPOINTMENT ---
+                    ServiceType = app.service_type ?? "General Consultation"
                 });
             }
 

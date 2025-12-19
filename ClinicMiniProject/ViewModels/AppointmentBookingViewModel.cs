@@ -92,6 +92,9 @@ namespace ClinicMiniProject.ViewModels
         public ICommand SelectTimeCommand { get; }
         public ICommand ConfirmSelectionCommand { get; }
 
+        public static readonly TimeSpan StartTime = new TimeSpan(10, 0, 0); // 10 AM
+        public static readonly TimeSpan EndTime = new TimeSpan(22, 0, 0);   // 10 PM
+
         public AppointmentBookingViewModel()
         {
             CurrentMonth = DateTime.Today;
@@ -112,10 +115,10 @@ namespace ClinicMiniProject.ViewModels
         private void GenerateCalendar()
         {
             Days.Clear();
-            
+
             // Get the first day of the month
             var firstDayOfMonth = new DateTime(CurrentMonth.Year, CurrentMonth.Month, 1);
-            
+
             // Find the starting day of the week (Sunday)
             var startDay = firstDayOfMonth.AddDays(-(int)firstDayOfMonth.DayOfWeek);
 
@@ -148,8 +151,8 @@ namespace ClinicMiniProject.ViewModels
         private void GenerateTimeSlots()
         {
             TimeSlots.Clear();
-            var start = new TimeSpan(10, 0, 0); // 10 AM
-            var end = new TimeSpan(22, 0, 0);   // 10 PM
+            var start = StartTime;
+            var end = EndTime;
 
             while (start <= end)
             {
@@ -161,7 +164,7 @@ namespace ClinicMiniProject.ViewModels
 
         private void NextMonth()
         {
-            CurrentMonth = CurrentMonth.AddMonths(1); 
+            CurrentMonth = CurrentMonth.AddMonths(1);
             GenerateCalendar();
         }
 
@@ -203,7 +206,7 @@ namespace ClinicMiniProject.ViewModels
                     // But if now is 10:30, 10:00 slot starts before now. 
                     // Usually we want to book for future. Let's strictly say start time > now
                     // Or maybe give a buffer. Let's stick to start time > now.TimeOfDay
-                    
+
                     slot.IsEnabled = slot.Time > now.TimeOfDay;
                 }
                 else
@@ -296,7 +299,7 @@ namespace ClinicMiniProject.ViewModels
             }
 
             public Color BackgroundColor => IsSelected ? Color.FromArgb("#5FA8FF") : Colors.Transparent;
-            
+
             public Color TextColor
             {
                 get

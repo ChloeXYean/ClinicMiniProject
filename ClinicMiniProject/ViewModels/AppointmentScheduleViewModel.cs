@@ -71,7 +71,7 @@ namespace ClinicMiniProject.ViewModels
                 LoadSchedule();
             }
         }
-
+            
         public ICommand HomeCommand { get; set; }
         public ICommand ChatCommand { get; }
         public ICommand ProfileCommand { get; }

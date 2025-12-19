@@ -10,7 +10,6 @@ public partial class AppointmentSchedulePage : ContentPage
         BindingContext = viewModel;
     }
 
-    // You can keep this, or use the Command in the ViewModel (better)
     private async void OnBackClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("..");

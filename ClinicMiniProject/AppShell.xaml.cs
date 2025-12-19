@@ -43,6 +43,8 @@ namespace ClinicMiniProject
             Routing.RegisterRoute("BookAnAppointment", typeof(AppointmentBooking_Patient));
             Routing.RegisterRoute("AppointmentBooking", typeof(AppointmentBooking_Patient));
             Routing.RegisterRoute("SelectDoctorPage", typeof(SelectDoctorPage));
+            Routing.RegisterRoute("EditPatientProfile", typeof(EditPatientProfilePage));
+
 
             //Prevent lose 
             Routing.RegisterRoute("NurseReporting", typeof(ReportingManagementPage));

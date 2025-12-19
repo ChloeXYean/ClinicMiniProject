@@ -11,4 +11,9 @@ public partial class PatientDetailsPage : ContentPage
         InitializeComponent();
         BindingContext = _viewModel = viewModel;
     }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _viewModel.ReloadData();
+    }
 }

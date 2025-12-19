@@ -2,6 +2,7 @@ using ClinicMiniProject.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using ClinicMiniProject.Services.Interfaces;
 
 namespace ClinicMiniProject.ViewModels
 {
@@ -12,6 +13,7 @@ namespace ClinicMiniProject.ViewModels
     {
         private readonly AppDbContext _context;
 
+        private readonly IAuthService _authService;
         private DateTime _selectedDate;
         public DateTime SelectedDate
         {
@@ -62,9 +64,10 @@ namespace ClinicMiniProject.ViewModels
         public ICommand SelectDoctorCommand { get; }
         public ICommand GoBackCommand { get; }
 
-        public SelectDoctorViewModel(AppDbContext context)
+        public SelectDoctorViewModel(AppDbContext context, IAuthService authService)
         {
             _context = context;
+            _authService = authService;
             AvailableDoctors = new ObservableCollection<Staff>();
             SelectDoctorCommand = new Command<Staff>(async (doctor) => await SelectDoctor(doctor));
             GoBackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
@@ -136,10 +139,17 @@ namespace ClinicMiniProject.ViewModels
             {
                 try
                 {
+                    var patient = _authService.GetCurrentPatient();
+                    if (patient == null)
+                    {
+                        await Shell.Current.DisplayAlert("Error", "You must be logged in as a patient to book an appointment.", "OK");
+                        return;
+                    }
+
                     // Create the appointment object
                     var newAppointment = new Appointment
                     {
-                        patient_IC = "123456121234", // TODO: Get logged-in user's IC
+                        patient_IC = patient.patient_IC,
                         staff_ID = doctor.staff_ID,
                         appointedAt = SelectedDate.Date + SelectedTime,
                         bookedAt = DateTime.Now,
