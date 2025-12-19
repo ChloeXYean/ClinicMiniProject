@@ -19,7 +19,7 @@ namespace ClinicMiniProject
             Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
 
             // --- Shared / Doctor Routes (Using simple string keys to match ViewModel) ---
-            Routing.RegisterRoute("AppointmentSchedule", typeof(AppointmentSchedulePage));
+            Routing.RegisterRoute(nameof(AppointmentSchedulePage), typeof(AppointmentSchedulePage));
             Routing.RegisterRoute("ConsultationDetails", typeof(ConsultationDetailsPage));
             Routing.RegisterRoute("AppointmentHistory", typeof(AppointmentHistoryPage));
             Routing.RegisterRoute("ReportingManagement", typeof(ReportingManagementPage));
@@ -43,6 +43,9 @@ namespace ClinicMiniProject
             Routing.RegisterRoute("BookAnAppointment", typeof(AppointmentBooking_Patient));
             Routing.RegisterRoute("AppointmentBooking", typeof(AppointmentBooking_Patient));
             Routing.RegisterRoute("SelectDoctorPage", typeof(SelectDoctorPage));
+
+            //Prevent lose 
+            Routing.RegisterRoute("NurseReporting", typeof(ReportingManagementPage));
         }
 
         protected override async void OnAppearing()

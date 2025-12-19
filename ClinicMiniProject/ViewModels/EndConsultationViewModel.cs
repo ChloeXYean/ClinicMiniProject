@@ -13,7 +13,7 @@ namespace ClinicMiniProject.ViewModels
         public ObservableCollection<ConsultationQueueDto> ActiveConsultations { get; set; } = new();
 
         public ICommand BackCommand { get; }
-        public ICommand CompleteCommand { get; }
+        public ICommand ViewDetailsCommand { get; }
 
         public EndConsultationViewModel(NurseController nurseController)
         {
@@ -22,7 +22,7 @@ namespace ClinicMiniProject.ViewModels
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
 
             // This command runs when you click "End Consultation" link in the UI
-            CompleteCommand = new Command<ConsultationQueueDto>(OnCompleteConsultation);
+            ViewDetailsCommand = new Command<ConsultationQueueDto>(OnCompleteConsultation);
 
             // Load real data immediately
             LoadConsultations();
@@ -63,6 +63,7 @@ namespace ClinicMiniProject.ViewModels
                 { "SelectedConsultation", consultation }
             };
 
+            // Navigate to the details page (Ensure this route is registered in AppShell!)
             await Shell.Current.GoToAsync("ConsultationDetails", navParam);
         }
 

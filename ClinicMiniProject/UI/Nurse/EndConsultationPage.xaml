@@ -62,13 +62,18 @@
                                     <Label Text="-" TextColor="Black" FontSize="13"/>
                                     <Label Text="{Binding AppointedTime}" TextColor="Black" FontAttributes="Bold" FontSize="13"/>
                                 </HorizontalStackLayout>
-
                                 <Label Grid.Row="3" Grid.Column="1" 
-                                       Text="End Consultation" 
-                                       TextColor="#E02D2D" FontSize="12" FontAttributes="Bold" TextDecorations="Underline" HorizontalOptions="End" Margin="0,15,0,0">
+                                       Text="View Details" 
+                                       TextColor="#2D5AF0" 
+                                       FontSize="12" 
+                                       FontAttributes="Bold" 
+                                       TextDecorations="Underline" 
+                                       HorizontalOptions="End" 
+                                       Margin="0,15,0,0">
+
                                     <Label.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:EndConsultationViewModel}}, Path=CompleteCommand}"
-                                                              CommandParameter="{Binding .}"/>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:EndConsultationViewModel}}, Path=ViewDetailsCommand}"
+                              CommandParameter="{Binding .}"/>
                                     </Label.GestureRecognizers>
                                 </Label>
 
