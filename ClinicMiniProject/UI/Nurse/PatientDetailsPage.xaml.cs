@@ -11,14 +11,4 @@ public partial class PatientDetailsPage : ContentPage
         InitializeComponent();
         BindingContext = _viewModel = viewModel;
     }
-
-    private void OnBackClicked(object sender, EventArgs e)
-    {
-        _viewModel.BackCommand.Execute(null);
-    }
-
-    private void OnUpdateClicked(object sender, EventArgs e)
-    {
-        _viewModel.UpdateCommand.Execute(null);
-    }
 }

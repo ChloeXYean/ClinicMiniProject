@@ -25,7 +25,6 @@ namespace ClinicMiniProject.Controller
 
         public async Task<List<Appointment>> ViewAppointmentList(DateTime selectedDate)
         {
-            // filter by staff or role
             var start = selectedDate.Date;
             var end = start.AddDays(1);
 
@@ -35,41 +34,67 @@ namespace ClinicMiniProject.Controller
             return appointments.ToList();
         }
 
-        public async Task<bool> RegisterWalkInPatient(string fullName,string ic,string phone, string? preferredDoctorId = null)
-        { //Reason idk need or not 
+        public async Task<string> RegisterWalkInPatient(string fullName, string ic, string phone, string serviceType)
+        { 
             try
             {
-                var patient = new Patient
+                var existingPatient = _patientService.GetPatientByIC(ic);
+                if (existingPatient == null)
                 {
-                    patient_IC = ic,
-                    patient_name = fullName,
-                    patient_contact = phone,
-                    isAppUser = false
-                };
+                    var patient = new Patient
+                    {
+                        patient_IC = ic,
+                        patient_name = fullName,
+                        patient_contact = phone,
+                        isAppUser = false
+                    };
+                    _patientService.AddPatient(patient);
+                }
 
-                _patientService.AddPatient(patient);
+                var doctors = _staffService.GetAllDocs();
 
-                string doctorId = preferredDoctorId ?? "DOC001"; // TODO: real logic
+                if (doctors == null || doctors.Count == 0)
+                {
+                    return "Unavailable: No doctors found in the system.";
+                }
 
-                var slot = _appointmentService.AssignWalkInTimeSlot(doctorId,DateTime.Today);
+                string assignedDoctorId = null;
+                DateTime? assignedSlot = null;
+
+                foreach (var doc in doctors)
+                {
+                    var slot = _appointmentService.AssignWalkInTimeSlot(doc.staff_ID, DateTime.Today);
+
+                    if (slot.HasValue)
+                    {
+                        assignedDoctorId = doc.staff_ID;
+                        assignedSlot = slot;
+                        break;
+                    }
+                }
+
+                if (assignedDoctorId == null || assignedSlot == null)
+                {
+                    return "Unavailable: All doctors are fully booked today.";
+                }
 
                 var appointment = new Appointment
                 {
                     patient_IC = ic,
-                    staff_ID = doctorId,
-                    appointedAt = slot,
+                    staff_ID = assignedDoctorId,
+                    appointedAt = assignedSlot,
                     bookedAt = DateTime.Now,
-                    status = slot.HasValue ? "Pending" : "NoSlot",
-                    //reason = serviceType
+                    status = "Pending",
+                    service_type = serviceType
                 };
 
                 _appointmentService.AddAppointment(appointment);
 
-                return true;
+                return "Success";
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                return $"Error: {ex.Message}";
             }
         }
 
@@ -123,7 +148,6 @@ namespace ClinicMiniProject.Controller
                 {
                     // MAPPING: Use the real DB columns here
                     PatientName = app.patient_IC, // Or fetch the name using PatientService if you only have IC
-                    RegisteredTime = app.appointedAt?.ToString("hh:mm tt") ?? "--:--",
 
                     // QUEUE ID LOGIC:
                     // If you have a specific queue_number column, use it. 
@@ -136,5 +160,41 @@ namespace ClinicMiniProject.Controller
 
             return queueList;
         }
+
+
+        public async Task<bool> CompleteAppointment(string appointmentId)
+        {
+            try
+            {
+                var appointment = await _appointmentService.GetAppointmentByIdAsync(appointmentId);
+
+                if (appointment == null) return false;
+
+                appointment.status = "Completed";
+
+                await _appointmentService.UpdateAppointmentAsync(appointment);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error completing appointment: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<List<Appointment>> GetAllAppointmentsHistory()
+        {
+            var start = DateTime.Now.AddMonths(-12);
+            var end = DateTime.Now.AddMonths(6);
+
+            var appointments = await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync("", start, end);
+
+            return appointments.OrderByDescending(x => x.appointedAt).ToList();
+        }
+
     }
+
+
 }
+
