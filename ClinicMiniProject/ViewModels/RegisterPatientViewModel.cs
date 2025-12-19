@@ -41,10 +41,15 @@ namespace ClinicMiniProject.ViewModels
         // Dropdown Data Sources
         public ObservableCollection<Staff> Doctors { get; set; } = new();
         public List<string> ServiceTypes { get; set; } = new()
-        {
-            "General Consultation","Vaccination/Injection" ,"Follow up treatment", "Test Result Discussion", "Medical Checkup"
-            ,"Follow-up'", "Online"
-        };
+{
+    "General Consultation",
+    "Vaccination/Injection",  
+    "Follow Up Treatment",   
+    "Test Result Discussion",
+    "Medical Checkup",
+    "Follow-up",            
+    "Online"
+};
 
         private string _selectedServiceType;
         public string SelectedServiceType

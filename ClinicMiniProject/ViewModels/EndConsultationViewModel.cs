@@ -1,5 +1,5 @@
-﻿using ClinicMiniProject.Dtos;
-using ClinicMiniProject.Models; 
+﻿using ClinicMiniProject.Controller; // Import Controller
+using ClinicMiniProject.Dtos;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -7,33 +7,65 @@ namespace ClinicMiniProject.ViewModels
 {
     public class EndConsultationViewModel : BindableObject
     {
+        private readonly NurseController _controller; 
         public ObservableCollection<ConsultationQueueDto> ActiveConsultations { get; set; } = new();
 
         public ICommand BackCommand { get; }
-        public ICommand ViewDetailsCommand { get; }
+        public ICommand CompleteCommand { get; } 
 
-        public EndConsultationViewModel()
+        public EndConsultationViewModel(NurseController controller) 
         {
-            // Dummy Data - deleteable
-            ActiveConsultations = new ObservableCollection<ConsultationQueueDto>
-            {
-                new ConsultationQueueDto { PatientName = "John Doe", EndTime = "10:30 AM", ConsultationId = "C001" },
-                new ConsultationQueueDto { PatientName = "Jane Smith", EndTime = "11:00 AM", ConsultationId = "C002" }
-            };
+            _controller = controller;
+
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
-            ViewDetailsCommand = new Command<ConsultationQueueDto>(OnViewDetails);
+
+            CompleteCommand = new Command<ConsultationQueueDto>(async (item) => await OnComplete(item));
+
+            LoadConsultations();
         }
 
-        private async void OnViewDetails(ConsultationQueueDto consultation)
+        public async void LoadConsultations()
         {
-            if (consultation == null) return;
+            var appointments = await _controller.GetUpcomingAppointment();
 
-            var navParam = new Dictionary<string, object>
+            ActiveConsultations.Clear();
+
+            foreach (var app in appointments)
             {
-                { "SelectedConsultation", consultation }
-            };
+                var patient = _controller.ViewPatientDetails(app.patient_IC);
+                string nameToDisplay = patient != null ? patient.patient_name : "Unknown";
 
-            await Shell.Current.GoToAsync("ConsultationDetails", navParam);
+                ActiveConsultations.Add(new ConsultationQueueDto
+                {
+                    ConsultationId = app.appointment_ID,
+                    PatientName = nameToDisplay,
+                    PatientIC = app.patient_IC,
+                    ServiceType = app.service_type ?? "General",
+
+                    Date = app.appointedAt?.ToString("dd MMM yyyy") ?? "-",
+                    AppointedTime = app.appointedAt?.ToString("hh:mm tt") ?? "-"
+                });
+            }
+        }
+
+        private async Task OnComplete(ConsultationQueueDto item)
+        {
+            if (item == null) return;
+
+            bool confirm = await Shell.Current.DisplayAlert("Confirm", $"End consultation for {item.PatientName}?", "Yes", "No");
+            if (!confirm) return;
+
+            bool success = await _controller.CompleteAppointment(item.ConsultationId);
+
+            if (success)
+            {
+                ActiveConsultations.Remove(item);
+                await Shell.Current.DisplayAlert("Success", "Consultation ended.", "OK");
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Error", "Failed to update status.", "OK");
+            }
         }
     }
 }

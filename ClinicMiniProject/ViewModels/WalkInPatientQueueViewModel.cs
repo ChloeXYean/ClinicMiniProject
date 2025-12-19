@@ -37,15 +37,17 @@ namespace ClinicMiniProject.ViewModels
                                     && a.status == "Pending")         
                         .OrderBy(a => a.appointedAt)                   
                         .ToListAsync();
-
                     foreach (var appt in appointments)
                     {
                         QueueList.Add(new PatientQueueDto
                         {
                             PatientName = appt.Patient?.patient_name ?? "Unknown",
                             QueueId = appt.appointment_ID,
-                            RegisteredTime = appt.appointedAt?.ToString("hh:mm tt") ?? "--",
-                            ICNumber = appt.patient_IC
+                            ICNumber = appt.patient_IC,
+
+                            RegisteredTime = appt.appointedAt?.ToString("hh:mm tt") ?? "--:--",
+
+                            PhoneNumber = appt.Patient?.patient_contact ?? "N/A"
                         });
                     }
 

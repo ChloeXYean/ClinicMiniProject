@@ -120,6 +120,8 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<WalkInPatientQueuePage>();
             builder.Services.AddTransient<WalkInPatientQueueViewModel>();
 
+
+
             return builder.Build();
         }
     }

@@ -147,7 +147,6 @@ namespace ClinicMiniProject.Controller
                 {
                     // MAPPING: Use the real DB columns here
                     PatientName = app.patient_IC, // Or fetch the name using PatientService if you only have IC
-                    RegisteredTime = app.appointedAt?.ToString("hh:mm tt") ?? "--:--",
 
                     // QUEUE ID LOGIC:
                     // If you have a specific queue_number column, use it. 
@@ -159,6 +158,27 @@ namespace ClinicMiniProject.Controller
             }
 
             return queueList;
+        }
+
+        public async Task<bool> CompleteAppointment(string appointmentId)
+        {
+            try
+            {
+                var appointment = await _appointmentService.GetAppointmentByIdAsync(appointmentId);
+
+                if (appointment == null) return false;
+
+                appointment.status = "Completed";
+
+                await _appointmentService.UpdateAppointmentAsync(appointment);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error completing appointment: {ex.Message}");
+                return false;
+            }
         }
     }
 }

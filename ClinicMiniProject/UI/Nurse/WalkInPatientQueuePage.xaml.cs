@@ -11,11 +11,16 @@ public partial class WalkInPatientQueuePage : ContentPage
         BindingContext = viewModel;
         _viewModel = viewModel;
     }
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-        // Trigger the data load
-        _viewModel.LoadQueue();
+
+        if (WalkInPatientList.SelectedItem != null)
+        {
+            WalkInPatientList.SelectedItem = null;
+        }
+
+        await _viewModel.LoadQueue();
     }
 
 }

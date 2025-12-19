@@ -1,4 +1,4 @@
-﻿using System.Windows.Input;
+﻿        using System.Windows.Input;
 using ClinicMiniProject.Dtos; 
 
 namespace ClinicMiniProject.ViewModels
@@ -31,10 +31,24 @@ namespace ClinicMiniProject.ViewModels
             } 
         }
 
+        private string registeredTime = string.Empty;
+        public string RegisteredTime
+        {
+            get => registeredTime;
+            set { registeredTime = value; OnPropertyChanged(); }
+        }
+
+        private string phoneNumber = string.Empty;
+        public string PhoneNumber
+        {
+            get => phoneNumber;
+            set { phoneNumber = value; OnPropertyChanged(); }
+        }
+
         private PatientQueueDto _patient;
         public PatientQueueDto Patient
         {
-           get => _patient;
+            get => _patient;
             set
             {
                 _patient = value;
@@ -42,12 +56,14 @@ namespace ClinicMiniProject.ViewModels
                 if (_patient != null)
                 {
                     PatientName = _patient.PatientName;
-                    //RegisteredTime = _patient.RegisteredTime;
                     QueueNo = _patient.QueueId;
-                    icNumber = _patient.ICNumber;
+                    IcNumber = _patient.ICNumber;
+
+                    // 2. MAP VALUES HERE so the UI updates
+                    RegisteredTime = _patient.RegisteredTime;
+                    PhoneNumber = _patient.PhoneNumber;
                 }
             }
-                
         }
 
         // --- Commands ---
@@ -61,7 +77,14 @@ namespace ClinicMiniProject.ViewModels
             QueueNo = "--";
             IcNumber = "--";
 
-            BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
+            BackCommand = new Command(async () =>
+            {
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    await Shell.Current.GoToAsync("..");
+                });
+            });
+
             UpdateCommand = new Command(OnUpdate);
         }
 
