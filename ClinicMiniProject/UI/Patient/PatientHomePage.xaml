@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ClinicMiniProject.UI.Patient.PatientHomePage"
+<<<<<<< Updated upstream
              Title="PatientHomePage">
     
     <VerticalStackLayout>
@@ -10,4 +11,113 @@
             VerticalOptions="Center" 
             HorizontalOptions="Center" />
     </VerticalStackLayout>
+=======
+             Title="Patient Home"
+             BackgroundColor="#F5F7FA"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="*, Auto">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="16" Spacing="20">
+
+                <!-- Top Bar -->
+                <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
+                    <!--control:BackNavBar x:Name="BackBar" Grid.Row="0" /-->
+                    <Label Text="☰" FontSize="40" TextColor="#333" VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ProfileCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+
+                    <Label Text="{Binding Username, StringFormat='Hi, {0}'}" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="#333"
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center"
+                           Grid.Column="1"/>
+
+                    <ImageButton Source="bell.png" WidthRequest="15" HeightRequest="15" Grid.Column="2" 
+                                 Command="{Binding NotificationCommand}" Aspect="AspectFit">
+                        <!-- Placeholder for bell -->
+                    </ImageButton>
+                </Grid>
+
+                <!-- Upcoming Appointment (Placeholder) -->
+                <Frame CornerRadius="16" BackgroundColor="#D6ECFF" Padding="20" HasShadow="False" HeightRequest="250">
+                    <Label Text="Upcoming Appointment (Design Later)" 
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center" 
+                           TextColor="Gray"/>
+                </Frame>
+
+                <!-- 3 Main Action Buttons -->
+                <Grid ColumnDefinitions="*,*,*">
+                    <!-- Booking -->
+                    <VerticalStackLayout Spacing="8">
+                        <Frame CornerRadius="30" HeightRequest="70" WidthRequest="70" Padding="0" BackgroundColor="#D6ECFF" HasShadow="True">
+                            <Image Source="appointment.png" HeightRequest="30" WidthRequest="30" HorizontalOptions="Center" VerticalOptions="Center"></Image>
+                            <Frame.GestureRecognizers>
+                                 <TapGestureRecognizer Command="{Binding NavigateToAppointmentBookingCommand}"/>
+                             </Frame.GestureRecognizers>
+                        </Frame>
+                        <Label Text="Appointment Booking" FontSize="11" HorizontalTextAlignment="Center" TextColor="#333"/>
+                         <VerticalStackLayout.GestureRecognizers>
+                             <TapGestureRecognizer Command="{Binding NavigateToAppointmentBookingCommand}"/>
+                         </VerticalStackLayout.GestureRecognizers>
+                    </VerticalStackLayout>
+
+                    <!-- History -->
+                    <VerticalStackLayout Grid.Column="1" Spacing="8">
+                        <Frame CornerRadius="30" HeightRequest="70" WidthRequest="70" Padding="0" BackgroundColor="#D6ECFF" HasShadow="True">
+                            <Image Source="time.png" HeightRequest="30" WidthRequest="30" HorizontalOptions="Center" VerticalOptions="Center"></Image>
+                             <Frame.GestureRecognizers>
+                                 <TapGestureRecognizer Command="{Binding NavigateToAppointmentHistoryCommand}"/>
+                             </Frame.GestureRecognizers>
+                        </Frame>
+                        <Label Text="Appointment History" FontSize="11" HorizontalTextAlignment="Center" TextColor="#333"/>
+                        <VerticalStackLayout.GestureRecognizers>
+                             <TapGestureRecognizer Command="{Binding NavigateToAppointmentHistoryCommand}"/>
+                         </VerticalStackLayout.GestureRecognizers>
+                    </VerticalStackLayout>
+
+                    <!-- Inquiry -->
+                    <VerticalStackLayout Grid.Column="2" Spacing="8">
+                        <Frame CornerRadius="30" HeightRequest="70" WidthRequest="70" Padding="0" BackgroundColor="#D6ECFF" HasShadow="True">
+                             <!--Label Text="💬" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center"/-->
+                            <Image Source="inquiry.png" HeightRequest="30" WidthRequest="30" HorizontalOptions="Center" VerticalOptions="Center"></Image>
+                             <Frame.GestureRecognizers>
+                                 <TapGestureRecognizer Command="{Binding NavigateToOnlineInquiryCommand}"/>
+                             </Frame.GestureRecognizers>
+                        </Frame>
+                        <Label Text="Online Inquiry" FontSize="11" HorizontalTextAlignment="Center" TextColor="#333"/>
+                        <VerticalStackLayout.GestureRecognizers>
+                             <TapGestureRecognizer Command="{Binding NavigateToOnlineInquiryCommand}"/>
+                         </VerticalStackLayout.GestureRecognizers>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Advertisement -->
+                <Frame CornerRadius="16" Padding="12" BackgroundColor="#D6ECFF" HasShadow="True" HeightRequest="150">
+                    <HorizontalStackLayout Spacing="12">
+                        <BoxView WidthRequest="80" HeightRequest="80" Color="#CCCCCC" CornerRadius="8"/>
+                        <VerticalStackLayout VerticalOptions="Center">
+                            <Label Text="Now Available at our Clinic!" FontAttributes="Bold" TextColor="#333"/>
+                            <Label Text="Seasonal influenza vaccination now available." FontSize="12" TextColor="Gray"/>
+                            
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bottom Navigation -->
+        <control:BottomNavBar Grid.Row="1"
+                              SelectedTab="Home"
+                              HomeCommand="{Binding HomeCommand}"
+                              ChatCommand="{Binding InquiryHistoryCommand}"
+                              ProfileCommand="{Binding ProfileCommand}" />
+    </Grid>
+>>>>>>> Stashed changes
 </ContentPage>

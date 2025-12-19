@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+<<<<<<< Updated upstream
              x:Class="ClinicMiniProject.UI.Control.BackNavBar">
 
     <Border BackgroundColor="#6EA8FE"
+=======
+             x:Class="ClinicMiniProject.UI.Control.BackNavBar"
+             x:Name="thisControl"
+             HorizontalOptions="Fill" VerticalOptions="Start">
+
+    <!--<Grid ColumnDefinitions="Auto, *" Padding="10">-->
+        <Border BackgroundColor="#6EA8FE"
+>>>>>>> Stashed changes
             StrokeThickness="0"
             Padding="20,15,100,20"
             HorizontalOptions="Fill"
@@ -34,9 +43,16 @@
                    FontSize="20"
                    FontAttributes="Bold"
                    TextColor="Black"
-                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"
                    VerticalOptions="Center"
+<<<<<<< Updated upstream
                    Margin="15,0,0,0"/>
         </Grid>
     </Border>
+=======
+                   Margin="20,0,0,0"/>
+            </Grid>
+        </Border>
+    <!--</Grid>-->
+>>>>>>> Stashed changes
 </ContentView>
