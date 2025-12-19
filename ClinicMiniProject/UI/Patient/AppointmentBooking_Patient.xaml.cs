@@ -1,3 +1,4 @@
+using ClinicMiniProject.ViewModels;
 namespace ClinicMiniProject.UI.Patient;
 
 public partial class AppointmentBooking_Patient : ContentPage
@@ -7,5 +8,4 @@ public partial class AppointmentBooking_Patient : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
-}
 }

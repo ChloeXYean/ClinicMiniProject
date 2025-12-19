@@ -12,8 +12,11 @@ namespace ClinicMiniProject.ViewModels
     public class SelectDoctorViewModel : BindableObject
     {
         private readonly AppDbContext _context;
-
         private readonly IAuthService _authService;
+
+        // 1. ADD: Appointment Service to handle saving correctly
+        private readonly IAppointmentService _appointmentService;
+
         private DateTime _selectedDate;
         public DateTime SelectedDate
         {
@@ -22,7 +25,7 @@ namespace ClinicMiniProject.ViewModels
             {
                 _selectedDate = value;
                 OnPropertyChanged();
-                Task.Run(LoadDoctors); // Trigger load when property is set by QueryProperty
+                Task.Run(LoadDoctors);
             }
         }
 
@@ -34,8 +37,6 @@ namespace ClinicMiniProject.ViewModels
             {
                 _selectedTime = value;
                 OnPropertyChanged();
-                // LoadDoctors will be triggered by Date set, but if only Time changes...
-                // Usually QueryProperty sets them one by one. Calling LoadDoctors twice is fine or manage state.
             }
         }
 
@@ -64,10 +65,13 @@ namespace ClinicMiniProject.ViewModels
         public ICommand SelectDoctorCommand { get; }
         public ICommand GoBackCommand { get; }
 
-        public SelectDoctorViewModel(AppDbContext context, IAuthService authService)
+        // 2. INJECT: Add IAppointmentService to the constructor
+        public SelectDoctorViewModel(AppDbContext context, IAuthService authService, IAppointmentService appointmentService)
         {
             _context = context;
             _authService = authService;
+            _appointmentService = appointmentService; // Store it
+
             AvailableDoctors = new ObservableCollection<Staff>();
             SelectDoctorCommand = new Command<Staff>(async (doctor) => await SelectDoctor(doctor));
             GoBackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
@@ -86,7 +90,6 @@ namespace ClinicMiniProject.ViewModels
                     var dayOfWeek = SelectedDate.DayOfWeek;
                     var appointmentDateTime = SelectedDate.Date + SelectedTime;
 
-                    // 2. Use the injected _context
                     var doctors = await _context.Staffs
                         .Include(s => s.Availability)
                         .Where(s => s.isDoctor)
@@ -94,13 +97,7 @@ namespace ClinicMiniProject.ViewModels
 
                     foreach (var doc in doctors)
                     {
-                        // DEBUGGING: Check if data exists
-                        if (doc.Availability == null)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"[Warning] Doctor {doc.staff_name} has NO availability set in DB.");
-                            continue;
-                        }
-
+                        if (doc.Availability == null) continue;
                         if (!doc.Availability.IsAvailable(dayOfWeek)) continue;
 
                         bool conflict = await _context.Appointments
@@ -112,12 +109,6 @@ namespace ClinicMiniProject.ViewModels
                         {
                             AvailableDoctors.Add(doc);
                         }
-                    }
-
-                    // Alert if empty (Helps you debug)
-                    if (AvailableDoctors.Count == 0)
-                    {
-                        System.Diagnostics.Debug.WriteLine("No doctors found for this criteria.");
                     }
                 });
             }
@@ -155,26 +146,14 @@ namespace ClinicMiniProject.ViewModels
                         bookedAt = DateTime.Now,
                         status = "Pending",
                         service_type = SelectedService ?? "General Consultation"
+                        // NOTE: appointment_ID is missing here, but the Service below will generate it!
                     };
 
-                    System.Diagnostics.Debug.WriteLine($"Creating appointment: Doctor={doctor.staff_ID}, Date={newAppointment.appointedAt}, Patient={newAppointment.patient_IC}");
-
-                    _context.Appointments.Add(newAppointment);
-                    int result = await _context.SaveChangesAsync();
-
-                    System.Diagnostics.Debug.WriteLine($"Save result: {result} rows affected");
+                    // 3. FIX: Use Service to Save (Generates ID automatically)
+                    await Task.Run(() => _appointmentService.AddAppointment(newAppointment));
 
                     await Shell.Current.DisplayAlert("Success", "Appointment Request Sent!", "OK");
                     await Shell.Current.GoToAsync("///PatientHomePage");
-                }
-                catch (DbUpdateException dbEx)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Database update error: {dbEx.Message}");
-                    if (dbEx.InnerException != null)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Inner exception: {dbEx.InnerException.Message}");
-                    }
-                    await Shell.Current.DisplayAlert("Error", $"Failed to save appointment: {dbEx.Message}", "OK");
                 }
                 catch (Exception ex)
                 {
