@@ -15,7 +15,8 @@ namespace ClinicMiniProject.ViewModels
 
         private string _searchQuery = string.Empty;
         private string _selectedStatus = "All";
-        private DateTime? _selectedDate;
+        private DateTime _filterDate = DateTime.Today;
+        private bool _isDateFilterActive = false;
         private string _uploadedPhotoPath = string.Empty;
         private string _photoNotes = string.Empty;
 
@@ -26,6 +27,12 @@ namespace ClinicMiniProject.ViewModels
             _inquiryService = inquiryService;
 
             FilterCommand = new Command(async () => await LoadAsync());
+            ClearDateCommand = new Command(() => 
+            { 
+                _isDateFilterActive = false;
+                FilterDate = DateTime.Today;
+                _ = LoadAsync();
+            });
             ViewInquiryDetailsCommand = new Command<string>(OnViewDetails);
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
             NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorInquiryHistory"));
@@ -54,13 +61,14 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
-        public DateTime? SelectedDate
+        public DateTime FilterDate
         {
-            get => _selectedDate;
+            get => _filterDate;
             set 
             {
-                if (SetProperty(ref _selectedDate, value))
+                if (SetProperty(ref _filterDate, value))
                 {
+                    _isDateFilterActive = true;
                     _ = LoadAsync(); // Auto-filter when date changes
                 }
             }
@@ -85,6 +93,7 @@ namespace ClinicMiniProject.ViewModels
         public ObservableCollection<InquiryListItemVm> InquiryList { get; } = new();
 
         public ICommand FilterCommand { get; }
+        public ICommand ClearDateCommand { get; }
         public ICommand ViewInquiryDetailsCommand { get; }
         public ICommand NavigateToHomeCommand { get; }
         public ICommand NavigateToInquiryCommand { get; }
@@ -105,8 +114,8 @@ namespace ClinicMiniProject.ViewModels
                 if (SelectedStatus != "All" && !string.Equals(i.Status, SelectedStatus, StringComparison.OrdinalIgnoreCase))
                     return false;
                 
-                // Date filter
-                if (SelectedDate.HasValue && i.CreatedAt.Date != SelectedDate.Value.Date)
+                // Date filter (only if active)
+                if (_isDateFilterActive && i.CreatedAt.Date != FilterDate.Date)
                     return false;
                 
                 return true;

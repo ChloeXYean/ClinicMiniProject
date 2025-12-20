@@ -21,19 +21,44 @@
             <Label Text="Online Medical Inquiry" FontSize="20" FontAttributes="Bold" />
 
             <!-- Search and Filter Controls -->
-            <Grid RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+            <Grid RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="10">
                 
                 <!-- Search Row -->
-                <Grid Grid.Row="0" ColumnDefinitions="*">
-                    <Entry Grid.Column="0" Placeholder="Search" Text="{Binding SearchQuery, Mode=TwoWay}" />
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                    <Entry Grid.Column="0" 
+                           Placeholder="Search by patient name or symptom" 
+                           Text="{Binding SearchQuery, Mode=TwoWay}" />
+                    <Button Grid.Column="1" 
+                            Text="Search" 
+                            Command="{Binding FilterCommand}"
+                            BackgroundColor="#6EA8FE"
+                            TextColor="White"
+                            WidthRequest="100" />
                 </Grid>
                 
-                <!-- Date Filter Row -->
+                <!-- Status Filter Row -->
                 <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
-                    <Label Grid.Column="0" Text="Choose Date:" VerticalOptions="Center" />
+                    <Label Grid.Column="0" Text="Status:" VerticalOptions="Center" Margin="0,0,10,0" />
+                    <Picker Grid.Column="1" 
+                            ItemsSource="{Binding StatusOptions}"
+                            SelectedItem="{Binding SelectedStatus, Mode=TwoWay}"
+                            BackgroundColor="White" />
+                </Grid>
+
+                <!-- Date Filter Row -->
+                <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto">
+                    <Label Grid.Column="0" Text="Date:" VerticalOptions="Center" Margin="0,0,10,0" />
                     <DatePicker Grid.Column="1" 
-                               Date="{Binding SelectedDate, Mode=TwoWay}"
-                               Format="dd MMM yyyy" />
+                               x:Name="DateFilterPicker"
+                               Date="{Binding FilterDate, Mode=TwoWay}"
+                               Format="dd MMM yyyy"
+                               BackgroundColor="White" />
+                    <Button Grid.Column="2" 
+                            Text="Clear" 
+                            Command="{Binding ClearDateCommand}"
+                            BackgroundColor="#E0E0E0"
+                            TextColor="Black"
+                            WidthRequest="80" />
                 </Grid>
             </Grid>
 
