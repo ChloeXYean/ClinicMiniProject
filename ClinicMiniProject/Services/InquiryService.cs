@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ClinicMiniProject.Models;
+using ClinicMiniProject.Dtos; // Ensure you have this namespace
 using ClinicMiniProject.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,62 +18,57 @@ namespace ClinicMiniProject.Services
             _context = context;
         }
 
+        // --- 1. DOCTOR SIDE METHODS ---
+
         public async Task<IReadOnlyList<InquiryDto>> GetInquiriesByDoctorAsync(string doctorId, string? query = null)
         {
-            System.Diagnostics.Debug.WriteLine($"=== GetInquiriesByDoctorAsync called for doctor: {doctorId} ===");
-            
-            var dbQuery = _context.Inquiries
-                .Include(i => i.Patient) // Join with Patient table
-                .Where(i => i.DoctorId == doctorId) // Filter by specific doctor
-                .AsQueryable();
-
-            // Debug: Check total inquiries before filtering
-            var allInquiries = await _context.Inquiries.ToListAsync();
-            System.Diagnostics.Debug.WriteLine($"Total inquiries in database: {allInquiries.Count}");
-            
-            // Debug: Check inquiries for this doctor
-            var doctorInquiries = allInquiries.Where(i => i.DoctorId == doctorId).ToList();
-            System.Diagnostics.Debug.WriteLine($"Inquiries for doctor {doctorId}: {doctorInquiries.Count}");
-            
-            foreach (var inquiry in doctorInquiries)
+            try
             {
-                System.Diagnostics.Debug.WriteLine($"  - Inquiry {inquiry.InquiryId} for patient {inquiry.PatientIc}, Doctor: {inquiry.DoctorId}");
+                var dbQuery = _context.Inquiries
+                    .Include(i => i.Patient)
+                    .Where(i => i.DoctorId == doctorId)
+                    .AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(query))
+                {
+                    string q = query.Trim();
+                    dbQuery = dbQuery.Where(i =>
+                        i.PatientIc.Contains(q) ||
+                        (i.Patient != null && i.Patient.patient_name.Contains(q)) ||
+                        i.SymptomDescription.Contains(q) ||
+                        i.Status.Contains(q));
+                }
+
+                var list = await dbQuery.OrderByDescending(i => i.AskDatetime).ToListAsync();
+
+                return MapToDtoList(list);
             }
-
-            if (!string.IsNullOrWhiteSpace(query))
+            catch (Exception ex)
             {
-                string q = query.Trim();
-                dbQuery = dbQuery.Where(i =>
-                    i.PatientIc.Contains(q) ||
-                    (i.Patient != null && i.Patient.patient_name.Contains(q)) ||
-                    i.SymptomDescription.Contains(q) ||
-                    i.Status.Contains(q));
+                System.Diagnostics.Debug.WriteLine($"Error in GetInquiriesByDoctorAsync: {ex.Message}");
+                return new List<InquiryDto>();
             }
-
-            var list = await dbQuery.OrderByDescending(i => i.AskDatetime).ToListAsync();
-            System.Diagnostics.Debug.WriteLine($"Final filtered list count: {list.Count}");
-
-            // Convert DB Model to DTO
-            return list.Select(i => new InquiryDto
-            {
-                InquiryId = i.InquiryId,
-                PatientIc = i.PatientIc,
-                PatientName = i.Patient?.patient_name ?? "Unknown",
-                PatientAge = 0, // Age not in DB, set 0 or calculate from IC if possible
-                PatientGender = "N/A", // Gender not in DB
-                FullSymptomDescription = i.SymptomDescription,
-                Status = i.Status,
-                DoctorResponse = i.DoctorReply ?? string.Empty,
-                Image1 = null,
-                Image2 = null,
-                Image3 = null // Images not in SQL schema
-            }).ToList();
         }
+
+        public async Task SendResponseAsync(string inquiryId, string doctorResponse)
+        {
+            var inquiry = await _context.Inquiries.FirstOrDefaultAsync(i => i.InquiryId == inquiryId);
+            if (inquiry == null) return;
+
+            inquiry.DoctorReply = doctorResponse;
+            inquiry.Status = "Replied";
+            inquiry.ReplyDatetime = DateTime.Now;
+
+            _context.Inquiries.Update(inquiry);
+            await _context.SaveChangesAsync();
+        }
+
+        // --- 2. GENERAL / ADMIN METHODS ---
 
         public async Task<IReadOnlyList<InquiryDto>> GetInquiriesAsync(string? query)
         {
             var dbQuery = _context.Inquiries
-                .Include(i => i.Patient) // Join with Patient table
+                .Include(i => i.Patient)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query))
@@ -86,22 +82,7 @@ namespace ClinicMiniProject.Services
             }
 
             var list = await dbQuery.OrderByDescending(i => i.AskDatetime).ToListAsync();
-
-            // Convert DB Model to DTO
-            return list.Select(i => new InquiryDto
-            {
-                InquiryId = i.InquiryId,
-                PatientIc = i.PatientIc,
-                PatientName = i.Patient?.patient_name ?? "Unknown",
-                PatientAge = 0, // Age not in DB, set 0 or calculate from IC if possible
-                PatientGender = "N/A", // Gender not in DB
-                FullSymptomDescription = i.SymptomDescription,
-                Status = i.Status,
-                DoctorResponse = i.DoctorReply ?? string.Empty,
-                Image1 = null,
-                Image2 = null,
-                Image3 = null // Images not in SQL schema
-            }).ToList();
+            return MapToDtoList(list);
         }
 
         public async Task<InquiryDto?> GetInquiryByIdAsync(string inquiryId)
@@ -120,35 +101,27 @@ namespace ClinicMiniProject.Services
                 FullSymptomDescription = i.SymptomDescription,
                 Status = i.Status,
                 DoctorResponse = i.DoctorReply ?? string.Empty
+                // Add other properties if needed
             };
         }
 
-        public async Task SendResponseAsync(string inquiryId, string doctorResponse)
-        {
-            var inquiry = await _context.Inquiries.FirstOrDefaultAsync(i => i.InquiryId == inquiryId);
-            if (inquiry == null) return;
-
-            inquiry.DoctorReply = doctorResponse;
-            inquiry.Status = "Replied";
-            inquiry.ReplyDatetime = DateTime.Now;
-
-            _context.Inquiries.Update(inquiry);
-            await _context.SaveChangesAsync();
-        }
+        // --- 3. PATIENT SIDE METHODS ---
 
         public async Task<bool> CreateInquiryAsync(InquiryDto dto)
         {
             if (dto == null) return false;
 
-            // Generate ID if missing (Simple random logic)
+            // Generate ID if missing
             string newId = dto.InquiryId;
             if (string.IsNullOrEmpty(newId))
-                newId = "I" + new Random().Next(100000, 999999).ToString();
+                newId = "I" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
 
-            // Assign a default doctor if your DTO doesn't select one (SQL requires it)
-            // Here we pick the first doctor found in DB as a fallback
+            // Assign a default doctor if your DTO doesn't select one
+            // (Since DoctorId is likely a Foreign Key, we need a valid one)
+            string assignedDocId = "S001"; // Default fallback
             var defaultDoc = await _context.Staffs.FirstOrDefaultAsync(s => s.isDoctor);
-            string assignedDocId = defaultDoc?.staff_ID ?? "S001";
+            if (defaultDoc != null)
+                assignedDocId = defaultDoc.staff_ID;
 
             var newInquiry = new Inquiry
             {
@@ -167,10 +140,34 @@ namespace ClinicMiniProject.Services
 
         public async Task<IReadOnlyList<InquiryDto>> GetInquiriesByPatientIcAsync(string patientIc)
         {
-            await Task.Yield();
-            return _inquiries.Where(i => string.Equals(i.PatientIc, patientIc, StringComparison.OrdinalIgnoreCase))
-                             .OrderByDescending(i => i.CreatedAt)
-                             .ToList();
+            // FIX: Now queries the Database instead of the static list
+            var list = await _context.Inquiries
+                .Include(i => i.Patient)
+                .Where(i => i.PatientIc == patientIc)
+                .OrderByDescending(i => i.AskDatetime)
+                .ToListAsync();
+
+            return MapToDtoList(list);
+        }
+
+        // --- HELPER MAPPING METHOD ---
+
+        private List<InquiryDto> MapToDtoList(List<Inquiry> inquiries)
+        {
+            return inquiries.Select(i => new InquiryDto
+            {
+                InquiryId = i.InquiryId,
+                PatientIc = i.PatientIc,
+                PatientName = i.Patient?.patient_name ?? "Unknown",
+                PatientAge = 0, // Calculate from IC if needed
+                PatientGender = "N/A", // Fetch from Patient table if needed
+                FullSymptomDescription = i.SymptomDescription,
+                Status = i.Status,
+                DoctorResponse = i.DoctorReply ?? string.Empty,
+                Image1 = null,
+                Image2 = null,
+                Image3 = null
+            }).ToList();
         }
     }
 }

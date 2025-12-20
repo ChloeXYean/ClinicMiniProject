@@ -10,26 +10,26 @@
         <control:BackNavBar Grid.Row="0" Title="Inquiry History" BackCommand="{Binding BackCommand}" />
         <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="16">
 
-        <SearchBar Placeholder="Search inquiry" />
+            <SearchBar Placeholder="Search inquiry" />
 
-        <CollectionView ItemsSource="{Binding PatientInquiryHistory}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame Margin="0,0,0,10"
+            <CollectionView ItemsSource="{Binding PatientInquiryHistory}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="0,0,0,10"
                            BackgroundColor="White"
                            CornerRadius="8"
                            HasShadow="True">
-                        <VerticalStackLayout Padding="10">
-                            <Label Text="{Binding DoctorName}"
+                            <VerticalStackLayout Padding="10">
+                                <Label Text="{Binding DoctorName}"
                                    FontAttributes="Bold" />
-                            <Label Text="{Binding SymptomHistory}" />
-                            <Button Text="View Details"
+                                <Label Text="{Binding SymptomHistory}" />
+                                <Button Text="View Details"
                                     Command="{Binding ViewDetailsCommand}" />
-                        </VerticalStackLayout>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
         </VerticalStackLayout>
     </Grid>

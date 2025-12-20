@@ -10,33 +10,33 @@
         <control:BackNavBar Grid.Row="0" Title="Inquiry Details" BackCommand="{Binding BackCommand}" />
         <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="16">
 
-        <ScrollView>
-            <VerticalStackLayout Padding="10" Spacing="12">
+            <ScrollView>
+                <VerticalStackLayout Padding="10" Spacing="12">
 
-                <Label Text="{Binding PatientName, StringFormat='Patient Name: {0}'}"
+                    <Label Text="{Binding PatientName, StringFormat='Patient Name: {0}'}"
                        FontAttributes="Bold"
                        FontSize="16" />
 
-                <Label Text="Symptom History:"
+                    <Label Text="Symptom History:"
                        FontAttributes="Bold"
                        FontSize="16" />
 
-                <Label Text="{Binding FullSymptomDescription}"
+                    <Label Text="{Binding FullSymptomDescription}"
                        FontSize="14"
                        TextColor="Black" />
 
-                <Label Text="{Binding Details.CreatedAt, StringFormat='Date: {0:dd/MM/yyyy HH:mm}'}"
+                    <Label Text="{Binding Details.CreatedAt, StringFormat='Date: {0:dd/MM/yyyy HH:mm}'}"
                        FontSize="14"
                        TextColor="Black" />
 
-                <Button Text="Back to History"
+                    <Button Text="Back to History"
                         BackgroundColor="#5DA9FF"
                         TextColor="White"
                         CornerRadius="16"
                         Command="{Binding BackCommand}" />
 
-            </VerticalStackLayout>
-        </ScrollView>
+                </VerticalStackLayout>
+            </ScrollView>
 
         </VerticalStackLayout>
     </Grid>
