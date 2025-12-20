@@ -228,8 +228,7 @@ namespace ClinicMiniProject.ViewModels
 
         private async Task OnEditProfile()
         {
-            await Shell.Current.DisplayAlert("Info", "Edit Profile Coming Soon", "OK");
-            // await Shell.Current.GoToAsync("EditPatientProfile");
+            await Shell.Current.GoToAsync("EditPatientProfile");
         }
 
         private async Task OnLogout()

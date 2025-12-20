@@ -133,6 +133,12 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
+        public void ReloadData()
+        {
+            OnPropertyChanged(nameof(Username));
+            _ = LoadUpcomingAppointment();
+        }
+
         private async Task OnNavigateToHistory()
         {
             var patient = _authService.GetCurrentPatient();
