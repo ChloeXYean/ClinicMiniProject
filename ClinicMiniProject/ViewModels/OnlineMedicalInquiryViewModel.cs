@@ -30,10 +30,12 @@ namespace ClinicMiniProject.ViewModels
         public OnlineMedicalInquiryViewModel(
                     IInquiryService inquiryService,
                     IAuthService authService,
+                    IAppointmentService appointmentService,
                     AppDbContext context)
         {
             _inquiryService = inquiryService;
             _authService = authService;
+            _appointmentService = appointmentService;
             _context = context;
 
             FilterCommand = new Command(async () => await LoadAsync());
@@ -47,8 +49,8 @@ namespace ClinicMiniProject.ViewModels
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
             SubmitInquiryCommand = new Command(async () => await SubmitInquiryAsync());
 
-            _ = InitializePatientDataAsync();
-            _ = LoadAsync();
+            // Note: InitializePatientDataAsync and LoadAsync are called from OnAppearing in respective pages
+            // to avoid concurrent DbContext access
         }
 
         public string SearchQuery
@@ -134,57 +136,51 @@ namespace ClinicMiniProject.ViewModels
         {
             InquiryList.Clear();
 
-            // Get current doctor
+            // Get current doctor for doctor view
             var currentUser = _authService?.GetCurrentUser();
-            if (currentUser == null || !currentUser.isDoctor)
+            if (currentUser != null && currentUser.isDoctor)
             {
-                return; // Only load for doctors
-            }
-
-            var items = await _inquiryService.GetInquiriesByDoctorAsync(currentUser.staff_ID, SearchQuery);
-            
-            // Apply filters
-            var filteredItems = items.Where(i =>
-            {
-                // Status filter
-                if (SelectedStatus != "All" && !string.Equals(i.Status, SelectedStatus, StringComparison.OrdinalIgnoreCase))
-                    return false;
+                // Doctor flow: Load inquiries assigned to this doctor
+                var items = await _inquiryService.GetInquiriesByDoctorAsync(currentUser.staff_ID, SearchQuery);
                 
-                // Date filter (only if active)
-                if (_isDateFilterActive && i.CreatedAt.Date != FilterDate.Date)
-                    return false;
-                
-                return true;
-            });
-
-            foreach (var i in filteredItems)
-            {
-                InquiryList.Add(new InquiryListItemVm
+                // Apply filters
+                var filteredItems = items.Where(i =>
                 {
-                    InquiryId = i.InquiryId,
-                    PatientIc = i.PatientIc,
-                    PatientName = i.PatientName,
-                    SymptomSnippet = BuildSnippet(i.FullSymptomDescription),
-                    Status = i.Status,
-                    CreatedDate = i.CreatedAt
+                    // Status filter
+                    if (SelectedStatus != "All" && !string.Equals(i.Status, SelectedStatus, StringComparison.OrdinalIgnoreCase))
+                        return false;
+                    
+                    // Date filter (only if active)
+                    if (_isDateFilterActive && i.CreatedAt.Date != FilterDate.Date)
+                        return false;
+                    
+                    return true;
                 });
+
+                foreach (var i in filteredItems)
+                {
+                    InquiryList.Add(new InquiryListItemVm
+                    {
+                        InquiryId = i.InquiryId,
+                        PatientIc = i.PatientIc,
+                        PatientName = i.PatientName,
+                        SymptomSnippet = BuildSnippet(i.FullSymptomDescription),
+                        Status = i.Status,
+                        CreatedDate = i.CreatedAt
+                    });
+                }
             }
 
-            // Load patient-specific history if current user is a patient
-            // Load patient-specific history
+            // Patient flow: Load patient-specific history
             var patient = _authService?.GetCurrentPatient();
             if (patient != null)
             {
                 await LoadPatientHistoryAsync(patient.patient_IC);
             }
-            else
+            else if (currentUser != null && !currentUser.isDoctor)
             {
-                var staff = _authService?.GetCurrentUser();
-                if (staff != null && !staff.isDoctor)
-                {
-                    // Fallback or nurse view if needed, though usually patients use InquiryHistory
-                    await LoadPatientHistoryAsync(staff.staff_ID);
-                }
+                // Fallback for nurse or other staff testing as patient
+                await LoadPatientHistoryAsync(currentUser.staff_ID);
             }
         }
 
@@ -199,6 +195,7 @@ namespace ClinicMiniProject.ViewModels
                     InquiryId = i.InquiryId,
                     PatientIc = i.PatientIc,
                     PatientName = i.PatientName,
+                    DoctorName = i.DoctorName ?? "Unknown", // Add doctor name from DTO
                     SymptomSnippet = BuildSnippet(i.FullSymptomDescription),
                     Status = i.Status,
                     CreatedDate = i.CreatedAt
@@ -206,7 +203,8 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
-        private async Task InitializePatientDataAsync()
+
+        public async Task InitializePatientDataAsync()
         {
             var patient = _authService?.GetCurrentPatient();
             string? patientIc = patient?.patient_IC;
@@ -284,7 +282,7 @@ namespace ClinicMiniProject.ViewModels
             // 3. Create DTO with DOCTOR ID
             var newInquiry = new InquiryDto
             {
-                InquiryId = $"INQ{DateTime.Now:yyyyMMddHHmmss}",
+                InquiryId = "I" + new Random().Next(100000, 999999).ToString(), // 7 characters: I + 6 digits
                 PatientIc = ic,
                 PatientName = name,
                 FullSymptomDescription = SymptomDescription,
@@ -295,7 +293,32 @@ namespace ClinicMiniProject.ViewModels
                 DoctorId = SelectedDoctor.Id
             };
 
-            var success = await _inquiryService.CreateInquiryAsync(newInquiry);
+            try
+            {
+                var success = await _inquiryService.CreateInquiryAsync(newInquiry);
+
+                if (success)
+                {
+                    await Shell.Current.DisplayAlert("Success", "Your inquiry has been submitted successfully!", "OK");
+                    
+                    // Reset form
+                    SymptomDescription = string.Empty;
+                    SelectedDoctor = null;
+                    UploadedPhotoPath = string.Empty;
+                    PhotoNotes = string.Empty;
+                    
+                    // Navigate back
+                    await Shell.Current.GoToAsync("..");
+                }
+                else
+                {
+                    await Shell.Current.DisplayAlert("Error", "Failed to submit inquiry. Please try again.", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
+            }
         }
 
         private void OnViewDetails(string inquiryId)
@@ -367,9 +390,9 @@ namespace ClinicMiniProject.ViewModels
         public string DoctorName { get; set; } = string.Empty; // For patient history view
         public string SymptomHistory => SymptomSnippet;
 
-        public ICommand ViewDetailsCommand { get; } = new Command<InquiryListItemVm>(async (vm) => 
+        public ICommand ViewDetailsCommand => new Command(async () => 
         {
-             await Shell.Current.GoToAsync($"InquiryDetailsView?inquiryId={vm.InquiryId}");
+             await Shell.Current.GoToAsync($"InquiryDetailsView?inquiryId={InquiryId}");
         });
     }
 

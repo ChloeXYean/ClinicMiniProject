@@ -151,8 +151,8 @@ namespace ClinicMiniProject.ViewModels
                 bool isBookedByPatient = patientBookedSlots.Contains(startTime);
                 bool allDoctorsBooked = unavailableSlots.Contains(startTime);
 
-                TimeSlots.Add(new TimeSlotItem 
-                { 
+                TimeSlots.Add(new TimeSlotItem
+                {
                     Time = startTime,
                     // Disable if: past time, patient already booked, OR no doctors available
                     IsEnabled = !isPast && !isBookedByPatient && !allDoctorsBooked,
@@ -250,7 +250,7 @@ namespace ClinicMiniProject.ViewModels
                 }
             }
         }
-        
+
         private bool _isEnabled = true;
         public bool IsEnabled
         {
@@ -267,7 +267,7 @@ namespace ClinicMiniProject.ViewModels
                 }
             }
         }
-        
+
         private bool _isBookedByPatient;
         public bool IsBookedByPatient
         {
@@ -283,7 +283,7 @@ namespace ClinicMiniProject.ViewModels
                 }
             }
         }
-        
+
         private bool _allDoctorsBooked;
         public bool AllDoctorsBooked
         {
@@ -307,7 +307,7 @@ namespace ClinicMiniProject.ViewModels
                 return Colors.White;
             }
         }
-        
+
         public Color TextColor
         {
             get
@@ -317,7 +317,7 @@ namespace ClinicMiniProject.ViewModels
                 return Color.FromArgb("#5FA8FF");
             }
         }
-        
+
         public double Opacity => IsEnabled ? 1.0 : 0.5;
     }
 }
