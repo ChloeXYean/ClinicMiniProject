@@ -37,6 +37,7 @@
 					<Grid ColumnSpacing="0" RowSpacing="0">
 						<Grid.RowDefinitions>
 							<RowDefinition Height="Auto" />
+							<RowDefinition Height="*" />
 						</Grid.RowDefinitions>
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="90" />
@@ -47,6 +48,7 @@
 							<ColumnDefinition Width="190" />
 						</Grid.ColumnDefinitions>
 
+						<!-- Header Row -->
 						<Border Grid.Row="0" Grid.Column="0" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
 							<Label Text="Time" FontAttributes="Bold" />
 						</Border>
@@ -65,75 +67,74 @@
 						<Border Grid.Row="0" Grid.Column="5" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
 							<Label Text="Medical\nScreening" FontAttributes="Bold" />
 						</Border>
+
+						<!-- Data Rows -->
+						<CollectionView Grid.Row="1" Grid.ColumnSpan="6" ItemsSource="{Binding Rows}" SelectionMode="None">
+							<CollectionView.ItemTemplate>
+								<DataTemplate>
+									<Grid ColumnSpacing="0" RowSpacing="0">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="90" />
+											<ColumnDefinition Width="170" />
+											<ColumnDefinition Width="170" />
+											<ColumnDefinition Width="170" />
+											<ColumnDefinition Width="170" />
+											<ColumnDefinition Width="190" />
+										</Grid.ColumnDefinitions>
+
+										<Border Grid.Column="0" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#FFFFFF">
+											<Label Text="{Binding SlotStart, StringFormat='{0:HH:mm}'}" FontAttributes="Bold" />
+										</Border>
+
+										<Border Grid.Column="1" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
+											<Label Text="{Binding CellsByServiceType[GeneralConsultation].PatientName}" TextColor="#1A1A1A">
+												<Label.GestureRecognizers>
+													<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                                          CommandParameter="{Binding CellsByServiceType[GeneralConsultation].PatientIc}" />
+												</Label.GestureRecognizers>
+											</Label>
+										</Border>
+
+										<Border Grid.Column="2" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
+											<Label Text="{Binding CellsByServiceType[FollowUpTreatment].PatientName}">
+												<Label.GestureRecognizers>
+													<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                                          CommandParameter="{Binding CellsByServiceType[FollowUpTreatment].PatientIc}" />
+												</Label.GestureRecognizers>
+											</Label>
+										</Border>
+
+										<Border Grid.Column="3" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
+											<Label Text="{Binding CellsByServiceType[TestResultDiscussion].PatientName}">
+												<Label.GestureRecognizers>
+													<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                                          CommandParameter="{Binding CellsByServiceType[TestResultDiscussion].PatientIc}" />
+												</Label.GestureRecognizers>
+											</Label>
+										</Border>
+
+										<Border Grid.Column="4" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
+											<Label Text="{Binding CellsByServiceType[VaccinationInjection].PatientName}">
+												<Label.GestureRecognizers>
+													<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                                          CommandParameter="{Binding CellsByServiceType[VaccinationInjection].PatientIc}" />
+												</Label.GestureRecognizers>
+											</Label>
+										</Border>
+
+										<Border Grid.Column="5" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
+											<Label Text="{Binding CellsByServiceType[MedicalScreening].PatientName}">
+												<Label.GestureRecognizers>
+													<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                                          CommandParameter="{Binding CellsByServiceType[MedicalScreening].PatientIc}" />
+												</Label.GestureRecognizers>
+											</Label>
+										</Border>
+									</Grid>
+								</DataTemplate>
+							</CollectionView.ItemTemplate>
+						</CollectionView>
 					</Grid>
-				</ScrollView>
-
-				<ScrollView Grid.Row="1" Orientation="Horizontal">
-					<CollectionView ItemsSource="{Binding Rows}" SelectionMode="None">
-						<CollectionView.ItemTemplate>
-							<DataTemplate>
-								<Grid ColumnSpacing="0" RowSpacing="0">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="90" />
-										<ColumnDefinition Width="170" />
-										<ColumnDefinition Width="170" />
-										<ColumnDefinition Width="170" />
-										<ColumnDefinition Width="170" />
-										<ColumnDefinition Width="190" />
-									</Grid.ColumnDefinitions>
-
-									<Border Grid.Column="0" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#FFFFFF">
-										<Label Text="{Binding SlotStart, StringFormat='{0:HH:mm}'}" FontAttributes="Bold" />
-									</Border>
-
-									<Border Grid.Column="1" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
-										<Label Text="{Binding CellsByServiceType[GeneralConsultation].PatientName}" TextColor="#1A1A1A">
-											<Label.GestureRecognizers>
-												<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                                      CommandParameter="{Binding CellsByServiceType[GeneralConsultation].PatientIc}" />
-											</Label.GestureRecognizers>
-										</Label>
-									</Border>
-
-									<Border Grid.Column="2" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
-										<Label Text="{Binding CellsByServiceType[FollowUpTreatment].PatientName}">
-											<Label.GestureRecognizers>
-												<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                                      CommandParameter="{Binding CellsByServiceType[FollowUpTreatment].PatientIc}" />
-											</Label.GestureRecognizers>
-										</Label>
-									</Border>
-
-									<Border Grid.Column="3" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
-										<Label Text="{Binding CellsByServiceType[TestResultDiscussion].PatientName}">
-											<Label.GestureRecognizers>
-												<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                                      CommandParameter="{Binding CellsByServiceType[TestResultDiscussion].PatientIc}" />
-											</Label.GestureRecognizers>
-										</Label>
-									</Border>
-
-									<Border Grid.Column="4" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
-										<Label Text="{Binding CellsByServiceType[VaccinationInjection].PatientName}">
-											<Label.GestureRecognizers>
-												<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                                      CommandParameter="{Binding CellsByServiceType[VaccinationInjection].PatientIc}" />
-											</Label.GestureRecognizers>
-										</Label>
-									</Border>
-
-									<Border Grid.Column="5" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
-										<Label Text="{Binding CellsByServiceType[MedicalScreening].PatientName}">
-											<Label.GestureRecognizers>
-												<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                                      CommandParameter="{Binding CellsByServiceType[MedicalScreening].PatientIc}" />
-											</Label.GestureRecognizers>
-										</Label>
-									</Border>
-								</Grid>
-							</DataTemplate>
-						</CollectionView.ItemTemplate>
-					</CollectionView>
 				</ScrollView>
 			</Grid>
 		</ScrollView>

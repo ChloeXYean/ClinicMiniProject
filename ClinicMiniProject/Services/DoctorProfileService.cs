@@ -33,18 +33,27 @@ namespace ClinicMiniProject.Services
         public async Task<DoctorProfileDto?> GetDoctorProfileAsync(string doctorId)
         {
             await Task.Yield();
+            
+            System.Diagnostics.Debug.WriteLine($"=== GetDoctorProfileAsync Started for ID: {doctorId} ===");
 
             // NOTE: Current project has no Staff repository/db service. AuthService keeps staff in-memory.
             // TODO: link with database (load staff profile by doctorId)
             var current = _authService.GetCurrentUser();
+            System.Diagnostics.Debug.WriteLine($"AuthService current user: {current?.staff_ID}, Name: {current?.staff_name}, Contact: {current?.staff_contact}");
+            
             Staff? staff = current != null && current.staff_ID == doctorId ? current : null;
+            System.Diagnostics.Debug.WriteLine($"Staff match result: {staff != null}");
 
             if (staff == null)
+            {
+                System.Diagnostics.Debug.WriteLine("No staff found - returning null");
                 return null;
+            }
 
             var extras = GetOrCreateExtras(doctorId, staff);
+            System.Diagnostics.Debug.WriteLine($"Extras - WorkingHours: {extras.WorkingHoursText}, Services: {extras.ServicesProvided.Count}");
 
-            return new DoctorProfileDto
+            var result = new DoctorProfileDto
             {
                 DoctorId = staff.staff_ID,
                 Name = staff.staff_name,
@@ -53,6 +62,11 @@ namespace ClinicMiniProject.Services
                 ServicesProvided = extras.ServicesProvided.ToList(),
                 ProfileImageUri = extras.ProfileImageUri
             };
+            
+            System.Diagnostics.Debug.WriteLine($"Returning DoctorProfileDto - ID: {result.DoctorId}, Name: {result.Name}, Phone: {result.PhoneNo}");
+            System.Diagnostics.Debug.WriteLine($"=== GetDoctorProfileAsync Completed ===");
+            
+            return result;
         }
 
         public async Task UpdateDoctorProfileAsync(string doctorId, DoctorProfileUpdateDto update)

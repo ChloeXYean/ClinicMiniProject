@@ -17,6 +17,7 @@ namespace ClinicMiniProject.ViewModels
         private ConsultationDetailsDto? _currentDetails;
         private string _appointmentId = string.Empty;
         private string _consultationRemark = string.Empty;
+        private bool _isConsultationStarted = false;
 
         public string SearchText
         {
@@ -58,6 +59,14 @@ namespace ClinicMiniProject.ViewModels
             get => _consultationRemark;
             set => SetProperty(ref _consultationRemark, value);
         }
+
+        public bool IsConsultationStarted
+        {
+            get => _isConsultationStarted;
+            set => SetProperty(ref _isConsultationStarted, value);
+        }
+
+        public bool HasAppointment => CurrentDetails != null || !string.IsNullOrWhiteSpace(AppointmentId);
 
         public string DateText => CurrentDetails == null ? "" : $"Date: {CurrentDetails.Date:dd MMMM yyyy}";
         public string AppointedTimeSlotText => CurrentDetails == null ? "" : $"Appointed Time Slot: {CurrentDetails.AppointedTimeSlot:h:mm tt}";
@@ -117,11 +126,30 @@ namespace ClinicMiniProject.ViewModels
 
         public async Task StartAsync()
         {
-            if (CurrentDetails == null)
-                return;
+            // Debug information
+            System.Diagnostics.Debug.WriteLine($"StartAsync called. AppointmentId: '{AppointmentId}', CurrentDetails: {CurrentDetails}");
+            
+            var apptId = CurrentDetails?.AppointmentId;
+            if (string.IsNullOrWhiteSpace(apptId))
+                apptId = AppointmentId;
 
-            await _consultationService.StartConsultationAsync(CurrentDetails.AppointmentId);
-            await RefreshAsync();
+            if (string.IsNullOrWhiteSpace(apptId))
+            {
+                System.Diagnostics.Debug.WriteLine("No appointment ID found - cannot start consultation");
+                return;
+            }
+
+            try
+            {
+                await _consultationService.StartConsultationAsync(apptId);
+                IsConsultationStarted = true;
+                await RefreshAsync();
+                System.Diagnostics.Debug.WriteLine("Consultation started successfully");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error starting consultation: {ex}");
+            }
         }
 
         public async Task EndAsync()

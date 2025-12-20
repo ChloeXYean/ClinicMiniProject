@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ClinicMiniProject.UI.Control"
+             x:Class="ClinicMiniProject.UI.Doctor.EditDoctorProfilePage"
+             Shell.NavBarIsVisible="False"
+             Title="Edit Profile"
+             BackgroundColor="White">
+
+    <Grid RowDefinitions="Auto, *">
+        <controls:BackNavBar Grid.Row="0" BackCommand="{Binding BackCommand}" Title="Edit Profile" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- Profile Picture Section -->
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="12">
+                    <Border HeightRequest="100" WidthRequest="100" StrokeShape="RoundRectangle 50" BackgroundColor="#E0E0E0" StrokeThickness="2" Stroke="#2D5AF0">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ChangeProfilePictureCommand}"/>
+                        </Border.GestureRecognizers>
+                        <Image Source="{Binding ProfilePictureSource}" Aspect="AspectFill" Margin="5"/>
+                    </Border>
+                    <Label Text="Tap to change photo" FontSize="12" TextColor="#2D5AF0" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+
+                <!-- Doctor Information -->
+                <Border BackgroundColor="#F8F9FA" StrokeThickness="0" StrokeShape="RoundRectangle 15" Padding="20">
+                    <VerticalStackLayout Spacing="15">
+                        <Label Text="Doctor Information" FontSize="16" FontAttributes="Bold" TextColor="Black"/>
+                        
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Full Name" TextColor="Gray" FontSize="14"/>
+                            <Border BackgroundColor="White" StrokeThickness="1" Stroke="#E0E0E0" StrokeShape="RoundRectangle 8" Padding="15,10">
+                                <Entry Text="{Binding Name}" Placeholder="Enter full name" TextColor="Black" FontSize="14"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Phone Number" TextColor="Gray" FontSize="14"/>
+                            <Border BackgroundColor="White" StrokeThickness="1" Stroke="#E0E0E0" StrokeShape="RoundRectangle 8" Padding="15,10">
+                                <Entry Text="{Binding PhoneNumber}" Placeholder="Enter phone number" Keyboard="Telephone" TextColor="Black" FontSize="14"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Working Hours" TextColor="Gray" FontSize="14"/>
+                            <Border BackgroundColor="White" StrokeThickness="1" Stroke="#E0E0E0" StrokeShape="RoundRectangle 8" Padding="15,10">
+                                <Entry Text="{Binding WorkingHours}" Placeholder="e.g., 9:00 AM - 9:00 PM" TextColor="Black" FontSize="14"/>
+                            </Border>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Services Section -->
+                <Border BackgroundColor="#F8F9FA" StrokeThickness="0" StrokeShape="RoundRectangle 15" Padding="20">
+                    <VerticalStackLayout Spacing="15">
+                        <Label Text="Services Provided" FontSize="16" FontAttributes="Bold" TextColor="Black"/>
+                        
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Select Service Types" TextColor="Gray" FontSize="14"/>
+                            <Border BackgroundColor="White" StrokeThickness="1" Stroke="#E0E0E0" StrokeShape="RoundRectangle 8" Padding="15,10">
+                                <CollectionView ItemsSource="{Binding ServiceTypes}" SelectionMode="None">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <HorizontalStackLayout Spacing="10" Padding="10" VerticalOptions="Center">
+                                                <CheckBox IsChecked="{Binding IsSelected}" VerticalOptions="Center"/>
+                                                <Label Text="{Binding Name}" VerticalOptions="Center" TextColor="Black"/>
+                                            </HorizontalStackLayout>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Border>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Save Button -->
+                <Button Text="Save Changes" 
+                        Command="{Binding SaveCommand}"
+                        BackgroundColor="#2D5AF0" 
+                        TextColor="White" 
+                        FontAttributes="Bold" 
+                        CornerRadius="10" 
+                        HeightRequest="50"
+                        Margin="0,20,0,0"/>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

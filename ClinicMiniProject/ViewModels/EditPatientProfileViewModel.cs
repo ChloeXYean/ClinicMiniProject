@@ -2,6 +2,7 @@
 using ClinicMiniProject.Services;
 using ClinicMiniProject.Services.Interfaces;
 using System.Windows.Input;
+using Microsoft.Maui.Storage;
 
 namespace ClinicMiniProject.ViewModels
 {
@@ -38,8 +39,23 @@ namespace ClinicMiniProject.ViewModels
             set { ic = value; OnPropertyChanged(); }
         }
 
+        private ImageSource profilePictureSource;
+        public ImageSource ProfilePictureSource
+        {
+            get => profilePictureSource;
+            set { profilePictureSource = value; OnPropertyChanged(); }
+        }
+
+        private string newProfilePicturePath;
+        public string NewProfilePicturePath
+        {
+            get => newProfilePicturePath;
+            set { newProfilePicturePath = value; OnPropertyChanged(); }
+        }
+
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
+        public ICommand ChangeProfilePictureCommand { get; }
 
         public EditPatientProfileViewModel(PatientService patientService, IAuthService authService)
         {
@@ -48,6 +64,7 @@ namespace ClinicMiniProject.ViewModels
 
             SaveCommand = new Command(async () => await OnSave());
             CancelCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
+            ChangeProfilePictureCommand = new Command(async () => await OnChangeProfilePicture());
 
             LoadCurrentPatient();
         }
@@ -61,6 +78,31 @@ namespace ClinicMiniProject.ViewModels
                 Contact = p.patient_contact;
                 Email = p.patient_email ?? "";
                 IC = p.patient_IC;
+                
+                // Load default profile picture (stored in session only)
+                ProfilePictureSource = ImageSource.FromFile("profilepicture.png");
+            }
+        }
+
+        private async Task OnChangeProfilePicture()
+        {
+            try
+            {
+                var result = await FilePicker.PickAsync(new PickOptions
+                {
+                    PickerTitle = "Select profile photo"
+                });
+
+                if (result != null)
+                {
+                    NewProfilePicturePath = result.FullPath;
+                    ProfilePictureSource = ImageSource.FromFile(result.FullPath);
+                    await Shell.Current.DisplayAlert("Success", "Photo selected successfully", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Error", $"Failed to select photo: {ex.Message}", "OK");
             }
         }
 

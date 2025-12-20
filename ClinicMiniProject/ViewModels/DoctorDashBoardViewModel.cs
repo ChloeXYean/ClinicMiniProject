@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ClinicMiniProject.Dtos;
@@ -18,6 +20,9 @@ namespace ClinicMiniProject.ViewModels
         private UpcomingScheduleDto _upcomingSchedule = new();
         private string _nextAppointmentTime = "Loading...";
         private string _doctorName = "Doctor";
+        private string _searchText = string.Empty;
+        private ObservableCollection<InquiryDto> _allInquiries = new();
+        private ObservableCollection<InquiryDto> _filteredInquiries = new();
 
         public string Greeting
         {
@@ -51,6 +56,29 @@ namespace ClinicMiniProject.ViewModels
             set => SetProperty(ref _nextAppointmentTime, value);
         }
 
+        public string SearchText
+        {
+            get => _searchText;
+            set => SetProperty(ref _searchText, value);
+        }
+
+        public ObservableCollection<InquiryDto> AllInquiries
+        {
+            get => _allInquiries;
+            set => SetProperty(ref _allInquiries, value);
+        }
+
+        public ObservableCollection<InquiryDto> FilteredInquiries
+        {
+            get => _filteredInquiries;
+            set
+            {
+                _filteredInquiries = value;
+                OnPropertyChanged(nameof(FilteredInquiries));
+                System.Diagnostics.Debug.WriteLine($"FilteredInquiries property updated - new count: {value?.Count ?? 0}");
+            }
+        }
+
         // Commands for menu items
         public ICommand LogoutCommand { get; }
         public ICommand NavigateToAppointmentScheduleCommand { get; }
@@ -64,6 +92,7 @@ namespace ClinicMiniProject.ViewModels
 
         public ICommand ToggleMenuCommand { get; }
         public ICommand NotificationCommand { get; }
+        public ICommand ViewInquiryDetailsCommand { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -95,9 +124,11 @@ namespace ClinicMiniProject.ViewModels
             ToggleMenuCommand = new Command(() => { /* TODO: Implement Toggle Menu */ });
             NotificationCommand = new Command(async () => await Shell.Current.DisplayAlert("Notification", "No new notifications", "OK"));
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
+            ViewInquiryDetailsCommand = new Command<string>(async (inquiryId) => await NavigateToInquiryDetails(inquiryId));
 
             // Initialize Data
             LoadDashboardData();
+            LoadInquiryData();
         }
 
         private async void LoadDashboardData()
@@ -135,6 +166,88 @@ namespace ClinicMiniProject.ViewModels
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void LoadInquiryData()
+        {
+            System.Diagnostics.Debug.WriteLine("=== Loading hardcoded inquiry data ===");
+            
+            // Load sample inquiry data for demonstration
+            AllInquiries.Clear();
+            AllInquiries.Add(new InquiryDto 
+            { 
+                InquiryId = "1", 
+                PatientName = "John Doe", 
+                CreatedAt = DateTime.Now.AddDays(-2),
+                FullSymptomDescription = "I have been experiencing headaches for the past few days..."
+            });
+            AllInquiries.Add(new InquiryDto 
+            { 
+                InquiryId = "2", 
+                PatientName = "Jane Smith", 
+                CreatedAt = DateTime.Now.AddDays(-1),
+                FullSymptomDescription = "I need a prescription refill for my blood pressure medication..."
+            });
+            AllInquiries.Add(new InquiryDto 
+            { 
+                InquiryId = "3", 
+                PatientName = "Mike Johnson", 
+                CreatedAt = DateTime.Now,
+                FullSymptomDescription = "I have a fever and sore throat, should I come in for a checkup?"
+            });
+
+            // Initialize filtered inquiries with all inquiries
+            FilteredInquiries.Clear();
+            foreach (var inquiry in AllInquiries)
+            {
+                FilteredInquiries.Add(inquiry);
+            }
+            
+            System.Diagnostics.Debug.WriteLine($"=== Loaded {AllInquiries.Count} hardcoded inquiries ===");
+        }
+
+        private async Task NavigateToInquiryDetails(string inquiryId)
+        {
+            if (!string.IsNullOrEmpty(inquiryId))
+            {
+                await Shell.Current.GoToAsync($"///InquiryDetailsPage?inquiryId={inquiryId}");
+            }
+        }
+
+        public void FilterInquiries(string searchText)
+        {
+            System.Diagnostics.Debug.WriteLine($"=== FilterInquiries Called ===");
+            System.Diagnostics.Debug.WriteLine($"Search text: '{searchText}'");
+            System.Diagnostics.Debug.WriteLine($"AllInquiries count: {AllInquiries.Count}");
+            
+            // Clear current filtered inquiries
+            FilteredInquiries.Clear();
+            
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                // Add all inquiries back
+                foreach (var inquiry in AllInquiries)
+                {
+                    FilteredInquiries.Add(inquiry);
+                }
+                System.Diagnostics.Debug.WriteLine("Search text is empty - showing all inquiries");
+            }
+            else
+            {
+                // Add only matching inquiries
+                var filtered = AllInquiries.Where(inquiry => 
+                    inquiry.PatientName.ToLower().Contains(searchText.ToLower()) ||
+                    inquiry.FullSymptomDescription.ToLower().Contains(searchText.ToLower()) ||
+                    inquiry.CreatedAt.ToString("MMM dd, yyyy").ToLower().Contains(searchText.ToLower()));
+
+                foreach (var inquiry in filtered)
+                {
+                    FilteredInquiries.Add(inquiry);
+                }
+                System.Diagnostics.Debug.WriteLine($"Filtered results count: {FilteredInquiries.Count}");
+            }
+            
+            System.Diagnostics.Debug.WriteLine($"=== FilterInquiries Completed ===");
         }
     }
 }

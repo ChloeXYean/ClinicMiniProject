@@ -28,39 +28,55 @@
 			   FontAttributes="Bold"
 			   HorizontalOptions="Center" />
 
-		<Entry x:Name="IcEntry" Placeholder="IC Number" />
-		<Entry x:Name="PasswordEntry" Placeholder="Password" IsPassword="True" />
+		<Entry x:Name="IcEntry" Placeholder="IC Number/ID" />
+		<Grid ColumnDefinitions="*, Auto">
+			<Entry x:Name="PasswordEntry"
+				Grid.Column="0"
+				Grid.ColumnSpan="2"
+				Placeholder="Password"
+				IsPassword="True" />
+
+			<ImageButton x:Name="ShowPasswordBtn"
+				 Grid.Column="1"
+				 Source="eye_off.png"
+				 HeightRequest="5"
+				 WidthRequest="5"
+				 Margin="0,0,12,0"
+				 VerticalOptions="Center"
+				 BackgroundColor="Transparent"
+				 Clicked="OnShowPasswordClicked" />
+		</Grid>
 
 		<Button Text="Login" Clicked="OnLoginClicked">
-            <Button.VisualStateManager.VisualStateGroups>
-                <VisualStateGroup Name="CommonStates">
-                    <VisualState Name="Normal">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="#6EA8FE" />
-                            <Setter Property="TextColor" Value="White" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState Name="PointerOver">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="#5A90E6" />
-                            <Setter Property="Scale" Value="1.02" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState Name="Pressed">
-                        <VisualState.Setters>
-                            <Setter Property="BackgroundColor" Value="#4A7BC8" />
-                            <Setter Property="Scale" Value="0.98" />
-                        </VisualState.Setters>
-                    </VisualState>
-                </VisualStateGroup>
-            </Button.VisualStateManager.VisualStateGroups>
-        </Button>
+			<Button.VisualStateManager.VisualStateGroups>
+				<VisualStateGroup Name="CommonStates">
+					<VisualState Name="Normal">
+						<VisualState.Setters>
+							<Setter Property="BackgroundColor" Value="#6EA8FE" />
+							<Setter Property="TextColor" Value="White" />
+						</VisualState.Setters>
+					</VisualState>
+					<VisualState Name="PointerOver">
+						<VisualState.Setters>
+							<Setter Property="BackgroundColor" Value="#5A90E6" />
+							<Setter Property="Scale" Value="1.02" />
+						</VisualState.Setters>
+					</VisualState>
+					<VisualState Name="Pressed">
+						<VisualState.Setters>
+							<Setter Property="BackgroundColor" Value="#4A7BC8" />
+							<Setter Property="Scale" Value="0.98" />
+						</VisualState.Setters>
+					</VisualState>
+				</VisualStateGroup>
+			</Button.VisualStateManager.VisualStateGroups>
+		</Button>
 
 		<Label Grid.Row="4" HorizontalOptions="Center">
 			<Label.FormattedText>
 				<FormattedString>
-					<Span Text="Don't have an account? " TextColor="Black"/>
-					<Span Text="Sign Up" TextColor="Blue">
+					<Span Text="Don't have an account? " TextColor="Black" />
+					<Span Text="Sign Up" TextColor="Blue" FontAttributes="Bold">
 						<Span.GestureRecognizers>
 							<TapGestureRecognizer Tapped="OnGoToRegister"/>
 						</Span.GestureRecognizers>

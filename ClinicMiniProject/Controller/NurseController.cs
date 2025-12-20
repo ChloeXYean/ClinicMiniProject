@@ -34,7 +34,7 @@ namespace ClinicMiniProject.Controller
             return appointments.ToList();
         }
 
-        public async Task<string> RegisterWalkInPatient(string fullName, string ic, string phone, string serviceType)
+        public async Task<string> RegisterWalkInPatient(string fullName, string ic, string phone, string serviceType, bool isEmergency = false)
         { 
             try
             {
@@ -61,15 +61,41 @@ namespace ClinicMiniProject.Controller
                 string assignedDoctorId = null;
                 DateTime? assignedSlot = null;
 
-                foreach (var doc in doctors)
+                // For emergency patients, prioritize getting the earliest available slot
+                if (isEmergency)
                 {
-                    var slot = _appointmentService.AssignWalkInTimeSlot(doc.staff_ID, DateTime.Today);
-
-                    if (slot.HasValue)
+                    foreach (var doc in doctors)
                     {
-                        assignedDoctorId = doc.staff_ID;
-                        assignedSlot = slot;
-                        break;
+                        var slot = _appointmentService.AssignWalkInTimeSlot(doc.staff_ID, DateTime.Today);
+
+                        if (slot.HasValue)
+                        {
+                            assignedDoctorId = doc.staff_ID;
+                            assignedSlot = slot;
+                            break;
+                        }
+                    }
+
+                    // If no slot available today, try to create one immediately for emergency
+                    if (assignedSlot == null && doctors.Count > 0)
+                    {
+                        assignedDoctorId = doctors.First().staff_ID;
+                        assignedSlot = DateTime.Now.AddMinutes(5); // Emergency slot in 5 minutes
+                    }
+                }
+                else
+                {
+                    // Regular walk-in patients
+                    foreach (var doc in doctors)
+                    {
+                        var slot = _appointmentService.AssignWalkInTimeSlot(doc.staff_ID, DateTime.Today);
+
+                        if (slot.HasValue)
+                        {
+                            assignedDoctorId = doc.staff_ID;
+                            assignedSlot = slot;
+                            break;
+                        }
                     }
                 }
 
@@ -84,7 +110,7 @@ namespace ClinicMiniProject.Controller
                     staff_ID = assignedDoctorId,
                     appointedAt = assignedSlot,
                     bookedAt = DateTime.Now,
-                    status = "Pending",
+                    status = isEmergency ? "Emergency" : "Pending",
                     service_type = serviceType
                 };
 
@@ -129,20 +155,26 @@ namespace ClinicMiniProject.Controller
 
         public async Task<List<PatientQueueDto>> GetWalkInQueueForToday()
         {
-            // 1. Fetch appointments for today that are "Pending" or "checked_in"
+            // 1. Fetch appointments for today that are "Pending", "Emergency", or "checked_in"
             // This depends on your service logic (e.g., _appointmentService)
             var today = DateTime.Today;
             var appointments = await _appointmentService.GetAppointmentsByDateAsync(today); // You might need to add this method to your Service if missing
 
-            // 2. Filter for Walk-In only
+            // 2. Filter for Walk-In only and prioritize emergency patients
             var walkIns = appointments
-                .Where(a => a.status == "Pending") // Adjust status check as needed
+                .Where(a => a.status == "Pending" || a.status == "Emergency") // Include emergency status
                 .ToList();
 
-            // 3. Convert DB Model -> UI DTO
+            // 3. Sort by priority: Emergency patients first, then by appointment time
+            var sortedWalkIns = walkIns
+                .OrderByDescending(a => a.status == "Emergency") // Emergency patients first
+                .ThenBy(a => a.appointedAt) // Then by appointment time
+                .ToList();
+
+            // 4. Convert DB Model -> UI DTO
             var queueList = new List<PatientQueueDto>();
 
-            foreach (var app in walkIns)
+            foreach (var app in sortedWalkIns)
             {
                 var patient = _patientService.GetPatientByIC(app.patient_IC);
 
@@ -155,7 +187,8 @@ namespace ClinicMiniProject.Controller
                     PhoneNumber = patient?.patient_contact ?? "N/A",
 
                     // --- FETCH REAL REASON FROM APPOINTMENT ---
-                    ServiceType = app.service_type ?? "General Consultation"
+                    ServiceType = app.service_type ?? "General Consultation",
+                    IsEmergency = app.status == "Emergency" // Add emergency status to DTO
                 });
             }
 

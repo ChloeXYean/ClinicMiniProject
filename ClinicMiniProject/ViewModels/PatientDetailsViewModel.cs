@@ -103,6 +103,13 @@ namespace ClinicMiniProject.ViewModels
         private string reason = "N/A";
         public string Reason { get => reason; set { reason = value; OnPropertyChanged(); } }
 
+        private ImageSource profilePictureSource;
+        public ImageSource ProfilePictureSource
+        {
+            get => profilePictureSource;
+            set { profilePictureSource = value; OnPropertyChanged(); }
+        }
+
         // --- COMMANDS ---
         public ICommand BackCommand { get; }
         public ICommand UpdateCommand { get; }
@@ -202,6 +209,9 @@ namespace ClinicMiniProject.ViewModels
                 // Gender placeholder
                 Gender = "Unknown";
 
+                // Load default profile picture (stored in session only)
+                ProfilePictureSource = ImageSource.FromFile("profilepicture.png");
+
                 // Only overwrite these if we are loading raw patient data, 
                 // not when enhancing queue data
                 if (overwriteVisitDetails)
@@ -228,8 +238,7 @@ namespace ClinicMiniProject.ViewModels
 
         private async Task OnEditProfile()
         {
-            await Shell.Current.DisplayAlert("Info", "Edit Profile Coming Soon", "OK");
-            // await Shell.Current.GoToAsync("EditPatientProfile");
+            await Shell.Current.GoToAsync("EditPatientProfile");
         }
 
         private async Task OnLogout()

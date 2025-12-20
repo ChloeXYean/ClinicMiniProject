@@ -5,7 +5,11 @@
              Shell.NavBarIsVisible="False"
              x:Class="ClinicMiniProject.UI.Doctor.AppointmentHistoryPage">
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
-        <control:TopNavBar x:Name="TopBar" Grid.Row="0" />
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Padding="20,15" BackgroundColor="#6EA8FE">
+            <ImageButton Grid.Column="0" Source="back.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent" Clicked="OnBackClicked" />
+            <Label Grid.Column="1" Text="Appointment History" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
+        </Grid>
 
         <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="12">
             <Label Text="Appointment History" FontSize="20" FontAttributes="Bold" />

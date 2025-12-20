@@ -3,24 +3,35 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Doctor.InquiryHistoryPage"
-             BackgroundColor="#F8F9FD" 
-             Shell.NavBarIsVisible="False">
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#F8F9FD" >
 
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
-        <control:TopNavBar Grid.Row="0"
-                          UserName="{Binding DoctorName}"
-                          MenuCommand="{Binding ToggleMenuCommand}"
-                          BellCommand="{Binding NotificationCommand}" />
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Padding="20,15" BackgroundColor="#6EA8FE">
+            <ImageButton Grid.Column="0" Source="back.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent" Clicked="OnBackClicked" />
+            <Label Grid.Column="1" Text="Inquiry History" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
+        </Grid>
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="20">
-                <Label Text="Inquiry History" 
-                       FontSize="24" 
-                       FontAttributes="Bold" 
-                       TextColor="#333" />
+                
+                <!-- Search Bar -->
+                <Border BackgroundColor="White" StrokeThickness="1" Stroke="#E0E0E0" Padding="12">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8" />
+                    </Border.StrokeShape>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Image Grid.Column="0" Source="search.png" WidthRequest="16" HeightRequest="16" Margin="0,0,8,0" />
+                        <Entry Grid.Column="1" 
+                               Placeholder="Search inquiries..." 
+                               Text="{Binding SearchText}"
+                               TextChanged="OnSearchTextChanged" />
+                    </Grid>
+                </Border>
 
                 <!-- Inquiry List -->
-                <CollectionView x:Name="InquiriesList">
+                <CollectionView x:Name="InquiriesList" ItemsSource="{Binding FilteredInquiries}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Border StrokeThickness="1" 
@@ -31,18 +42,32 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
-                                <VerticalStackLayout Spacing="8">
-                                    <Label Text="{Binding PatientName}" 
-                                           FontSize="16" 
-                                           FontAttributes="Bold" />
-                                    <Label Text="{Binding InquiryDate}" 
-                                           FontSize="12" 
-                                           TextColor="#666" />
-                                    <Label Text="{Binding InquiryText}" 
+                                <Grid RowDefinitions="Auto,*,Auto">
+                                    <VerticalStackLayout Grid.Row="0" Spacing="8">
+                                        <Label Text="{Binding PatientName}" 
+                                               FontSize="16" 
+                                               FontAttributes="Bold" />
+                                        <Label Text="{Binding CreatedAt, StringFormat='{0:MMM dd, yyyy}'}" 
+                                               FontSize="12" 
+                                               TextColor="#666" />
+                                        <Label Text="{Binding FullSymptomDescription}" 
+                                               FontSize="14" 
+                                               TextColor="#333" 
+                                               MaxLines="2"/>
+                                    </VerticalStackLayout>
+                                    
+                                    <Label Grid.Row="2" 
+                                           Text="View Details" 
                                            FontSize="14" 
-                                           TextColor="#333" 
-                                           MaxLines="2"/>
-                                </VerticalStackLayout>
+                                           TextColor="#0066CC"
+                                           TextDecorations="Underline"
+                                           HorizontalOptions="End">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding BindingContext.ViewInquiryDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                                  CommandParameter="{Binding InquiryId}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </Grid>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

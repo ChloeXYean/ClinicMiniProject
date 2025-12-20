@@ -65,6 +65,9 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<ProfilePage>();
             builder.Services.AddTransient<DoctorProfileViewModel>();
 
+            builder.Services.AddTransient<EditDoctorProfilePage>();
+            builder.Services.AddTransient<EditDoctorProfileViewModel>();
+
             builder.Services.AddTransient<ReportingManagementPage>();
             builder.Services.AddTransient<ReportingManagementViewModel>();
 
