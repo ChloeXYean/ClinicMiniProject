@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:ClinicMiniProject.ViewModels"
+             xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Patient.SelectDoctorPage"
              BackgroundColor="White"
              Shell.NavBarIsVisible="False"
@@ -9,26 +10,7 @@
 
     <Grid RowDefinitions="Auto, Auto, *">
         <!-- Header -->
-        <Grid Grid.Row="0" BackgroundColor="#5FA8FF" Padding="15" ColumnDefinitions="*, Auto" HeightRequest="70">
-            <Label Grid.Column="0"
-                Text="Select Doctor"
-                TextColor="White"
-                FontSize="20"
-                FontAttributes="Bold"
-                VerticalOptions="Center"/>
-            
-            <!-- Exit Button -->
-            <Button Grid.Column="1"
-                    Text="✕"
-                    BackgroundColor="Transparent"
-                    TextColor="White"
-                    FontSize="20"
-                    FontAttributes="Bold"
-                    Command="{Binding GoBackCommand}"
-                    WidthRequest="40"
-                    HeightRequest="40"
-                    Padding="0"/>
-        </Grid>
+        <control:BackNavBar Grid.Row="0" Title="Select Doctor" BackCommand="{Binding GoBackCommand}" />
 
         <!-- Search Bar (Optional, can be filtering logic later) -->
         <SearchBar Grid.Row="1"

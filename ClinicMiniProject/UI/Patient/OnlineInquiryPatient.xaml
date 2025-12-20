@@ -2,18 +2,13 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
     x:Class="ClinicMiniProject.UI.Patient.OnlineInquiryPatient"
 	Shell.NavBarIsVisible="False"
     BackgroundColor="#F6F7F9">
-
-    <VerticalStackLayout Padding="20" Spacing="16">
-
-        <Border BackgroundColor="#5DA9FF" Padding="16">
-            <Label Text="Online Medical Inquiry"
-                   FontSize="18"
-                   FontAttributes="Bold"
-                   TextColor="White" />
-        </Border>
+    <Grid RowDefinitions="Auto, *">
+        <control:BackNavBar Grid.Row="0" Title="Online Medical Inquiry" BackCommand="{Binding BackCommand}" />
+        <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="16">
 
         <Label Text="For non-emergency cases only"
                TextColor="Red"
@@ -72,5 +67,6 @@
                 CornerRadius="16"
                 HeightRequest="50" />
 
-    </VerticalStackLayout>
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>

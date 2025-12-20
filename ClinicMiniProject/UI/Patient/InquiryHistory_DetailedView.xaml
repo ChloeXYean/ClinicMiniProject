@@ -2,17 +2,13 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
     x:Class="ClinicMiniProject.UI.Patient.InquiryHistory_DetailedView"
+    Shell.NavBarIsVisible="False"
     BackgroundColor="#F6F7F9">
-
-    <VerticalStackLayout Padding="20" Spacing="16">
-
-        <Border BackgroundColor="#5DA9FF" Padding="16">
-            <Label Text="Inquiry Details"
-                   FontSize="18"
-                   FontAttributes="Bold"
-                   TextColor="White" />
-        </Border>
+    <Grid RowDefinitions="Auto, *">
+        <control:BackNavBar Grid.Row="0" Title="Inquiry Details" BackCommand="{Binding BackCommand}" />
+        <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="16">
 
         <ScrollView>
             <VerticalStackLayout Padding="10" Spacing="12">
@@ -42,5 +38,6 @@
             </VerticalStackLayout>
         </ScrollView>
 
-    </VerticalStackLayout>
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>

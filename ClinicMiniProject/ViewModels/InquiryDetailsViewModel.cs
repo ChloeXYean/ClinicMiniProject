@@ -26,6 +26,7 @@ namespace ClinicMiniProject.ViewModels
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
             NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorInquiryHistory"));
             NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
+            BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
         }
 
         public string InquiryId
@@ -73,6 +74,7 @@ namespace ClinicMiniProject.ViewModels
             set => SetProperty(ref _doctorResponseText, value);
         }
 
+        public ICommand BackCommand { get; }
         public ICommand SendResponseCommand { get; }
         public ICommand ViewFullProfileCommand { get; }
         public ICommand NavigateToHomeCommand { get; }
