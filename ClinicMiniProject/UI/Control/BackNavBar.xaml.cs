@@ -23,8 +23,33 @@ public partial class BackNavBar : ContentView
         set => SetValue(TitleProperty, value);
     }
 
+    public static readonly BindableProperty TargetRouteProperty =
+        BindableProperty.Create(nameof(TargetRoute), typeof(string), typeof(BackNavBar), null);
+
+    public string TargetRoute
+    {
+        get => (string)GetValue(TargetRouteProperty);
+        set => SetValue(TargetRouteProperty, value);
+    }
+
     public BackNavBar()
     {
         InitializeComponent();
+    }
+
+    private async void BackBtn_Clicked(object sender, EventArgs e)
+    {
+        if (!string.IsNullOrEmpty(TargetRoute))
+        {
+            await Shell.Current.GoToAsync(TargetRoute);
+        }
+        else if (BackCommand != null && BackCommand.CanExecute(null))
+        {
+            BackCommand.Execute(null);
+        }
+        else
+        {
+            await Shell.Current.GoToAsync("..");
+        }
     }
 }

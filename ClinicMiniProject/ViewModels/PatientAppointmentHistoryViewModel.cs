@@ -67,7 +67,7 @@ namespace ClinicMiniProject.ViewModels
             _originalAppointments = new List<AppointmentHistoryItem>();
 
             LoadAppointmentsCommand = new Command(async () => await LoadAppointments());
-            BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
+            BackCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
 
             // Initial load
             _ = LoadAppointments();
@@ -151,7 +151,9 @@ namespace ClinicMiniProject.ViewModels
                         Status = status,
                         StatusColor = Colors.Black,
                         BadgeColor = badgeBg,
-                        CardBackgroundColor = cardBg
+                        CardBackgroundColor = cardBg,
+                        AppointmentId = appt.appointment_ID,
+                        ViewDetailsCommand = new Command(async () => await NavigateToConsultationDetails(appt.appointment_ID))
                     });
                 }
 
@@ -217,6 +219,14 @@ namespace ClinicMiniProject.ViewModels
                 _ => (Colors.White, Colors.Gray)
             };
         }
+
+        private async Task NavigateToConsultationDetails(string appointmentId)
+        {
+            if (!string.IsNullOrEmpty(appointmentId))
+            {
+                await Shell.Current.GoToAsync($"///ConsultationDetailsPage?appointmentId={appointmentId}");
+            }
+        }
     }
 
     public class AppointmentHistoryItem
@@ -230,5 +240,7 @@ namespace ClinicMiniProject.ViewModels
         public Color StatusColor { get; set; } // Text Color (e.g. Black or specific)
         public Color BadgeColor { get; set; } // Background of the status pill
         public Color CardBackgroundColor { get; set; } // Background of the entire card
+        public string AppointmentId { get; set; }
+        public ICommand ViewDetailsCommand { get; set; }
     }
 }

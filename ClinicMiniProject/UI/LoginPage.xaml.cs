@@ -11,7 +11,7 @@ namespace ClinicMiniProject.UI
 
         private readonly IAuthService _authService;
 
-        public LoginPage()
+        public LoginPage(IAuthService authService)
         {
             InitializeComponent();
             var sp = Application.Current?.Handler?.MauiContext?.Services;
@@ -21,12 +21,6 @@ namespace ClinicMiniProject.UI
                 DisplayAlert("FATAL ERROR", "AuthService could not be resolved", "OK");
                 return;
             }
-        }
-
-        public LoginPage(IAuthService authService)
-        {
-            _authService = authService;
-            InitializeComponent();
         }
 
         private async void OnLoginClicked(object sender, EventArgs e)

@@ -74,6 +74,11 @@
         Route="InquiryDetailsPage" />
 
     <ShellContent
+        Title="Consultation Details"
+        ContentTemplate="{DataTemplate doc:ConsultationDetailsPage}"
+        Route="ConsultationDetailsPage" />
+
+    <ShellContent
         Title="Patient Details"
         ContentTemplate="{DataTemplate nur:PatientDetailsPage}"
         Route="PatientDetails" />

@@ -4,16 +4,11 @@
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              Shell.NavBarIsVisible="False"
              x:Class="ClinicMiniProject.UI.Doctor.AppointmentHistoryPage"
-             BackgroundColor="#F5F7FA">
+             BackgroundColor="#F5F7FA"
+             Title="Appointment History">
 
-    <Grid RowDefinitions="Auto, *, Auto" RowSpacing="0">
-
-        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Padding="20,15" BackgroundColor="#6EA8FE">
-            <ImageButton Grid.Column="0" Source="back.png" HeightRequest="22" WidthRequest="22" 
-                         BackgroundColor="Transparent" Clicked="OnBackClicked" />
-            <Label Grid.Column="1" Text="Appointment History" FontSize="18" FontAttributes="Bold" 
-                   VerticalOptions="Center" TextColor="White" Margin="10,0,0,0"/>
-        </Grid>
+    <Grid RowDefinitions="Auto, *" RowSpacing="0">
+        <control:BackNavBar Grid.Row="0" BackCommand="{Binding BackCommand}" TargetRoute="///DoctorDashboardPage" />
 
         <RefreshView Grid.Row="1" Command="{Binding LoadAppointmentsCommand}">
             <CollectionView ItemsSource="{Binding Appointments}" Margin="15">
@@ -31,7 +26,7 @@
                                 <Shadow Brush="Black" Opacity="0.05" Radius="5" Offset="0,2"/>
                             </Border.Shadow>
 
-                            <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, Auto">
+                            <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*, Auto">
                                 <Label Grid.Row="0" Grid.Column="0" Text="{Binding Date}" 
                                        TextColor="#999" FontSize="12"/>
                                 <Label Grid.Row="0" Grid.Column="1" Text="{Binding Time}" 
@@ -56,6 +51,15 @@
                                            TextColor="{Binding StatusColor}" 
                                            FontSize="11" FontAttributes="Bold"/>
                                 </Border>
+
+                                <Button Grid.Row="3" Grid.ColumnSpan="2" 
+                                        Text="View Details" 
+                                        Command="{Binding ViewDetailsCommand}"
+                                        BackgroundColor="#6EA8FE" 
+                                        TextColor="White" 
+                                        HeightRequest="36" 
+                                        FontSize="14" 
+                                        Margin="0,8,0,0"/>
                             </Grid>
                         </Border>
                     </DataTemplate>
@@ -68,7 +72,5 @@
                 </CollectionView.EmptyView>
             </CollectionView>
         </RefreshView>
-
-        <control:BottomNavBar x:Name="BottomBar" Grid.Row="2" SelectedTab="Home" />
     </Grid>
 </ContentPage>

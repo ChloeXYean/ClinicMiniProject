@@ -7,113 +7,146 @@ using System.Windows.Input;
 
 namespace ClinicMiniProject.ViewModels
 {
+    [QueryProperty(nameof(AppointmentId), "appointmentId")]
     public class ConsultationDetailsViewModel : INotifyPropertyChanged
     {
         private readonly IAuthService _authService;
         private readonly IConsultationService _consultationService;
+        private readonly IAppointmentService _appointmentService;
 
-        // Master list to hold all data (for searching)
-        private List<ConsultationQueueDto> _allPatients = new();
+        private string _appointmentId;
+        private string _appointmentDate;
+        private string _appointmentTime;
+        private string _patientName;
+        private string _patientIC;
+        private string _serviceType;
+        private string _doctorRemarks;
+        private string _nurseNotes;
+        private string _prescription;
+        private string _status;
 
-        private bool _isBusy;
-        private string _searchText = string.Empty;
-
-        // Collection bound to the UI (displays filtered results)
-        public ObservableCollection<ConsultationQueueDto> PatientQueue { get; } = new();
-
-        public bool IsBusy
+        public string AppointmentId
         {
-            get => _isBusy;
-            set => SetProperty(ref _isBusy, value);
-        }
-
-        public string SearchText
-        {
-            get => _searchText;
+            get => _appointmentId;
             set
             {
-                if (SetProperty(ref _searchText, value))
-                {
-                    // Filter the list whenever text changes
-                    FilterPatientList();
-                }
+                _appointmentId = value;
+                OnPropertyChanged();
+                _ = LoadConsultationDetails();
             }
         }
 
-        public ICommand SelectPatientCommand { get; }
-        public ICommand RefreshCommand { get; }
+        public string AppointmentDate
+        {
+            get => _appointmentDate;
+            set => SetProperty(ref _appointmentDate, value);
+        }
 
-        public ConsultationDetailsViewModel(IAuthService authService, IConsultationService consultationService)
+        public string AppointmentTime
+        {
+            get => _appointmentTime;
+            set => SetProperty(ref _appointmentTime, value);
+        }
+
+        public string PatientName
+        {
+            get => _patientName;
+            set => SetProperty(ref _patientName, value);
+        }
+
+        public string PatientIC
+        {
+            get => _patientIC;
+            set => SetProperty(ref _patientIC, value);
+        }
+
+        public string ServiceType
+        {
+            get => _serviceType;
+            set => SetProperty(ref _serviceType, value);
+        }
+
+        public string DoctorRemarks
+        {
+            get => _doctorRemarks;
+            set => SetProperty(ref _doctorRemarks, value);
+        }
+
+        public string NurseNotes
+        {
+            get => _nurseNotes;
+            set => SetProperty(ref _nurseNotes, value);
+        }
+
+        public string Prescription
+        {
+            get => _prescription;
+            set => SetProperty(ref _prescription, value);
+        }
+
+        public string Status
+        {
+            get => _status;
+            set => SetProperty(ref _status, value);
+        }
+
+        public ICommand BackCommand { get; }
+
+        public ConsultationDetailsViewModel(IAuthService authService, IConsultationService consultationService, IAppointmentService appointmentService)
         {
             _authService = authService;
             _consultationService = consultationService;
+            _appointmentService = appointmentService;
 
-            // Navigation Command
-            SelectPatientCommand = new Command<ConsultationQueueDto>(async (item) => await SelectPatientAsync(item));
-
-            RefreshCommand = new Command(async () => await LoadQueueAsync());
-
-            LoadQueueAsync();
+            BackCommand = new Command(async () => await Shell.Current.GoToAsync("///AppointmentHistoryPage?UserType=Doctor"));
         }
 
-        public async Task LoadQueueAsync()
+        private async Task LoadConsultationDetails()
         {
-            if (IsBusy) return;
-            IsBusy = true;
+            if (string.IsNullOrEmpty(AppointmentId)) return;
 
             try
             {
-                var user = _authService.GetCurrentUser();
-                if (user == null) return;
+                var appointment = await _appointmentService.GetAppointmentByIdAsync(AppointmentId);
+                if (appointment != null)
+                {
+                    AppointmentDate = appointment.appointedAt?.ToString("dd MMM yyyy") ?? "Unknown";
+                    AppointmentTime = appointment.appointedAt?.ToString("hh:mm tt") ?? "Unknown";
+                    PatientName = appointment.Patient?.patient_name ?? "Unknown";
+                    PatientIC = appointment.patient_IC;
+                    ServiceType = appointment.service_type?.ToString() ?? "General Consultation";
+                    Status = appointment.status ?? "Unknown";
 
-                // Fetch from Service
-                var items = await _consultationService.GetConsultationQueueAsync(user.staff_ID, DateTime.Now);
-
-                // Update Master List
-                _allPatients.Clear();
-                _allPatients.AddRange(items);
-
-                // Apply current filter (or show all)
-                FilterPatientList();
+                    // Load consultation details if available
+                    var consultation = await _consultationService.GetConsultationDetailsByAppointmentIdAsync(AppointmentId);
+                    if (consultation != null)
+                    {
+                        DoctorRemarks = consultation.DoctorRemark ?? "No remarks recorded";
+                        NurseNotes = consultation.NurseRemark ?? "No notes recorded";
+                        Prescription = "No prescription recorded";
+                    }
+                    else
+                    {
+                        DoctorRemarks = "No consultation details available";
+                        NurseNotes = "No consultation details available";
+                        Prescription = "No prescription recorded";
+                    }
+                }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}");
-                await Shell.Current.DisplayAlert("Error", "Failed to load queue.", "OK");
+                System.Diagnostics.Debug.WriteLine($"Error loading consultation details: {ex.Message}");
+                await Shell.Current.DisplayAlert("Error", "Failed to load consultation details.", "OK");
             }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
-        private void FilterPatientList()
-        {
-            PatientQueue.Clear();
-
-            var query = SearchText?.ToLower() ?? "";
-
-            var filteredItems = string.IsNullOrWhiteSpace(query)
-                ? _allPatients
-                : _allPatients.Where(p =>
-                    p.PatientName.ToLower().Contains(query) ||
-                    p.PatientIC.Contains(query));
-
-            foreach (var item in filteredItems)
-            {
-                PatientQueue.Add(item);
-            }
-        }
-
-        private async Task SelectPatientAsync(ConsultationQueueDto item)
-        {
-            if (item == null) return;
-
-            // Navigate to EndConsultationDetailsPage with the AppointmentId
-            await Shell.Current.GoToAsync($"EndConsultationDetails?AppointmentId={item.ConsultationId}");
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")
         {
             if (Equals(backingStore, value)) return false;

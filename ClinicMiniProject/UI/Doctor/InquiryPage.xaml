@@ -14,7 +14,7 @@
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*" RowSpacing="0">
-        <control:BackNavBar x:Name="TopBar" Grid.Row="0" />
+        <control:BackNavBar x:Name="TopBar" Grid.Row="0" BackCommand="{Binding BackCommand}" />
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="12">
