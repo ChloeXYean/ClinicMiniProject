@@ -120,37 +120,71 @@ namespace ClinicMiniProject.ViewModels
         public IReadOnlyList<TimeSlotRowDto> Rows => Grid.Rows;
         private async void LoadSchedule()
         {
+            System.Diagnostics.Debug.WriteLine("=== LoadSchedule CALLED ===");
+            System.Diagnostics.Debug.WriteLine($"IsNurseMode: {IsNurseMode}");
+            System.Diagnostics.Debug.WriteLine($"SelectedDate: {SelectedDate:yyyy-MM-dd}");
+            
             if (IsNurseMode)
             {
                 if (SelectedDoctor == null)
                 {
+                    System.Diagnostics.Debug.WriteLine("No doctor selected in Nurse mode");
                     Grid = new AppointmentScheduleGridDto { Date = SelectedDate.Date };
                     return;
                 }
+                System.Diagnostics.Debug.WriteLine($"Loading schedule for doctor: {SelectedDoctor.staff_ID}");
                 try
                 {
                     Grid = await _scheduleService.GetScheduleGridAsync(SelectedDoctor.staff_ID, SelectedDate.Date);
+                    System.Diagnostics.Debug.WriteLine($"Loaded {Grid.Rows.Count} time slots");
                 }
-                catch
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.WriteLine($"Error loading schedule: {ex.Message}");
                     Grid = new AppointmentScheduleGridDto { Date = SelectedDate.Date };
                 }
             }
             else
             {
                 var current = _authService.GetCurrentUser();
+                System.Diagnostics.Debug.WriteLine($"Current user: {current?.staff_ID} ({current?.staff_name})");
+                
                 if (current == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("ERROR: No current user found!");
                     return;
+                }
 
                 try
                 {
+                    System.Diagnostics.Debug.WriteLine($"Loading schedule for doctor: '{current.staff_ID}' (Type: {current.staff_ID?.GetType().Name})");
                     Grid = await _scheduleService.GetScheduleGridAsync(current.staff_ID, SelectedDate.Date);
+                    System.Diagnostics.Debug.WriteLine($"Loaded {Grid.Rows.Count} time slots");
+                    
+                    // Debug: Count booked slots
+                    int bookedCount = 0;
+                    foreach (var row in Grid.Rows)
+                    {
+                        foreach (var kvp in row.CellsByServiceType)
+                        {
+                            if (kvp.Value.IsBooked && !string.IsNullOrEmpty(kvp.Value.PatientName))
+                            {
+                                bookedCount++;
+                                System.Diagnostics.Debug.WriteLine($"  [{row.SlotStart:HH:mm}] {kvp.Key}: {kvp.Value.PatientName} (IC: {kvp.Value.PatientIc})");
+                            }
+                        }
+                    }
+                    System.Diagnostics.Debug.WriteLine($"Total booked slots displayed: {bookedCount}");
                 }
-                catch
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.WriteLine($"ERROR loading schedule: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
                     Grid = new AppointmentScheduleGridDto { Date = SelectedDate.Date };
                 }
             }
+            
+            System.Diagnostics.Debug.WriteLine("=== LoadSchedule COMPLETED ===");
         }
 
         private void LoadDoctors()
@@ -179,7 +213,7 @@ namespace ClinicMiniProject.ViewModels
             if (string.IsNullOrWhiteSpace(patientIc))
                 return;
 
-            Shell.Current.GoToAsync($"PatientDetails?patientIc={Uri.EscapeDataString(patientIc)}");
+            Shell.Current.GoToAsync($"PatientDetails?patientIc={Uri.EscapeDataString(patientIc)}&UserType=Doctor");
         }
 
         private bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")

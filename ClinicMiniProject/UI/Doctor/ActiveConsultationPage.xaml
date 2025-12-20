@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
+             x:Class="ClinicMiniProject.UI.Doctor.ActiveConsultationPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#F5F7FA">
+
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
+        <control:BackNavBar Grid.Row="0" Title="Start Consultation" BackCommand="{Binding BackCommand}" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="16">
+
+                <!-- Patient Information -->
+                <Border BackgroundColor="White" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Patient Information" FontAttributes="Bold" FontSize="18" TextColor="#333" />
+                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+                            <Label Grid.Row="0" Grid.Column="0" Text="Name:" FontAttributes="Bold" WidthRequest="100"/>
+                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding PatientName}" />
+                            
+                            <Label Grid.Row="1" Grid.Column="0" Text="IC:" FontAttributes="Bold"/>
+                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding PatientIC}" />
+                            
+                            <Label Grid.Row="2" Grid.Column="0" Text="Service:" FontAttributes="Bold"/>
+                            <Label Grid.Row="2" Grid.Column="1" Text="{Binding ServiceType}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Doctor Remarks (Editable) -->
+                <Border BackgroundColor="White" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Doctor Remarks" FontAttributes="Bold" FontSize="18" TextColor="#333" />
+                        <Label Text="Enter your consultation notes and diagnosis:" FontSize="14" TextColor="#666" />
+                        <Editor Text="{Binding ConsultationRemark, Mode=TwoWay}"
+                                Placeholder="Type your remarks here..."
+                                HeightRequest="200"
+                                BackgroundColor="#F8F9FA"
+                                TextColor="#333" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Consultation Status -->
+                <Border BackgroundColor="#E3F2FD" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Status" FontAttributes="Bold" FontSize="16" TextColor="#1976D2" />
+                        <Label Text="{Binding Status}" FontSize="14" TextColor="#1976D2" FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Action Buttons -->
+        <Border Grid.Row="2" Padding="20" StrokeThickness="0" BackgroundColor="White">
+            <Border.Shadow>
+                <Shadow Brush="Black" Opacity="0.1" Radius="10" Offset="0,-5"/>
+            </Border.Shadow>
+            
+            <Button Text="End Consultation" 
+                    Command="{Binding EndConsultationCommand}"
+                    BackgroundColor="#4CAF50" 
+                    TextColor="White" 
+                    FontAttributes="Bold" 
+                    CornerRadius="10" 
+                    HeightRequest="50"/>
+        </Border>
+    </Grid>
+</ContentPage>
