@@ -148,6 +148,8 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <control:BottomNavBar x:Name="BottomBar" Grid.Row="2" SelectedTab="Profile" />
+        <control:BottomNavBar x:Name="BottomBar" Grid.Row="2" SelectedTab="Profile" 
+                              HomeCommand="{Binding HomeCommand}"
+                              ChatCommand="{Binding InquiryCommand}"/>
     </Grid>
 </ContentPage>

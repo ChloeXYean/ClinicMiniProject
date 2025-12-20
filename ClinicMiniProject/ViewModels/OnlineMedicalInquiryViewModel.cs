@@ -16,7 +16,6 @@ namespace ClinicMiniProject.ViewModels
         private readonly IInquiryService _inquiryService;
         private readonly IAuthService? _authService;
         private readonly IAppointmentService? _appointmentService;
-        private readonly AppDbContext _context;
 
         private string _searchQuery = string.Empty;
         private string _selectedStatus = "All";
@@ -34,16 +33,16 @@ namespace ClinicMiniProject.ViewModels
         {
             _inquiryService = inquiryService;
             _authService = authService;
-            _context = context;
 
             FilterCommand = new Command(async () => await LoadAsync());
             ViewInquiryDetailsCommand = new Command<string>(OnViewDetails);
+
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
             NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorInquiryHistory"));
             NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
+
             UploadPhotoCommand = new Command(async () => await UploadPhotoAsync());
             ViewPhotosCommand = new Command(async () => await Shell.Current.GoToAsync("InquiryPhotos"));
-
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
             SubmitInquiryCommand = new Command(async () => await SubmitInquiryAsync());
 
@@ -132,62 +131,58 @@ namespace ClinicMiniProject.ViewModels
 
         public async Task LoadAsync()
         {
-            InquiryList.Clear();
-
-            // Get current doctor
-            var currentUser = _authService?.GetCurrentUser();
-            if (currentUser == null || !currentUser.isDoctor)
+            try
             {
-                return; // Only load for doctors
-            }
+                InquiryList.Clear();
 
-            var items = await _inquiryService.GetInquiriesByDoctorAsync(currentUser.staff_ID, SearchQuery);
-            
-            // Apply filters
-            var filteredItems = items.Where(i =>
-            {
-                // Status filter
-                if (SelectedStatus != "All" && !string.Equals(i.Status, SelectedStatus, StringComparison.OrdinalIgnoreCase))
-                    return false;
-                
-                // Date filter (only if active)
-                if (_isDateFilterActive && i.CreatedAt.Date != FilterDate.Date)
-                    return false;
-                
-                return true;
-            });
+                var currentUser = _authService?.GetCurrentUser();
+                if (currentUser == null) return;
 
-            foreach (var i in filteredItems)
-            {
-                InquiryList.Add(new InquiryListItemVm
+                IEnumerable<InquiryDto> items;
+
+                // LOGIC CHANGE: 
+                // If Doctor -> View assigned inquiries
+                // If Nurse (Not Doctor) -> View ALL inquiries (Admin/Triage view)
+                if (currentUser.isDoctor)
                 {
-                    InquiryId = i.InquiryId,
-                    PatientIc = i.PatientIc,
-                    PatientName = i.PatientName,
-                    SymptomSnippet = BuildSnippet(i.FullSymptomDescription),
-                    Status = i.Status,
-                    CreatedDate = i.CreatedAt
+                    items = await _inquiryService.GetInquiriesByDoctorAsync(currentUser.staff_ID, SearchQuery);
+                }
+                else
+                {
+                    // Nurse View: Fetch All Inquiries using the generic search method
+                    items = await _inquiryService.GetInquiriesAsync(SearchQuery);
+                }
+
+                // Apply Client-Side Filters (Status/Date)
+                var filteredItems = items.Where(i =>
+                {
+                    if (SelectedStatus != "All" && !string.Equals(i.Status, SelectedStatus, StringComparison.OrdinalIgnoreCase))
+                        return false;
+
+                    if (_isDateFilterActive && i.CreatedAt.Date != FilterDate.Date)
+                        return false;
+
+                    return true;
                 });
-            }
 
-            // Load patient-specific history if current user is a patient
-            // Load patient-specific history
-            var patient = _authService?.GetCurrentPatient();
-            if (patient != null)
-            {
-                await LoadPatientHistoryAsync(patient.patient_IC);
-            }
-            else
-            {
-                var staff = _authService?.GetCurrentUser();
-                if (staff != null && !staff.isDoctor)
+                foreach (var i in filteredItems)
                 {
-                    // Fallback or nurse view if needed, though usually patients use InquiryHistory
-                    await LoadPatientHistoryAsync(staff.staff_ID);
+                    InquiryList.Add(new InquiryListItemVm
+                    {
+                        InquiryId = i.InquiryId,
+                        PatientIc = i.PatientIc,
+                        PatientName = i.PatientName,
+                        SymptomSnippet = BuildSnippet(i.FullSymptomDescription),
+                        Status = i.Status,
+                        CreatedDate = i.CreatedAt
+                    });
                 }
             }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading inquiries: {ex.Message}");
+            }
         }
-
         private async Task LoadPatientHistoryAsync(string patientIc)
         {
             PatientInquiryHistory.Clear();
@@ -205,7 +200,6 @@ namespace ClinicMiniProject.ViewModels
                 });
             }
         }
-
         private async Task InitializePatientDataAsync()
         {
             var patient = _authService?.GetCurrentPatient();
@@ -227,7 +221,6 @@ namespace ClinicMiniProject.ViewModels
 
                 // 2. Filter: Must be "Completed" AND "isDoctor"
                 var consultedDoctors = appointments
-                    .Where(a => string.Equals((a.status ?? "").Trim(), "Completed", StringComparison.OrdinalIgnoreCase))
                     .Select(a => a.Staff)
                     .Where(s => s != null && s.isDoctor) // <--- THIS FILTERS OUT NURSES (FLORA)
                     .GroupBy(s => s.staff_ID) // Remove duplicates (if patient saw Doc A twice)
@@ -300,26 +293,19 @@ namespace ClinicMiniProject.ViewModels
 
         private void OnViewDetails(string inquiryId)
         {
-            if (string.IsNullOrWhiteSpace(inquiryId))
-                return;
-
-            Shell.Current.GoToAsync($"///InquiryDetailsPage?inquiryId={Uri.EscapeDataString(inquiryId)}");
+            if (!string.IsNullOrWhiteSpace(inquiryId))
+                Shell.Current.GoToAsync($"///InquiryDetailsPage?inquiryId={Uri.EscapeDataString(inquiryId)}");
         }
-
         private static string BuildSnippet(string text)
         {
-            if (string.IsNullOrWhiteSpace(text))
-                return string.Empty;
-
+            if (string.IsNullOrWhiteSpace(text)) return string.Empty;
             var t = text.Trim();
             return t.Length <= 60 ? t : t.Substring(0, 60) + "...";
         }
 
         private bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")
         {
-            if (Equals(backingStore, value))
-                return false;
-
+            if (Equals(backingStore, value)) return false;
             backingStore = value;
             OnPropertyChanged(propertyName);
             return true;

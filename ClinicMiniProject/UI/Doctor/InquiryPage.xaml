@@ -90,6 +90,9 @@
         </VerticalStackLayout>
         </ScrollView>
 
-        <control:BottomNavBar x:Name="BottomBar" Grid.Row="2" SelectedTab="Chat" />
+        <control:BottomNavBar x:Name="BottomBar" Grid.Row="2" SelectedTab="InquiryHistory"
+                              HomeCommand="{Binding NavigateToHomeCommand}"
+                              ChatCommand="{Binding NavigateToInquiryCommand}"
+                              ProfileCommand="{Binding NavigateToProfileCommand}" />
     </Grid>
 </ContentPage>

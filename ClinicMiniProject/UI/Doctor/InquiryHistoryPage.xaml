@@ -4,7 +4,7 @@
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Doctor.InquiryHistoryPage"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="#F8F9FD" >
+             BackgroundColor="#F8F9FD">
 
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
 
@@ -15,8 +15,7 @@
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="20">
-                
-                <!-- Search Bar -->
+
                 <Border BackgroundColor="White" StrokeThickness="1" Stroke="#E0E0E0" Padding="12">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="8" />
@@ -30,38 +29,21 @@
                     </Grid>
                 </Border>
 
-                <!-- Inquiry List -->
                 <CollectionView x:Name="InquiriesList" ItemsSource="{Binding FilteredInquiries}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Border StrokeThickness="1" 
-                                   Stroke="#E0E0E0" 
-                                   BackgroundColor="White" 
-                                   Padding="15" 
-                                   Margin="0,5">
+                            <Border StrokeThickness="1" Stroke="#E0E0E0" BackgroundColor="White" Padding="15" Margin="0,5">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
                                 <Grid RowDefinitions="Auto,*,Auto">
                                     <VerticalStackLayout Grid.Row="0" Spacing="8">
-                                        <Label Text="{Binding PatientName}" 
-                                               FontSize="16" 
-                                               FontAttributes="Bold" />
-                                        <Label Text="{Binding CreatedAt, StringFormat='{0:MMM dd, yyyy}'}" 
-                                               FontSize="12" 
-                                               TextColor="#666" />
-                                        <Label Text="{Binding FullSymptomDescription}" 
-                                               FontSize="14" 
-                                               TextColor="#333" 
-                                               MaxLines="2"/>
+                                        <Label Text="{Binding PatientName}" FontSize="16" FontAttributes="Bold" />
+                                        <Label Text="{Binding CreatedAt, StringFormat='{0:MMM dd, yyyy}'}" FontSize="12" TextColor="#666" />
+                                        <Label Text="{Binding FullSymptomDescription}" FontSize="14" TextColor="#333" MaxLines="2"/>
                                     </VerticalStackLayout>
-                                    
-                                    <Label Grid.Row="2" 
-                                           Text="View Details" 
-                                           FontSize="14" 
-                                           TextColor="#0066CC"
-                                           TextDecorations="Underline"
-                                           HorizontalOptions="End">
+
+                                    <Label Grid.Row="2" Text="View Details" FontSize="14" TextColor="#0066CC" TextDecorations="Underline" HorizontalOptions="End">
                                         <Label.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding BindingContext.ViewInquiryDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                                   CommandParameter="{Binding InquiryId}" />
@@ -75,9 +57,9 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <control:BottomNavBar Grid.Row="2" SelectedTab="InquiryHistory"
-                             HomeCommand="{Binding NavigateToHomeCommand}"
-                             ChatCommand="{Binding NavigateToInquiryCommand}"
-                             ProfileCommand="{Binding NavigateToProfileCommand}" />
+        <control:BottomNavBar x:Name="BottomBar" Grid.Row="2" SelectedTab="InquiryHistory"
+                              HomeCommand="{Binding NavigateToHomeCommand}"
+                              ChatCommand="{Binding NavigateToInquiryCommand}"
+                              ProfileCommand="{Binding NavigateToProfileCommand}" />
     </Grid>
 </ContentPage>

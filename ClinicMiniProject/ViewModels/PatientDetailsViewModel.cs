@@ -254,9 +254,16 @@ namespace ClinicMiniProject.ViewModels
         // --- ACTIONS ---
         private async void OnUpdate()
         {
-            await Shell.Current.DisplayAlert("Action", "Opening Edit Form...", "OK");
+            if (!string.IsNullOrEmpty(IcNumber))
+            {
+                // Pass the current patient's IC to the edit page
+                await Shell.Current.GoToAsync($"EditPatientProfile?TargetPatientIC={IcNumber}");
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Error", "Cannot edit: No Patient IC found.", "OK");
+            }
         }
-
         private async Task OnEditProfile()
         {
             await Shell.Current.GoToAsync("EditPatientProfile");
