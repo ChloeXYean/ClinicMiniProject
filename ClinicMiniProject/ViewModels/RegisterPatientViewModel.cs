@@ -11,6 +11,7 @@ namespace ClinicMiniProject.ViewModels
     {
         private readonly NurseController _controller;
         private readonly IStaffService _staffService;
+        private readonly IAuthService _authService;
 
         private string name = string.Empty;
         public string Name { 
@@ -71,9 +72,10 @@ namespace ClinicMiniProject.ViewModels
         public ICommand RegisterCommand { get; }
         public ICommand BackCommand { get; }
 
-        public RegisterPatientViewModel(NurseController controller)
+        public RegisterPatientViewModel(NurseController controller, IAuthService authService)
         {
             _controller = controller;
+            _authService = authService;
             RegisterCommand = new Command(OnRegisterClicked);
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
         }

@@ -22,18 +22,6 @@ namespace ClinicMiniProject.Controller
             _staffService = staffService;
         }
 
-
-        public async Task<List<Appointment>> ViewAppointmentList(DateTime selectedDate)
-        {
-            var start = selectedDate.Date;
-            var end = start.AddDays(1);
-
-            var appointments = await _appointmentService
-                .GetAppointmentsByStaffAndDateRangeAsync("", start, end);
-
-            return appointments.ToList();
-        }
-
         public async Task<string> RegisterWalkInPatient(string fullName, string ic, string phone, string serviceType, bool isEmergency = false)
         { 
             try
@@ -124,12 +112,6 @@ namespace ClinicMiniProject.Controller
             }
         }
 
-        public async Task<List<Appointment>> GetCompletedConsultationsAsync(string doctorId)
-        {
-            var appointments = await _appointmentService.GetUpcomingAppointmentsAsync(doctorId);
-
-            return appointments.Where(a => a.status == "Completed").OrderByDescending(a => a.appointedAt).ToList();
-        }
 
         public Patient? ViewPatientDetails(string patientIC)
         {
@@ -155,20 +137,19 @@ namespace ClinicMiniProject.Controller
 
         public async Task<List<PatientQueueDto>> GetWalkInQueueForToday()
         {
-            // 1. Fetch appointments for today that are "Pending", "Emergency", or "checked_in"
-            // This depends on your service logic (e.g., _appointmentService)
             var today = DateTime.Today;
-            var appointments = await _appointmentService.GetAppointmentsByDateAsync(today); // You might need to add this method to your Service if missing
+            var appointments = await _appointmentService.GetAppointmentsByDateAsync(today); 
 
-            // 2. Filter for Walk-In only and prioritize emergency patients
+        
             var walkIns = appointments
-                .Where(a => a.status == "Pending" || a.status == "Emergency") // Include emergency status
+                .Where(a => a.status == "Pending" || a.status == "Completed" || a.status == "Emergency" || a.status == "Cancelled") 
                 .ToList();
 
-            // 3. Sort by priority: Emergency patients first, then by appointment time
+          
             var sortedWalkIns = walkIns
-                .OrderByDescending(a => a.status == "Emergency") // Emergency patients first
-                .ThenBy(a => a.appointedAt) // Then by appointment time
+                .OrderByDescending(a => a.status == "Emergency")
+                .ThenByDescending(a => a.status == "Pending" || a.status == "Completed")
+                .ThenBy(a => a.appointedAt) 
                 .ToList();
 
             // 4. Convert DB Model -> UI DTO

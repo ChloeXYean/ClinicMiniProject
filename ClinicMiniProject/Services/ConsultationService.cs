@@ -24,35 +24,13 @@ namespace ClinicMiniProject.Services
             var todayAppointments = (await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(doctorId, today, endOfDay))
                 ?.ToList() ?? new List<Appointment>();
 
-            // Define "current time slot" as the earliest appointment that is not completed and is scheduled for today.
-            // If you have a fixed slot system, replace this selection logic.
+            // 1. Sort by Time (Earliest first) so 3 PM comes before 4 PM
             var current = todayAppointments
-                .Where(a => a.appointedAt.Value.Date == today && (a.status == "Pending" || a.status == "Confirmed"))
+                .Where(a => a.appointedAt.Value.Date == today && (a.status == "Pending" || a.status == "Confirmed" || a.status == "Pending"))
                 .OrderBy(a => a.appointedAt)
                 .FirstOrDefault();
 
-            if (current == null)
-                return null;
-
-            // 15-minute rule:
-            // If appointment start time + 15 mins has passed and doctor hasn't started consultation, cancel and reassign walk-in.
-            // We treat "Started" as status == "InProgress".
-            var isStarted = string.Equals(current.status, "InProgress", StringComparison.OrdinalIgnoreCase);
-            if (!isStarted && current.appointedAt.HasValue && now >= current.appointedAt.Value.AddMinutes(15))
-            {
-                await CancelAndReassignToRandomWalkInAsync(current, now);
-
-                // After reassignment, rebuild details using updated appointment.
-                if (string.IsNullOrWhiteSpace(current.appointment_ID))
-                    return null;
-
-                var updated = await _appointmentService.GetAppointmentByIdAsync(current.appointment_ID);
-                if (updated == null)
-                    return null;
-
-                return await BuildDetailsAsync(updated);
-            }
-
+            if (current == null) return null;
             return await BuildDetailsAsync(current);
         }
 
@@ -88,7 +66,8 @@ namespace ClinicMiniProject.Services
             await _appointmentService.UpdateAppointmentAsync(appt);
         }
 
-        public async Task EndConsultationAsync(string appointmentId, string remark)
+        // 1. Update signature to accept 'nurseRemark'
+        public async Task EndConsultationAsync(string appointmentId, string doctorRemark, string? nurseRemark)
         {
             var appt = await _appointmentService.GetAppointmentByIdAsync(appointmentId);
             if (appt == null)
@@ -96,13 +75,10 @@ namespace ClinicMiniProject.Services
 
             appt.status = "Completed";
 
-            // TODO: link with database (persist appointment status)
-            await _appointmentService.UpdateAppointmentAsync(appt);
+            appt.doc_remark = doctorRemark;
+            appt.nurse_remark = nurseRemark;
 
-            // TODO: link with database
-            // Persist remark to a Consultation/MedicalRecord table.
-            // Current Models do not include remark, so we do NOT store it here.
-            _ = remark;
+            await _appointmentService.UpdateAppointmentAsync(appt);
         }
 
         private async Task CancelAndReassignToRandomWalkInAsync(Appointment appointment, DateTime now)
@@ -144,10 +120,11 @@ namespace ClinicMiniProject.Services
                 Date = appt.appointedAt.Value.Date,
                 AppointedTimeSlot = appt.appointedAt.Value,
                 PatientIc = appt.patient_IC,
-                PatientName = patient?.patient_name ?? string.Empty,
+                PatientName = patient?.patient_name ?? string.Empty,    
                 PatientPhone = patient?.patient_contact ?? string.Empty,
-                SelectedServiceType = string.Empty, // TODO: link with database (Appointment currently has no service type)
-                Status = appt.status
+                Status = appt.status,
+                DoctorRemark = appt.doc_remark ?? string.Empty,
+                NurseRemark = appt.nurse_remark ?? string.Empty
             };
         }
     }

@@ -14,7 +14,7 @@ namespace ClinicMiniProject.Services.Interfaces
 
         Task StartConsultationAsync(string appointmentId);
 
-        Task EndConsultationAsync(string appointmentId, string remark);
+        Task EndConsultationAsync(string appointmentId, string doctorRemark, string? nurseRemark);
     }
 
     public sealed class ConsultationDetailsDto
@@ -27,6 +27,8 @@ namespace ClinicMiniProject.Services.Interfaces
         public string PatientPhone { get; init; } = string.Empty;
         public string SelectedServiceType { get; init; } = string.Empty;
         public string Status { get; init; } = string.Empty;
+        public string DoctorRemark { get; set; } = string.Empty;
+        public string NurseRemark { get; set; } = string.Empty;
     }
 
     public sealed class PatientLookupDto

@@ -8,6 +8,11 @@
         public string ServiceType { get; set; }
         public string AppointedTime { get; set; }
         public string Date { get; set; }
+        public string DoctorRemark { get; set; }
+
+        public string NurseRemark { get; set; }
+
+
 
     }
 }

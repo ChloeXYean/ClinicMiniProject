@@ -33,7 +33,15 @@ namespace ClinicMiniProject.Models
         [Column("status")]
         public string status { get; set; } = "Pending";
 
+        [Column("doctor_remark")]
+        public string? doc_remark { get; set; }
+
+        [Column("nurse_remark")]
+        public string? nurse_remark { get; set; }
+
         public Staff Staff { get; set; } = null!;
         public Patient Patient { get; set; } = null!;
+
+
     }
 }

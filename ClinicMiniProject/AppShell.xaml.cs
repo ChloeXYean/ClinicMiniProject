@@ -29,6 +29,7 @@ namespace ClinicMiniProject
             Routing.RegisterRoute("EditDoctorProfile", typeof(EditDoctorProfilePage)); // Edit Doctor Profile
             Routing.RegisterRoute("PatientDetails", typeof(PatientDetailsPage)); // Shared Patient Details
             Routing.RegisterRoute("InquiryDetails", typeof(InquiryDetailsPage));
+            Routing.RegisterRoute("EndConsultationDetails", typeof(ClinicMiniProject.UI.Nurse.EndConsultationDetailsPage));
 
             // --- Nurse Specific Routes ---
             Routing.RegisterRoute(nameof(EndConsultationPage), typeof(EndConsultationPage));

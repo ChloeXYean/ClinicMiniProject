@@ -60,7 +60,7 @@ namespace ClinicMiniProject.Services
 
             // Count online vs walk-in (this is a simplification - you might need to adjust based on your actual logic)
             var onlineConsulted = consultedAppointments
-                .Count(a => a.appointedAt >= now.AddHours(-12)); // Assuming online appointments are within 12 hours
+                .Count(a => a.service_type == "Online");
 
             return new TodayStatsDto
             {
@@ -80,7 +80,7 @@ namespace ClinicMiniProject.Services
 
             // Count online vs walk-in (simplified)
             var onlinePending = upcomingAppointments
-                .Count(a => a.appointedAt <= now.AddDays(7)); // Assuming online if within 7 days
+                .Count(a => a.service_type == "Online");
 
             return new UpcomingScheduleDto
             {

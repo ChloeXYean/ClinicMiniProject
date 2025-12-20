@@ -61,9 +61,9 @@ namespace ClinicMiniProject.Services
             var now = DateTime.Now;
             var appointment = await _context.Appointments
                 .Include(a => a.Staff)
-                .Where(a => a.patient_IC == patient_IC && 
+                .Where(a => a.patient_IC == patient_IC &&
                             a.status == "Pending" &&
-                            a.appointedAt >= now)
+                            a.appointedAt >= DateTime.Today)
                 .OrderBy(a => a.appointedAt)
                 .FirstOrDefaultAsync();
 

@@ -1,29 +1,44 @@
 using System;
 using System.Collections.ObjectModel;
+using ClinicMiniProject.Dtos;
+using ClinicMiniProject.Services.Interfaces;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using ClinicMiniProject.Services.Interfaces;
+
 
 namespace ClinicMiniProject.ViewModels
 {
-    public class ConsultationDetailsViewModel : INotifyPropertyChanged
+    public class ConsultationDetailsViewModel : INotifyPropertyChanged, IQueryAttributable
     {
         private readonly IAuthService _authService;
         private readonly IConsultationService _consultationService;
 
+        private string _nurseRemark = string.Empty;
+        private string _doctorRemark = string.Empty;
+
         private string _searchText = string.Empty;
         private ConsultationDetailsDto? _currentDetails;
         private string _appointmentId = string.Empty;
-        private string _consultationRemark = string.Empty;
         private bool _isConsultationStarted = false;
+
+        public bool IsNurse
+        {
+            get
+            {
+                var user = _authService.GetCurrentUser();
+                //Doctor = false to know if it is nurse
+                return user != null && !user.isDoctor;
+            }
+        }
 
         public string SearchText
         {
             get => _searchText;
             set => SetProperty(ref _searchText, value);
         }
+
+        public bool IsDoctor => !IsNurse;
 
         public ConsultationDetailsDto? CurrentDetails
         {
@@ -32,11 +47,15 @@ namespace ClinicMiniProject.ViewModels
             {
                 if (SetProperty(ref _currentDetails, value))
                 {
-                    OnPropertyChanged(nameof(DateText));
-                    OnPropertyChanged(nameof(AppointedTimeSlotText));
+                    // Update the editable fields when data loads
+                    if (value != null)
+                    {
+                        DoctorRemark = value.DoctorRemark ?? ""; 
+                        NurseRemark = value.NurseRemark ?? "";      
+                    }
                     OnPropertyChanged(nameof(PatientNameText));
                     OnPropertyChanged(nameof(PatientIcText));
-                    OnPropertyChanged(nameof(PatientPhoneText));
+                    OnPropertyChanged(nameof(AppointedTimeSlotText));
                     OnPropertyChanged(nameof(SelectedServiceTypeText));
                 }
             }
@@ -45,28 +64,39 @@ namespace ClinicMiniProject.ViewModels
         public string AppointmentId
         {
             get => _appointmentId;
-            set
-            {
-                if (SetProperty(ref _appointmentId, value))
-                {
-                    _ = LoadByAppointmentIdAsync();
-                }
-            }
+            set => SetProperty(ref _appointmentId, value);
         }
 
-        public string ConsultationRemark
+        public string DoctorRemark
         {
-            get => _consultationRemark;
-            set => SetProperty(ref _consultationRemark, value);
+            get => _doctorRemark;
+            set => SetProperty(ref _doctorRemark, value);
+        }
+
+        public string NurseRemark
+        {
+            get => _nurseRemark;
+            set => SetProperty(ref _nurseRemark, value);
         }
 
         public bool IsConsultationStarted
         {
             get => _isConsultationStarted;
-            set => SetProperty(ref _isConsultationStarted, value);
+            set
+            {
+                if (SetProperty(ref _isConsultationStarted, value))
+                {
+                    OnPropertyChanged(nameof(IsStartButtonVisible));
+                    OnPropertyChanged(nameof(IsRemarkBoxVisible));
+                }
+            }
         }
 
-        public bool HasAppointment => CurrentDetails != null || !string.IsNullOrWhiteSpace(AppointmentId);
+        // Only show "Start" if Doctor AND not started
+        public bool IsStartButtonVisible => IsDoctor && !IsConsultationStarted;
+
+        // Show Doctor Remark box if Started OR if we are just viewing details
+        public bool IsRemarkBoxVisible => IsConsultationStarted || (CurrentDetails != null && CurrentDetails.Status == "Completed");
 
         public string DateText => CurrentDetails == null ? "" : $"Date: {CurrentDetails.Date:dd MMMM yyyy}";
         public string AppointedTimeSlotText => CurrentDetails == null ? "" : $"Appointed Time Slot: {CurrentDetails.AppointedTimeSlot:h:mm tt}";
@@ -95,12 +125,23 @@ namespace ClinicMiniProject.ViewModels
             EndConsultationCommand = new Command(async () => await EndAsync());
         }
 
-        public async Task LoadByAppointmentIdAsync()
+        public async void LoadByAppointmentIdAsync()
         {
-            if (string.IsNullOrWhiteSpace(AppointmentId))
-                return;
-
+            if (string.IsNullOrWhiteSpace(AppointmentId)) return;
             CurrentDetails = await _consultationService.GetConsultationDetailsByAppointmentIdAsync(AppointmentId);
+
+  
+            IsConsultationStarted = true;
+            
+        }
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.ContainsKey("AppointmentId"))
+            {
+                AppointmentId = query["AppointmentId"].ToString();
+                LoadByAppointmentIdAsync();
+            }
         }
 
         public async Task RefreshAsync()
@@ -126,50 +167,28 @@ namespace ClinicMiniProject.ViewModels
 
         public async Task StartAsync()
         {
-            // Debug information
-            System.Diagnostics.Debug.WriteLine($"StartAsync called. AppointmentId: '{AppointmentId}', CurrentDetails: {CurrentDetails}");
-            
-            var apptId = CurrentDetails?.AppointmentId;
-            if (string.IsNullOrWhiteSpace(apptId))
-                apptId = AppointmentId;
-
-            if (string.IsNullOrWhiteSpace(apptId))
-            {
-                System.Diagnostics.Debug.WriteLine("No appointment ID found - cannot start consultation");
-                return;
-            }
-
-            try
-            {
-                await _consultationService.StartConsultationAsync(apptId);
-                IsConsultationStarted = true;
-                await RefreshAsync();
-                System.Diagnostics.Debug.WriteLine("Consultation started successfully");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error starting consultation: {ex}");
-            }
+            if (string.IsNullOrWhiteSpace(AppointmentId)) return;
+            await _consultationService.StartConsultationAsync(AppointmentId);
+            IsConsultationStarted = true;
         }
 
         public async Task EndAsync()
         {
-            var apptId = CurrentDetails?.AppointmentId;
-            if (string.IsNullOrWhiteSpace(apptId))
-                apptId = AppointmentId;
+            if (string.IsNullOrWhiteSpace(AppointmentId)) return;
 
-            if (string.IsNullOrWhiteSpace(apptId))
-                return;
+            bool confirm = await Shell.Current.DisplayAlert("Finish?", "End this consultation?", "Yes", "No");
+            if (!confirm) return;
 
-            await _consultationService.EndConsultationAsync(apptId, ConsultationRemark);
+            // Save Doctor Remark (and preserve Nurse remark)
+            await _consultationService.EndConsultationAsync(AppointmentId, DoctorRemark, NurseRemark);
+
             await Shell.Current.GoToAsync("..");
         }
 
+
         protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")
         {
-            if (Equals(backingStore, value))
-                return false;
-
+            if (Equals(backingStore, value)) return false;
             backingStore = value;
             OnPropertyChanged(propertyName);
             return true;

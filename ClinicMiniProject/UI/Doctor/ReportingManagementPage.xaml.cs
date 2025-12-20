@@ -23,7 +23,20 @@ public partial class ReportingManagementPage : ContentPage
 
         // Set up BackNavBar
             BackBar.Title = "Reporting Management";
-            BackBar.BackCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
+        BackBar.BackCommand = new Command(async () =>
+        {
+            // Check the UserType currently held in the ViewModel
+            if (BindingContext is ReportingManagementViewModel viewModel && viewModel.UserType == "Nurse")
+            {
+                // If Nurse, go to Nurse Home
+                await Shell.Current.GoToAsync("///NurseHomePage");
+            }
+            else
+            {
+                // Default (Doctor), go to Doctor Dashboard
+                await Shell.Current.GoToAsync("///DoctorDashboardPage");
+            }
+        });
     }
 
     private async void OnBackClicked(object sender, EventArgs e)

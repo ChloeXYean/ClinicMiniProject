@@ -121,6 +121,9 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<PatientConsultationDetailsViewModel>();
             builder.Services.AddTransient<PatientAppointmentBookingViewModel>();
 
+            builder.Services.AddTransient<EndConsultationDetailsViewModel>();
+            builder.Services.AddTransient<ClinicMiniProject.UI.Nurse.EndConsultationDetailsPage>();
+
 
             return builder.Build();
         }
