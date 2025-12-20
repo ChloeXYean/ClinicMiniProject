@@ -4,11 +4,14 @@
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              Shell.NavBarIsVisible="False"
              x:Class="ClinicMiniProject.UI.Doctor.AppointmentHistoryPage"
+             x:Name="ThisPage"
              BackgroundColor="#F5F7FA"
              Title="Appointment History">
 
-    <Grid RowDefinitions="Auto, *" RowSpacing="0">
-        <control:BackNavBar Grid.Row="0" BackCommand="{Binding BackCommand}" TargetRoute="///DoctorDashboardPage" />
+    <Grid RowDefinitions="Auto, *, Auto" RowSpacing="0">
+
+        <control:BackNavBar Grid.Row="0" 
+                            BackCommand="{Binding BackCommand, Source={x:Reference ThisPage}}" />
 
         <RefreshView Grid.Row="1" Command="{Binding LoadAppointmentsCommand}">
             <CollectionView ItemsSource="{Binding Appointments}" Margin="15">
@@ -72,5 +75,7 @@
                 </CollectionView.EmptyView>
             </CollectionView>
         </RefreshView>
+
+        <control:BottomNavBar x:Name="BottomBar" Grid.Row="2" />
     </Grid>
 </ContentPage>
