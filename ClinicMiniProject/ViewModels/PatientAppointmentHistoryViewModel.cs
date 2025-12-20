@@ -8,14 +8,13 @@ using Microsoft.Maui.Controls;
 namespace ClinicMiniProject.ViewModels
 {
     [QueryProperty(nameof(UserType), "UserType")]
-
     public class PatientAppointmentHistoryViewModel : BindableObject
     {
         private readonly NurseController _nurseController;
         private readonly IAppointmentService _appointmentService;
         private readonly IAuthService _authService;
         private ObservableCollection<AppointmentHistoryItem> _appointments;
-        private List<AppointmentHistoryItem> _originalAppointments; // Store full list for filtering
+        private List<AppointmentHistoryItem> _originalAppointments;
 
         public ObservableCollection<AppointmentHistoryItem> Appointments
         {
@@ -24,8 +23,6 @@ namespace ClinicMiniProject.ViewModels
             {
                 _appointments = value;
                 OnPropertyChanged();
-                
-                // Update visibility properties
                 OnPropertyChanged(nameof(HasNoAppointments));
                 OnPropertyChanged(nameof(HasAppointments));
             }
@@ -51,7 +48,7 @@ namespace ClinicMiniProject.ViewModels
             {
                 userType = value;
                 OnPropertyChanged();
-                _ = LoadAppointments();
+                _ = LoadAppointments(); // Reload when UserType changes
             }
         }
 
@@ -72,7 +69,7 @@ namespace ClinicMiniProject.ViewModels
             LoadAppointmentsCommand = new Command(async () => await LoadAppointments());
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
 
-            // Auto load on init
+            // Initial load
             _ = LoadAppointments();
         }
 
@@ -81,25 +78,22 @@ namespace ClinicMiniProject.ViewModels
             try
             {
                 List<Appointment> rawData = new();
+                bool isStaffView = false;
 
                 // ---------------------------------------------------------
-                // 1. DATA FETCHING (Background)
+                // 1. DATA FETCHING (Preserving "Else = Patient" safety)
                 // ---------------------------------------------------------
-                if (UserType == "Nurse")
+                if (UserType == "Nurse" || UserType == "Doctor")
                 {
+                    // --- STAFF LOGIC: SEE ALL HISTORY ---
+                    isStaffView = true;
+                    // Ensure getAll includes Patient/Staff details
                     rawData = await _nurseController.GetAllAppointmentsHistory();
-                }
-                else if (UserType == "Doctor")
-                {
-                    var staff = _authService.GetCurrentUser();
-                    if (staff != null)
-                    {
-                        var allApps = await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(staff.staff_ID, DateTime.MinValue, DateTime.MaxValue);
-                        rawData = allApps.ToList();
-                    }
                 }
                 else
                 {
+                    // --- PATIENT LOGIC (Default): SEE ONLY OWN HISTORY ---
+                    isStaffView = false;
                     var user = _authService.GetCurrentPatient();
                     if (user != null)
                     {
@@ -109,7 +103,7 @@ namespace ClinicMiniProject.ViewModels
                 }
 
                 // ---------------------------------------------------------
-                // 2. MAPPING TO UI ITEMS
+                // 2. MAPPING TO UI
                 // ---------------------------------------------------------
                 var uiItems = new List<AppointmentHistoryItem>();
 
@@ -118,19 +112,28 @@ namespace ClinicMiniProject.ViewModels
                     string status = appt.status ?? "Pending";
                     var (cardBg, badgeBg) = GetColors(status);
 
-                    string nameDisplay;
-                    string doctorInternalName;
-                    if (UserType == "Patient")
+                    string mainHeaderName;   // The bold text
+                    string subDetailText;    // The smaller text
+
+                    if (isStaffView)
                     {
-                        nameDisplay = $"Dr. {(appt.Staff != null ? appt.Staff.staff_name : "Unknown")}";
-                        doctorInternalName = appt.Staff?.staff_name ?? "Unknown";
+                        // STAFF SEE: "Patient: Ali" (Dr. Steven)
+                        string pName = appt.Patient?.patient_name
+                                       ?? _nurseController.ViewPatientDetails(appt.patient_IC)?.patient_name
+                                       ?? "Unknown";
+
+                        string dName = appt.Staff?.staff_name ?? appt.staff_ID;
+
+                        mainHeaderName = $"Patient: {pName}";
+                        subDetailText = $"Dr. {dName} - {appt.service_type}";
                     }
                     else
                     {
-                        var p = _nurseController.ViewPatientDetails(appt.patient_IC);
-                        string realName = p != null ? p.patient_name : "Unknown";
-                        nameDisplay = $"Patient: {realName}";
-                        doctorInternalName = realName;
+                        // PATIENT SEES: "Dr. Steven" (General Consultation)
+                        string dName = appt.Staff?.staff_name ?? "Unknown Doctor";
+
+                        mainHeaderName = $"Dr. {dName}";
+                        subDetailText = appt.service_type.ToString();
                     }
 
                     string timeDisplay = appt.appointedAt?.ToString("hh:mm tt") + " - " + appt.appointedAt?.AddHours(1).ToString("hh:mm tt");
@@ -140,8 +143,11 @@ namespace ClinicMiniProject.ViewModels
                         Time = timeDisplay,
                         Date = appt.appointedAt?.ToString("dd MMM yyyy") ?? "-",
                         RawDate = appt.appointedAt ?? DateTime.MinValue,
-                        Details = $"{nameDisplay} (#{appt.appointment_ID})",
-                        DoctorName = (UserType == "Patient") ? doctorInternalName : nameDisplay,
+
+                        // IMPORTANT: DoctorName property is used for the Main Header in your XAML
+                        DoctorName = mainHeaderName,
+                        Details = subDetailText,
+
                         Status = status,
                         StatusColor = Colors.Black,
                         BadgeColor = badgeBg,
@@ -170,17 +176,16 @@ namespace ClinicMiniProject.ViewModels
 
             var filtered = _originalAppointments.AsEnumerable();
 
-            // 1. FILTER BY SEARCH TEXT
+            // 1. FILTER
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 string search = SearchText.ToLower();
-                filtered = filtered.Where(a => 
+                filtered = filtered.Where(a =>
                     (a.DoctorName != null && a.DoctorName.ToLower().Contains(search)) ||
                     (a.Details != null && a.Details.ToLower().Contains(search)));
             }
 
-            // 2. SORTING: Pending (0) -> Completed (1) -> Cancelled (2)
-            // Then sort by latest date first
+            // 2. SORTING: Newest Date First
             var sorted = filtered
                 .OrderBy(a => a.Status?.ToLower() switch
                 {
@@ -189,7 +194,7 @@ namespace ClinicMiniProject.ViewModels
                     "cancelled" => 2,
                     _ => 3
                 })
-                .ThenBy(a => a.RawDate)
+                .ThenByDescending(a => a.RawDate) // Latest history first
                 .ToList();
 
             Appointments.Clear();
@@ -198,7 +203,6 @@ namespace ClinicMiniProject.ViewModels
                 Appointments.Add(item);
             }
 
-            // Sync visibility properties
             OnPropertyChanged(nameof(HasNoAppointments));
             OnPropertyChanged(nameof(HasAppointments));
         }

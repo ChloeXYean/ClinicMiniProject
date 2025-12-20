@@ -28,7 +28,9 @@ namespace ClinicMiniProject.Services
 
             var queue = new List<ConsultationQueueDto>();
 
-            foreach (var appt in appointments.Where(a => a.status != "Cancelled").OrderBy(a => a.appointedAt))
+            foreach (var appt in appointments
+                    .Where(a => a.status != "Cancelled" && a.status != "Completed")
+                    .OrderBy(a => a.appointedAt))
             {
                 var patient = await _appointmentService.GetPatientByIcAsync(appt.patient_IC);
 
@@ -112,35 +114,6 @@ namespace ClinicMiniProject.Services
             await _appointmentService.UpdateAppointmentAsync(appt);
         }
 
-        private async Task CancelAndReassignToRandomWalkInAsync(Appointment appointment, DateTime now)
-        {
-            appointment.status = "Cancelled";
-
-            // TODO: link with database (persist cancellation)
-            await _appointmentService.UpdateAppointmentAsync(appointment);
-
-            var walkIn = await _appointmentService.GetRandomWalkInPatientAsync();
-            if (walkIn == null)
-            {
-                // No walk-in patient available; leave as cancelled.
-                return;
-            }
-
-            // Reassign same slot to a walk-in patient.
-            var reassigned = new Appointment
-            {
-                appointment_ID = appointment.appointment_ID,
-                bookedAt = now,
-                appointedAt = appointment.appointedAt,
-                staff_ID = appointment.staff_ID,
-                patient_IC = walkIn.patient_IC,
-                status = "Pending"
-            };
-
-            // TODO: link with database (persist reassignment)
-            await _appointmentService.UpdateAppointmentAsync(reassigned);
-        }
-
         private async Task<ConsultationDetailsDto> BuildDetailsAsync(Appointment appt)
         {
             var patient = await _appointmentService.GetPatientByIcAsync(appt.patient_IC);
@@ -157,6 +130,18 @@ namespace ClinicMiniProject.Services
                 DoctorRemark = appt.doc_remark ?? string.Empty,
                 NurseRemark = appt.nurse_remark ?? string.Empty
             };
+        }
+        public async Task UpdateRemarksAsync(string appointmentId, string docRemark, string nurseRemark)
+        {
+            var appt = await _appointmentService.GetAppointmentByIdAsync(appointmentId);
+            if (appt != null)
+            {
+                appt.doc_remark = docRemark;
+                appt.nurse_remark = nurseRemark;
+
+
+                await _appointmentService.UpdateAppointmentAsync(appt);
+            }
         }
     }
 }

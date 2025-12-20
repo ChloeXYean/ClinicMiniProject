@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using ClinicMiniProject.Services;
 using ClinicMiniProject.Services.Interfaces;
+using ClinicMiniProject.ViewModels; 
 
 namespace ClinicMiniProject.UI.Doctor;
 
@@ -14,9 +14,15 @@ public partial class AppointmentHistoryPage : ContentPage
         _userType = userType;
 
         var sp = Application.Current?.Handler?.MauiContext?.Services;
-        var auth = sp?.GetService<Services.Interfaces.IAuthService>();
-        var name = auth?.GetCurrentUser()?.staff_name ?? string.Empty;
-        
+        var authService = sp?.GetService<IAuthService>();
+        var viewModel = sp?.GetService<PatientAppointmentHistoryViewModel>();
+
+        if (viewModel != null)
+        {
+            viewModel.UserType = _userType;
+            BindingContext = viewModel;
+        }
+
         if (BottomBar != null)
         {
             if (userType == "Nurse")

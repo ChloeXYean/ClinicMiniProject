@@ -17,6 +17,8 @@ namespace ClinicMiniProject.ViewModels
         private string _doctorRemark;
         private string _nurseRemark;
 
+        private bool _isDoctor;
+
         public string PatientName { get => _patientName; set => SetProperty(ref _patientName, value); }
         public string PatientIC { get => _patientIC; set => SetProperty(ref _patientIC, value); }
         public string ServiceType { get => _serviceType; set => SetProperty(ref _serviceType, value); }
@@ -28,21 +30,22 @@ namespace ClinicMiniProject.ViewModels
         public ICommand EndConsultationCommand { get; }
         public bool IsDoctor
         {
-            get
-            {
-                var user = _authService.GetCurrentUser();
-                return user != null && user.isDoctor;
-            }
+            get => _isDoctor;
+            set => SetProperty(ref _isDoctor, value);
         }
 
         public bool IsNurse => !IsDoctor;
 
+        public string SubmitButtonText => IsDoctor ? "End Consultation" : "Save Notes";
 
         public EndConsultationDetailsViewModel(IConsultationService consultationService, IAuthService authService)
         {
             _consultationService = consultationService;
-            _authService = authService; 
-            EndConsultationCommand = new Command(async () => await EndAsync());
+            _authService = authService;
+            var user = _authService.GetCurrentUser();
+            IsDoctor = user != null && user.isDoctor;
+
+            EndConsultationCommand = new Command(async () => await SubmitAsync());
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -68,24 +71,34 @@ namespace ClinicMiniProject.ViewModels
                 DoctorRemark = details.DoctorRemark;
                 OnPropertyChanged(nameof(IsDoctor));
                 OnPropertyChanged(nameof(IsNurse));
+                OnPropertyChanged(nameof(SubmitButtonText));
 
             }
         }
 
-        // 3. Save and End
-        private async Task EndAsync()
+        private async Task SubmitAsync()
         {
             if (string.IsNullOrEmpty(_appointmentId)) return;
 
-            bool confirm = await Shell.Current.DisplayAlert("Confirm", "End this consultation?", "Yes", "No");
-            if (!confirm) return;
+            if (IsDoctor)
+            {
+                // --- DOCTOR LOGIC: COMPLETE APPOINTMENT ---
+                bool confirm = await Shell.Current.DisplayAlert("Confirm", "End this consultation? Status will be set to Completed.", "Yes", "No");
+                if (!confirm) return;
 
-            await _consultationService.EndConsultationAsync(_appointmentId, DoctorRemark ?? "", NurseRemark);
+                await _consultationService.EndConsultationAsync(_appointmentId, DoctorRemark ?? "", NurseRemark ?? "");
+                await Shell.Current.DisplayAlert("Success", "Consultation Ended.", "OK");
+            }
+            else
+            {
+                // --- NURSE LOGIC: SAVE ONLY ---
+                await _consultationService.UpdateRemarksAsync(_appointmentId, DoctorRemark ?? "", NurseRemark ?? "");
+                await Shell.Current.DisplayAlert("Saved", "Notes have been updated.", "OK");
+            }
 
-            await Shell.Current.DisplayAlert("Success", "Consultation ended successfully.", "OK");
+            // Navigate back
             await Shell.Current.GoToAsync("..");
         }
-
 
         #region Property Changed Helpers
         public event PropertyChangedEventHandler PropertyChanged;

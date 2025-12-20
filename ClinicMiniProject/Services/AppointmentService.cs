@@ -138,5 +138,14 @@ namespace ClinicMiniProject.Services
                 .OrderByDescending(a => a.appointedAt)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Appointment>> GetAppointmentHistoryForStaffAsync(string staffId)
+        {
+            return await _context.Appointments
+                .Where(a => a.staff_ID == staffId && a.appointedAt < DateTime.Now)
+                .Include(a => a.Patient) // Important: Load Patient info!
+                .OrderByDescending(a => a.appointedAt)
+                .ToListAsync();
+        }
     }
 }

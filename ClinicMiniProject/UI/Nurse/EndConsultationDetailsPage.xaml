@@ -62,9 +62,10 @@
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12"/>
                         </Border.StrokeShape>
+
                         <Editor Text="{Binding DoctorRemark}"
                 IsReadOnly="{Binding IsNurse}" 
-                Placeholder="Enter diagnosis or remarks..."
+                Placeholder="No remarks from doctor."
                 BackgroundColor="Transparent"
                 AutoSize="TextChanges"
                 FontSize="14"
@@ -78,6 +79,7 @@
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12"/>
                         </Border.StrokeShape>
+
                         <Editor Text="{Binding NurseRemark}"
                 IsReadOnly="{Binding IsDoctor}"
                 Placeholder="Enter medication, instructions, or follow-up notes..."
@@ -88,15 +90,15 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <Button Text="End Consultation"
-                        BackgroundColor="#FF4D4D"
-                        TextColor="White"
-                        FontAttributes="Bold"
-                        FontSize="16"
-                        HeightRequest="50"
-                        CornerRadius="25"
-                        Margin="0,20,0,40"
-                        Command="{Binding EndConsultationCommand}">
+                <Button Text="{Binding SubmitButtonText}"
+        BackgroundColor="#FF4D4D"
+        TextColor="White"
+        FontAttributes="Bold"
+        FontSize="16"
+        HeightRequest="50"
+        CornerRadius="25"
+        Margin="0,20,0,40"
+        Command="{Binding EndConsultationCommand}">
                     <Button.Shadow>
                         <Shadow Brush="#FF4D4D" Opacity="0.4" Radius="10" Offset="0,4"/>
                     </Button.Shadow>
