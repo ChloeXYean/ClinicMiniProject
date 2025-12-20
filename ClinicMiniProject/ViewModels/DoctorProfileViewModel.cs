@@ -117,13 +117,27 @@ namespace ClinicMiniProject.ViewModels
 
         public async Task RefreshAsync()
         {
+            System.Diagnostics.Debug.WriteLine("=== RefreshAsync Started ===");
+            
             var doctor = _authService.GetCurrentUser();
+            System.Diagnostics.Debug.WriteLine($"RefreshAsync - Current user: {doctor?.staff_ID}, Name: {doctor?.staff_name}, Contact: {doctor?.staff_contact}");
+            
             if (doctor == null)
+            {
+                System.Diagnostics.Debug.WriteLine("No current user found - user might not be logged in");
                 return;
+            }
 
+            System.Diagnostics.Debug.WriteLine($"Attempting to load profile for doctor ID: {doctor.staff_ID}");
+            
             var dto = await _doctorProfileService.GetDoctorProfileAsync(doctor.staff_ID);
+            System.Diagnostics.Debug.WriteLine($"GetDoctorProfileAsync result: {dto?.DoctorId}, Name: {dto?.Name}, Phone: {dto?.PhoneNo}");
+            
             if (dto == null)
+            {
+                System.Diagnostics.Debug.WriteLine("DoctorProfileDto returned null - service might not be working");
                 return;
+            }
 
             DoctorId = dto.DoctorId;
             Name = dto.Name;
@@ -135,6 +149,10 @@ namespace ClinicMiniProject.ViewModels
             ServicesProvided.Clear();
             foreach (var s in dto.ServicesProvided)
                 ServicesProvided.Add(new ServiceItem { Name = s });
+                
+            System.Diagnostics.Debug.WriteLine($"Profile loaded successfully - DoctorId: {DoctorId}, Name: {DoctorName}, Phone: {PhoneNumber}, WorkingHours: {WorkingHoursText}");
+            System.Diagnostics.Debug.WriteLine($"Services count: {ServicesProvided.Count}");
+            System.Diagnostics.Debug.WriteLine("=== RefreshAsync Completed ===");
         }
 
         public async Task SaveAsync()

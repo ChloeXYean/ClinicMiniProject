@@ -30,6 +30,6 @@ public partial class ConsultationDetailsPage : ContentPage
 
     private async void OnBackClicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("..");
+        await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}");
     }
 }

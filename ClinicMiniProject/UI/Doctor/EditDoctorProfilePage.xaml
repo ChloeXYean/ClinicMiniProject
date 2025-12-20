@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Doctor.EditDoctorProfilePage"
+             Shell.NavBarIsVisible="False"
              Title="Edit Profile"
              BackgroundColor="White">
 

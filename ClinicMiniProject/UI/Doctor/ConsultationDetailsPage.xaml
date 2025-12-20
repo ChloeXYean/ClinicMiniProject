@@ -7,43 +7,86 @@
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
 
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Padding="20,15" BackgroundColor="#6EA8FE">
-            <ImageButton Grid.Column="0" Source="menu.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent" Clicked="OnBackClicked" />
+            <ImageButton Grid.Column="0" Source="back.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent" Clicked="OnBackClicked" />
             <Label Grid.Column="1" Text="Consultation Details" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
         </Grid>
 
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="20" Spacing="14">
+            <VerticalStackLayout Padding="16,12" Spacing="10">
 
-                <Border BackgroundColor="#F5F7FF" StrokeThickness="0" Padding="16">
+                <!-- No Appointment Message -->
+                <Border BackgroundColor="#ffccccff" StrokeThickness="0" Padding="16">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="16" />
+                        <RoundRectangle CornerRadius="12" />
                     </Border.StrokeShape>
                     <VerticalStackLayout Spacing="8">
-                        <Label Text="{Binding DateText}" />
-                        <Label Text="{Binding AppointedTimeSlotText}" />
-                        <Label Text="{Binding PatientNameText}" />
-                        <Label Text="{Binding PatientIcText}" />
-                        <Label Text="{Binding PatientPhoneText}" />
-                        <Label Text="{Binding SelectedServiceTypeText}" />
+                        <Label Text="No Appointment for this time slot" 
+                               FontAttributes="Bold" 
+                               FontSize="16" 
+                               TextColor="#5b0000ff"
+                               HorizontalOptions="Center" />
+                        <Label Text="Please select an appointment from the schedule to view next consultation details." 
+                               FontSize="14" 
+                               TextColor="#850404ff"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding HasAppointment}" Value="True">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                    </Border.Triggers>
+                </Border>
+
+                <!-- Appointment Details -->
+                <Border BackgroundColor="#F5F7FF" StrokeThickness="0" Padding="12"
+                        IsVisible="{Binding HasAppointment}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Patient Name:" FontAttributes="Bold" FontSize="14" />
+                        <Label Text="{Binding CurrentDetails.PatientName}" FontSize="14" />
+                        
+                        <Label Text="IC Number:" FontAttributes="Bold" FontSize="14" Margin="0,8,0,0" />
+                        <Label Text="{Binding CurrentDetails.PatientIc}" FontSize="14" />
+                        
+                        <Label Text="Appointment Time:" FontAttributes="Bold" FontSize="14" Margin="0,8,0,0" />
+                        <Label Text="{Binding CurrentDetails.AppointedTimeSlot, StringFormat='{0:h:mm tt}'}" FontSize="14" />
                     </VerticalStackLayout>
                 </Border>
 
-                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="16">
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="12"
+                        IsVisible="{Binding IsConsultationStarted}">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="16" />
+                        <RoundRectangle CornerRadius="12" />
                     </Border.StrokeShape>
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Remark:" FontAttributes="Bold" />
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Remark:" FontAttributes="Bold" FontSize="14" />
                         <Editor Text="{Binding ConsultationRemark, Mode=TwoWay}"
                                 Placeholder="type your remark"
                                 AutoSize="TextChanges"
-                                HeightRequest="160" />
+                                HeightRequest="120"
+                                FontSize="14" />
                     </VerticalStackLayout>
                 </Border>
 
+                <Button Text="Start Conversation"
+                        Command="{Binding StartConsultationCommand}"
+                        HeightRequest="48"
+                        Margin="0,8,0,0"
+                        IsVisible="{Binding HasAppointment}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsConsultationStarted}" Value="True">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
                 <Button Text="End Consultation"
                         Command="{Binding EndConsultationCommand}"
-                        HeightRequest="52" />
+                        HeightRequest="48"
+                        Margin="0,8,0,0"
+                        IsVisible="{Binding IsConsultationStarted}" />
 
             </VerticalStackLayout>
         </ScrollView>
