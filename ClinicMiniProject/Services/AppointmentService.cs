@@ -72,17 +72,34 @@ namespace ClinicMiniProject.Services
         public async Task<IEnumerable<Appointment>> GetAppointmentsByStaffAndDateRangeAsync(
             string? staffId, DateTime startDate, DateTime endDate)
         {
+            System.Diagnostics.Debug.WriteLine($"=== GetAppointmentsByStaffAndDateRangeAsync ===");
+            System.Diagnostics.Debug.WriteLine($"StaffId: '{staffId}' (Type: {staffId?.GetType().Name}, Length: {staffId?.Length})");
+            System.Diagnostics.Debug.WriteLine($"StartDate: {startDate:yyyy-MM-dd HH:mm:ss}");
+            System.Diagnostics.Debug.WriteLine($"EndDate: {endDate:yyyy-MM-dd HH:mm:ss}");
+            
             var query = _context.Appointments
                     .Include(a => a.Patient)
                     .Include(a => a.Staff)
                     .Where(a => a.appointedAt >= startDate && a.appointedAt <= endDate);
 
+            var allResults = await query.OrderBy(a => a.appointedAt).ToListAsync();
+            
+            System.Diagnostics.Debug.WriteLine($"Found {allResults.Count} total appointments in date range");
+            foreach (var appt in allResults)
+            {
+                System.Diagnostics.Debug.WriteLine($"  - ID: {appt.appointment_ID}, Staff: '{appt.staff_ID}' (Length: {appt.staff_ID?.Length}), Patient: {appt.patient_IC}, Time: {appt.appointedAt:yyyy-MM-dd HH:mm}, Service: {appt.service_type}");
+            }
+            
+            // Filter by staff ID in memory to handle CHAR(4) padding
             if (!string.IsNullOrEmpty(staffId))
             {
-                query = query.Where(a => a.staff_ID == staffId);
+                var trimmedStaffId = staffId.Trim();
+                var filtered = allResults.Where(a => a.staff_ID?.Trim() == trimmedStaffId).ToList();
+                System.Diagnostics.Debug.WriteLine($"After filtering by staff '{trimmedStaffId}': {filtered.Count} appointments");
+                return filtered;
             }
-
-            return await query.OrderBy(a => a.appointedAt).ToListAsync();
+            
+            return allResults;
         }
 
         public DateTime? AssignWalkInTimeSlot(string doctorId,DateTime preferredDate,int workStartHour = 9,int workEndHour = 17,TimeSpan slotDuration = default)

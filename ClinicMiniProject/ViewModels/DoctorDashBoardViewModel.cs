@@ -122,7 +122,7 @@ namespace ClinicMiniProject.ViewModels
             });
             
             // Initialize missing commands to avoid warnings
-            NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync("ConsultationDetails"));
+            NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync("ActiveConsultation"));
             ToggleMenuCommand = new Command(() => { /* TODO: Implement Toggle Menu */ });
             NotificationCommand = new Command(async () => await Shell.Current.DisplayAlert("Notification", "No new notifications", "OK"));
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
