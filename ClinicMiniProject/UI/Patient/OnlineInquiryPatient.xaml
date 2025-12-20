@@ -16,13 +16,17 @@
 
         <Label Text="Doctor" FontAttributes="Bold" />
         <Picker Title="Select Doctor"
-                BackgroundColor="White" />
+                BackgroundColor="White"
+                ItemsSource="{Binding Doctors}"
+                SelectedItem="{Binding SelectedDoctor}"
+                ItemDisplayBinding="{Binding Name}" />
 
         <Label Text="Symptom Description" FontAttributes="Bold" />
         <Editor Placeholder="Describe your symptoms here..."
                 AutoSize="TextChanges"
                 HeightRequest="100"
-                BackgroundColor="White" />
+                BackgroundColor="White"
+                Text="{Binding SymptomDescription}" />
         
         <Label Text="Upload Photo (Optional)" FontAttributes="Bold" />
         <Frame BackgroundColor="White"
@@ -64,7 +68,8 @@
                 BackgroundColor="#5DA9FF"
                 TextColor="White"
                 CornerRadius="16"
-                HeightRequest="50" />
+                HeightRequest="50"
+                Command="{Binding SubmitInquiryCommand}" />
 
         </VerticalStackLayout>
     </Grid>

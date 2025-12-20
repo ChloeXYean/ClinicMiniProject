@@ -13,7 +13,7 @@
         <ScrollView>
             <VerticalStackLayout Padding="10" Spacing="12">
 
-                <Label Text="Doctor Name: {Binding DoctorName}"
+                <Label Text="{Binding PatientName, StringFormat='Patient Name: {0}'}"
                        FontAttributes="Bold"
                        FontSize="16" />
 
@@ -21,11 +21,11 @@
                        FontAttributes="Bold"
                        FontSize="16" />
 
-                <Label Text="{Binding SymptomHistory}"
+                <Label Text="{Binding FullSymptomDescription}"
                        FontSize="14"
                        TextColor="Black" />
 
-                <Label Text="Date: {Binding Date}"
+                <Label Text="{Binding Details.CreatedAt, StringFormat='Date: {0:dd/MM/yyyy HH:mm}'}"
                        FontSize="14"
                        TextColor="Black" />
 
