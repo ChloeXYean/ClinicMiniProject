@@ -16,6 +16,7 @@
             <Frame BackgroundColor="#F0F0F0" CornerRadius="20" Padding="10" HasShadow="False" HorizontalOptions="Fill" Grid.Column="0">
                 <Grid ColumnDefinitions="*, Auto">
                     <Entry Placeholder="Search Doctor Name" 
+                           Text="{Binding SearchText}"
                            TextColor="Black" 
                            PlaceholderColor="Gray"
                            FontSize="14"

@@ -152,11 +152,11 @@ namespace ClinicMiniProject.ViewModels
                 var history = await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(null, DateTime.MinValue, DateTime.MaxValue);
                 var myHistory = history.Where(a => a.patient_IC == userIc).ToList();
 
-                await Shell.Current.GoToAsync("PatientAppointmentHistory");
+                await Shell.Current.GoToAsync("PatientAppointmentHistory?UserType=Patient");
             }
             catch
             {
-                await Shell.Current.GoToAsync("PatientAppointmentHistory");
+                await Shell.Current.GoToAsync("PatientAppointmentHistory?UserType=Patient");
             }
         }
     }

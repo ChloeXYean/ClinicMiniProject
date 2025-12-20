@@ -120,6 +120,7 @@ namespace ClinicMiniProject.ViewModels
             foreach (var d in Days) d.IsSelected = false;
             day.IsSelected = true;
             _selectedDate = day.Date;
+            GenerateTimeSlots(); // Refresh time slots for the new date
         }
 
         // --- TIME SLOT LOGIC ---
@@ -128,10 +129,17 @@ namespace ClinicMiniProject.ViewModels
             TimeSlots.Clear();
             var startTime = new TimeSpan(9, 0, 0);
             var endTime = new TimeSpan(17, 0, 0);
+            var now = DateTime.Now;
 
             while (startTime < endTime)
             {
-                TimeSlots.Add(new TimeSlotItem { Time = startTime });
+                bool isPast = _selectedDate.Date == DateTime.Today && startTime < now.TimeOfDay;
+
+                TimeSlots.Add(new TimeSlotItem 
+                { 
+                    Time = startTime,
+                    IsEnabled = !isPast
+                });
                 startTime = startTime.Add(TimeSpan.FromHours(1));
             }
         }
@@ -191,7 +199,15 @@ namespace ClinicMiniProject.ViewModels
         }
         public bool IsCurrentMonth { get; set; }
         public Color BackgroundColor => IsSelected ? Color.FromArgb("#5FA8FF") : Colors.Transparent;
-        public Color TextColor => IsSelected ? Colors.White : (IsCurrentMonth ? Colors.Black : Colors.Gray);
+        public Color TextColor
+        {
+            get
+            {
+                if (IsSelected) return Colors.White;
+                if (!IsCurrentMonth || !IsEnabled) return Colors.Gray;
+                return Colors.Black;
+            }
+        }
     }
 
     public class TimeSlotItem : BindableObject

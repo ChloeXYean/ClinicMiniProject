@@ -8,6 +8,14 @@ public partial class PatientAppointmentHistoryPage : ContentPage
 	public PatientAppointmentHistoryPage(PatientAppointmentHistoryViewModel viewModel)
 	{
 		InitializeComponent();
-		BindingContext = viewModel;
+		BindingContext = _viewModel = viewModel;
 	}
+
+    private readonly PatientAppointmentHistoryViewModel _viewModel;
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _viewModel.LoadAppointmentsCommand.Execute(null);
+    }
 }

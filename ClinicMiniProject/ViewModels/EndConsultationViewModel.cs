@@ -32,7 +32,7 @@ namespace ClinicMiniProject.ViewModels
         {
             // You might want to create a method in NurseController specifically for this
             // For now, we reuse the "GetWalkInQueue" or fetching "Pending/Scheduled" logic
-            // Ideally, you want appointments where status == "In Progress" or "Scheduled"
+            // Ideally, you want appointments where status == "In Progress" or "Pending"
 
             // Example Logic:
             var appointments = await _nurseController.GetWalkInQueueForToday();
