@@ -4,7 +4,7 @@
              x:Class="ClinicMiniProject.UI.Control.BottomNavBar">
     <Border BackgroundColor="White" 
             StrokeThickness="0"
-            Padding="0,10,0,20"
+            Padding="0,20,0,15"
             VerticalOptions="End">
 
         <Border.StrokeShape>
@@ -36,7 +36,7 @@
                              WidthRequest="25"
                              HorizontalOptions="Center"
                              Clicked="OnInquiryClicked"/>
-                <Label Text="Inquiry&#x0a;" 
+                <Label Text="Inquiry" 
                        FontSize="10" 
                        TextColor="Black" 
                        HorizontalTextAlignment="Center"
