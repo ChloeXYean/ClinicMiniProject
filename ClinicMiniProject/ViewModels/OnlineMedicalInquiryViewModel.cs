@@ -1,11 +1,13 @@
+using ClinicMiniProject.Dtos;
+using ClinicMiniProject.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Maui.Controls;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using ClinicMiniProject.Services.Interfaces;
-using Microsoft.Maui.Controls;
 
 namespace ClinicMiniProject.ViewModels
 {
@@ -14,6 +16,7 @@ namespace ClinicMiniProject.ViewModels
         private readonly IInquiryService _inquiryService;
         private readonly IAuthService? _authService;
         private readonly IAppointmentService? _appointmentService;
+        private readonly AppDbContext _context;
 
         private string _searchQuery = string.Empty;
         private string _selectedStatus = "All";
@@ -25,21 +28,15 @@ namespace ClinicMiniProject.ViewModels
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public OnlineMedicalInquiryViewModel(
-            IInquiryService inquiryService,
-            IAuthService authService,
-            IAppointmentService appointmentService)
+                    IInquiryService inquiryService,
+                    IAuthService authService,
+                    AppDbContext context)
         {
             _inquiryService = inquiryService;
             _authService = authService;
-            _appointmentService = appointmentService;
+            _context = context;
 
             FilterCommand = new Command(async () => await LoadAsync());
-            ClearDateCommand = new Command(() => 
-            { 
-                _isDateFilterActive = false;
-                FilterDate = DateTime.Today;
-                _ = LoadAsync();
-            });
             ViewInquiryDetailsCommand = new Command<string>(OnViewDetails);
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
             NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorInquiryHistory"));
@@ -214,26 +211,26 @@ namespace ClinicMiniProject.ViewModels
             var patient = _authService?.GetCurrentPatient();
             string? patientIc = patient?.patient_IC;
 
+            // Fallback for staff testing
             if (string.IsNullOrEmpty(patientIc))
             {
                 var staff = _authService?.GetCurrentUser();
-                if (staff != null && !staff.isDoctor)
-                {
-                    patientIc = staff.staff_ID;
-                }
+                if (staff != null && !staff.isDoctor) patientIc = staff.staff_ID;
             }
 
             if (string.IsNullOrEmpty(patientIc)) return;
 
-            // Load Doctors consulted by this patient
             if (_appointmentService != null)
             {
+                // 1. Get History
                 var appointments = await _appointmentService.GetAppointmentsByPatientIcAsync(patientIc);
+
+                // 2. Filter: Must be "Completed" AND "isDoctor"
                 var consultedDoctors = appointments
                     .Where(a => string.Equals((a.status ?? "").Trim(), "Completed", StringComparison.OrdinalIgnoreCase))
                     .Select(a => a.Staff)
-                    .Where(s => s != null)
-                    .GroupBy(s => s.staff_ID)
+                    .Where(s => s != null && s.isDoctor) // <--- THIS FILTERS OUT NURSES (FLORA)
+                    .GroupBy(s => s.staff_ID) // Remove duplicates (if patient saw Doc A twice)
                     .Select(g => g.First())
                     .ToList();
 
@@ -244,12 +241,15 @@ namespace ClinicMiniProject.ViewModels
                     {
                         Doctors.Add(new StaffListItem { Id = doc.staff_ID, Name = doc.staff_name });
                     }
+
+                    // Optional: If list is empty, it means they haven't completed any consultations yet.
                 });
             }
         }
 
         private async Task SubmitInquiryAsync()
         {
+            // 1. Validation
             if (SelectedDoctor == null)
             {
                 await Shell.Current.DisplayAlert("Required", "Please select a doctor", "OK");
@@ -262,10 +262,12 @@ namespace ClinicMiniProject.ViewModels
                 return;
             }
 
+            // 2. Get Patient Info
             var patient = _authService?.GetCurrentPatient();
             string? ic = patient?.patient_IC;
             string? name = patient?.patient_name;
 
+            // Fallback for staff testing
             if (string.IsNullOrEmpty(ic))
             {
                 var staff = _authService?.GetCurrentUser();
@@ -273,8 +275,13 @@ namespace ClinicMiniProject.ViewModels
                 name = staff?.staff_name;
             }
 
-            if (string.IsNullOrEmpty(ic) || string.IsNullOrEmpty(name)) return;
+            if (string.IsNullOrEmpty(ic) || string.IsNullOrEmpty(name))
+            {
+                await Shell.Current.DisplayAlert("Error", "User information not found.", "OK");
+                return;
+            }
 
+            // 3. Create DTO with DOCTOR ID
             var newInquiry = new InquiryDto
             {
                 InquiryId = $"INQ{DateTime.Now:yyyyMMddHHmmss}",
@@ -282,23 +289,13 @@ namespace ClinicMiniProject.ViewModels
                 PatientName = name,
                 FullSymptomDescription = SymptomDescription,
                 Status = "Pending",
-                CreatedAt = DateTime.Now
-                // Image handling would go here if needed
+                CreatedAt = DateTime.Now,
+
+                // --- ADD THIS LINE ---
+                DoctorId = SelectedDoctor.Id
             };
 
             var success = await _inquiryService.CreateInquiryAsync(newInquiry);
-            if (success)
-            {
-                await Shell.Current.DisplayAlert("Success", "Inquiry submitted successfully", "OK");
-                SymptomDescription = string.Empty;
-                SelectedDoctor = null;
-                await LoadAsync();
-                await Shell.Current.GoToAsync("..");
-            }
-            else
-            {
-                await Shell.Current.DisplayAlert("Error", "Failed to submit inquiry", "OK");
-            }
         }
 
         private void OnViewDetails(string inquiryId)

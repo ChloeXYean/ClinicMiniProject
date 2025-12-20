@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ClinicMiniProject.Dtos;
 
 namespace ClinicMiniProject.Services.Interfaces
 {
@@ -11,24 +12,5 @@ namespace ClinicMiniProject.Services.Interfaces
         Task SendResponseAsync(string inquiryId, string doctorResponse);
         Task<bool> CreateInquiryAsync(InquiryDto inquiry);
         Task<IReadOnlyList<InquiryDto>> GetInquiriesByPatientIcAsync(string patientIc);
-    }
-
-    public sealed class InquiryDto
-    {
-        public string InquiryId { get; init; } = string.Empty;
-        public string PatientIc { get; init; } = string.Empty;
-        public string PatientName { get; init; } = string.Empty;
-        public int PatientAge { get; init; }
-        public string PatientGender { get; init; } = string.Empty;
-
-        public string FullSymptomDescription { get; init; } = string.Empty;
-        public string Status { get; set; } = "Pending";
-        public DateTime CreatedAt { get; init; } = DateTime.Now;
-
-        public string? Image1 { get; init; }
-        public string? Image2 { get; init; }
-        public string? Image3 { get; init; }
-
-        public string? DoctorResponse { get; set; }
     }
 }

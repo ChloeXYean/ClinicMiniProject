@@ -111,28 +111,30 @@ namespace ClinicMiniProject.Services
         {
             if (dto == null) return false;
 
-            // Generate ID if missing
+            // 1. Generate ID if missing
             string newId = dto.InquiryId;
             if (string.IsNullOrEmpty(newId))
                 newId = "I" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
 
-            // Assign a default doctor if your DTO doesn't select one
-            // (Since DoctorId is likely a Foreign Key, we need a valid one)
-            string assignedDocId = "S001"; // Default fallback
-            var defaultDoc = await _context.Staffs.FirstOrDefaultAsync(s => s.isDoctor);
-            if (defaultDoc != null)
-                assignedDocId = defaultDoc.staff_ID;
+            // 2. Validate Doctor ID (Prevent Crash)
+            string assignedDocId = dto.DoctorId;
+
+            // If UI didn't send an ID, try to find a fallback doctor to prevent crash
+            if (string.IsNullOrEmpty(assignedDocId))
+            {
+                var defaultDoc = await _context.Staffs.FirstOrDefaultAsync(s => s.isDoctor);
+                assignedDocId = defaultDoc?.staff_ID ?? "S001";
+            }
 
             var newInquiry = new Inquiry
             {
                 InquiryId = newId,
                 PatientIc = dto.PatientIc,
-                DoctorId = assignedDocId,
+                DoctorId = assignedDocId, // <--- USE THE VALID ID
                 SymptomDescription = dto.FullSymptomDescription,
                 AskDatetime = DateTime.Now,
                 Status = "Pending"
             };
-
             _context.Inquiries.Add(newInquiry);
             await _context.SaveChangesAsync();
             return true;

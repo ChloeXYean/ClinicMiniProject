@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ClinicMiniProject.Services.Interfaces;
+using ClinicMiniProject.Dtos;
 
 namespace ClinicMiniProject.ViewModels
 {
