@@ -61,13 +61,10 @@
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Frame Padding="15,10" CornerRadius="20" BackgroundColor="{Binding BackgroundColor}" BorderColor="#5FA8FF" HasShadow="False" Opacity="{Binding Opacity}" IsEnabled="{Binding IsEnabled}">
-                                <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PatientAppointmentBookingViewModel}}, Path=SelectTimeCommand}" 
-                                                          CommandParameter="{Binding .}" />
-                                </Frame.GestureRecognizers>
-                                <Label Text="{Binding DisplayTime}" TextColor="{Binding TextColor}" FontAttributes="Bold"/>
-                            </Frame>
+                            <Border Stroke="#5FA8FF" StrokeThickness="0" BackgroundColor="{Binding BackgroundColor}" Padding="0" StrokeShape="RoundRectangle 20" Opacity="{Binding Opacity}">
+
+                                <Button Text="{Binding DisplayTime}" TextColor="{Binding TextColor}" FontAttributes="Bold" BackgroundColor="Transparent" BorderWidth="0" Padding="15,10" IsEnabled="{Binding IsEnabled}" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PatientAppointmentBookingViewModel}}, Path=SelectTimeCommand}" CommandParameter="{Binding .}" />
+                            </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>

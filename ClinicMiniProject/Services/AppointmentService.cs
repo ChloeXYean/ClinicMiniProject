@@ -15,15 +15,46 @@ namespace ClinicMiniProject.Services
             _context = context;
             _repo = repo;
         }
-        public async Task AddAppointmentAsync(Appointment appt)
+        public async Task<bool> AddAppointmentAsync(Appointment appt)
         {
-            if (appt == null) return;
+            if (appt == null || !appt.appointedAt.HasValue) 
+                return false;
+
+            // Check for conflicts before adding
+            bool hasConflict = await HasConflictingAppointmentAsync(
+                appt.patient_IC, 
+                appt.staff_ID, 
+                appt.appointedAt.Value);
+
+            if (hasConflict)
+                return false;
 
             if (string.IsNullOrEmpty(appt.appointment_ID))
                 appt.appointment_ID = "A" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
 
             _context.Appointments.Add(appt);
             await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> HasConflictingAppointmentAsync(string patientIc, string doctorId, DateTime appointmentTime)
+        {
+            // Check if patient already has an appointment at this time (any doctor)
+            bool patientConflict = await _context.Appointments
+                .AnyAsync(a => a.patient_IC == patientIc 
+                            && a.appointedAt == appointmentTime 
+                            && a.status != "Cancelled");
+
+            if (patientConflict)
+                return true;
+
+            // Check if doctor already has an appointment at this time (any patient)
+            bool doctorConflict = await _context.Appointments
+                .AnyAsync(a => a.staff_ID == doctorId 
+                            && a.appointedAt == appointmentTime 
+                            && a.status != "Cancelled");
+
+            return doctorConflict;
         }
         public async Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync(string staffId)
         {
@@ -137,6 +168,138 @@ namespace ClinicMiniProject.Services
                 .Where(a => a.patient_IC == patientIc)
                 .OrderByDescending(a => a.appointedAt)
                 .ToListAsync();
+        }
+
+        // New methods for synchronized appointment booking
+        public async Task<List<TimeSpan>> GetBookedTimeSlotsAsync(string doctorId, DateTime date)
+        {
+            var appointments = await _context.Appointments
+                .Where(a => a.staff_ID == doctorId 
+                            && a.appointedAt.HasValue 
+                            && a.appointedAt.Value.Date == date.Date
+                            && a.status != "Cancelled")
+                .Select(a => a.appointedAt!.Value.TimeOfDay)
+                .ToListAsync();
+
+            return appointments;
+        }
+
+        public async Task<bool> PatientHasAppointmentAtTimeAsync(string patientIc, DateTime appointmentTime)
+        {
+            return await _context.Appointments
+                .AnyAsync(a => a.patient_IC == patientIc 
+                            && a.appointedAt == appointmentTime 
+                            && a.status != "Cancelled");
+        }
+
+        public async Task<List<TimeSpan>> GetPatientBookedTimeSlotsForDateAsync(string patientIc, DateTime date)
+        {
+            var appointments = await _context.Appointments
+                .Where(a => a.patient_IC == patientIc 
+                            && a.appointedAt.HasValue 
+                            && a.appointedAt.Value.Date == date.Date
+                            && a.status != "Cancelled")
+                .Select(a => a.appointedAt!.Value.TimeOfDay)
+                .ToListAsync();
+
+            return appointments;
+        }
+
+        public async Task<bool> IsAnyDoctorAvailableAtTimeAsync(DateTime appointmentDateTime)
+        {
+            // Get all doctors
+            var doctors = await _context.Staffs
+                .Include(s => s.Availability)
+                .Where(s => s.isDoctor)
+                .ToListAsync();
+
+            var dayOfWeek = appointmentDateTime.DayOfWeek;
+
+            // Check if at least one doctor is available
+            foreach (var doctor in doctors)
+            {
+                // Skip if doctor has no availability info
+                if (doctor.Availability == null) continue;
+
+                // Skip if doctor is not available on this day of week
+                if (!doctor.Availability.IsAvailable(dayOfWeek)) continue;
+
+                // Check if this doctor has a conflicting appointment
+                bool hasConflict = await _context.Appointments
+                    .AnyAsync(a => a.staff_ID == doctor.staff_ID
+                                && a.appointedAt == appointmentDateTime
+                                && a.status != "Cancelled");
+
+                // If no conflict, this doctor is available!
+                if (!hasConflict)
+                    return true;
+            }
+
+            // No doctors available at this time
+            return false;
+        }
+
+        public async Task<List<TimeSpan>> GetUnavailableTimeSlotsForDateAsync(DateTime date)
+        {
+            // Get all doctors and their appointments for the day in a single query
+            var doctors = await _context.Staffs
+                .Include(s => s.Availability)
+                .Where(s => s.isDoctor)
+                .ToListAsync();
+
+            var dayOfWeek = date.DayOfWeek;
+            var dayStart = date.Date.AddHours(9);  // Start at 9 AM
+            var dayEnd = date.Date.AddHours(17);   // End at 5 PM
+
+            // Get all appointments for this date
+            var allAppointments = await _context.Appointments
+                .Where(a => a.appointedAt.HasValue 
+                            && a.appointedAt.Value.Date == date.Date
+                            && a.status != "Cancelled")
+                .Select(a => new { a.staff_ID, TimeSlot = a.appointedAt!.Value.TimeOfDay })
+                .ToListAsync();
+
+            // Create a dictionary of doctor appointments
+            var doctorAppointments = allAppointments
+                .GroupBy(a => a.staff_ID)
+                .ToDictionary(g => g.Key, g => g.Select(x => x.TimeSlot).ToHashSet());
+
+            var unavailableSlots = new List<TimeSpan>();
+
+            // Check each hour from 9 AM to 5 PM
+            for (int hour = 9; hour < 17; hour++)
+            {
+                var timeSlot = new TimeSpan(hour, 0, 0);
+                bool anyDoctorAvailable = false;
+
+                foreach (var doctor in doctors)
+                {
+                    // Skip if doctor has no availability info
+                    if (doctor.Availability == null) continue;
+
+                    // Skip if doctor is not available on this day of week
+                    if (!doctor.Availability.IsAvailable(dayOfWeek)) continue;
+
+                    // Check if this doctor has an appointment at this time
+                    bool hasDoctorAppointment = doctorAppointments.ContainsKey(doctor.staff_ID) 
+                                                && doctorAppointments[doctor.staff_ID].Contains(timeSlot);
+
+                    // If this doctor is free, the slot is available
+                    if (!hasDoctorAppointment)
+                    {
+                        anyDoctorAvailable = true;
+                        break;
+                    }
+                }
+
+                // If no doctor is available, mark this slot as unavailable
+                if (!anyDoctorAvailable)
+                {
+                    unavailableSlots.Add(timeSlot);
+                }
+            }
+
+            return unavailableSlots;
         }
     }
 }
