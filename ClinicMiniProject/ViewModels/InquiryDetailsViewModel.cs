@@ -95,8 +95,20 @@ namespace ClinicMiniProject.ViewModels
             if (string.IsNullOrWhiteSpace(InquiryId))
                 return;
 
-            await _inquiryService.SendResponseAsync(InquiryId, DoctorResponseText);
-            await Shell.Current.GoToAsync("..");
+            try
+            {
+                await _inquiryService.SendResponseAsync(InquiryId, DoctorResponseText);
+                
+                // Show success message
+                await Shell.Current.DisplayAlert("Success", "Response sent successfully!", "OK");
+                
+                // Navigate back to inquiry history
+                await Shell.Current.GoToAsync("///Inquiry");
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Error", "Failed to send response. Please try again.", "OK");
+            }
         }
 
         private void OnViewFullProfile()
@@ -105,7 +117,7 @@ namespace ClinicMiniProject.ViewModels
             if (string.IsNullOrWhiteSpace(ic))
                 return;
 
-            Shell.Current.GoToAsync($"PatientDetails?patientIc={Uri.EscapeDataString(ic)}");
+            Shell.Current.GoToAsync($"PatientDetails?patientIc={Uri.EscapeDataString(ic)}&UserType=Doctor");
         }
 
         private static ImageSource? ResolveImage(string? path)

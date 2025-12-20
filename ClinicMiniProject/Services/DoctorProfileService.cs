@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using ClinicMiniProject.Models;
 using ClinicMiniProject.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClinicMiniProject.Services
 {
     public class DoctorProfileService : IDoctorProfileService
     {
         private readonly IAuthService _authService;
+        private readonly AppDbContext _context;
 
         // TODO: link with database
         // Store profile-only fields that are not present in current Staff model:
@@ -25,9 +27,10 @@ namespace ClinicMiniProject.Services
             public string ProfileImageUri { get; set; } = string.Empty;
         }
 
-        public DoctorProfileService(IAuthService authService)
+        public DoctorProfileService(IAuthService authService, AppDbContext context)
         {
             _authService = authService;
+            _context = context;
         }
 
         public async Task<DoctorProfileDto?> GetDoctorProfileAsync(string doctorId)
@@ -71,51 +74,75 @@ namespace ClinicMiniProject.Services
 
         public async Task UpdateDoctorProfileAsync(string doctorId, DoctorProfileUpdateDto update)
         {
-            await Task.Yield();
-
             var current = _authService.GetCurrentUser();
             if (current == null || current.staff_ID != doctorId)
                 throw new InvalidOperationException("Not authorized to update this profile.");
 
             // Update fields that exist in Staff model
-            if (!string.IsNullOrWhiteSpace(update.Name))
-                current.staff_name = update.Name;
-
-            if (!string.IsNullOrWhiteSpace(update.PhoneNo))
-                current.staff_contact = update.PhoneNo;
-
-            // Specialists/Services tags: persist into Staff.specialities as comma-separated values
-            // so patient booking can search doctor by specialists.
-            // TODO: link with database
-            // For better search/indexing, normalize into a separate table (e.g., DoctorSpecialty(DoctorId, SpecialtyName)).
-            if (update.ServicesProvided != null)
+            bool hasChanges = false;
+            
+            if (!string.IsNullOrWhiteSpace(update.Name) && current.staff_name != update.Name)
             {
-                var tags = update.ServicesProvided
-                    .Where(s => !string.IsNullOrWhiteSpace(s))
-                    .Select(s => s.Trim())
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .ToList();
-
-                //current.specialities = string.Join(", ", tags);
+                current.staff_name = update.Name;
+                hasChanges = true;
+                System.Diagnostics.Debug.WriteLine($"Updated staff_name to: {update.Name}");
             }
 
+            if (!string.IsNullOrWhiteSpace(update.PhoneNo) && current.staff_contact != update.PhoneNo)
+            {
+                current.staff_contact = update.PhoneNo;
+                hasChanges = true;
+                System.Diagnostics.Debug.WriteLine($"Updated staff_contact to: {update.PhoneNo}");
+            }
+
+            // Save to database if there are changes
+            if (hasChanges)
+            {
+                try
+                {
+                    var staffInDb = await _context.Staffs.FindAsync(doctorId);
+                    if (staffInDb != null)
+                    {
+                        staffInDb.staff_name = current.staff_name;
+                        staffInDb.staff_contact = current.staff_contact;
+                        
+                        await _context.SaveChangesAsync();
+                        System.Diagnostics.Debug.WriteLine($"Successfully saved changes to database for doctor: {doctorId}");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Warning: Staff {doctorId} not found in database");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error saving to database: {ex.Message}");
+                    throw new InvalidOperationException($"Failed to save profile changes: {ex.Message}");
+                }
+            }
+
+            // Store services in extras dictionary (in-memory for now)
             var extras = GetOrCreateExtras(doctorId, current);
 
             if (!string.IsNullOrWhiteSpace(update.WorkingHoursText))
+            {
                 extras.WorkingHoursText = update.WorkingHoursText;
+                System.Diagnostics.Debug.WriteLine($"Updated working hours to: {update.WorkingHoursText}");
+            }
 
-            //if (update.ServicesProvided != null)
-            //    extras.ServicesProvided = ParseServices(current.specialities);
+            if (update.ServicesProvided != null)
+            {
+                extras.ServicesProvided = update.ServicesProvided.ToList();
+                System.Diagnostics.Debug.WriteLine($"Updated services count: {extras.ServicesProvided.Count}");
+            }
 
             if (!string.IsNullOrWhiteSpace(update.ProfileImageUri))
+            {
                 extras.ProfileImageUri = update.ProfileImageUri;
+                System.Diagnostics.Debug.WriteLine($"Updated profile image to: {update.ProfileImageUri}");
+            }
 
-            // TODO: link with database
-            // Persist:
-            // - Staff name/contact
-            // - profile image
-            // - working hours
-            // - services provided
+            System.Diagnostics.Debug.WriteLine("Profile update completed successfully");
         }
 
         private static ProfileExtras GetOrCreateExtras(string doctorId, Staff staff)
@@ -123,11 +150,17 @@ namespace ClinicMiniProject.Services
             if (_extrasByDoctorId.TryGetValue(doctorId, out var extras))
                 return extras;
 
+            // Initialize with default services since Staff model doesn't have specialities field yet
             extras = new ProfileExtras
             {
-                WorkingHoursText = "9.00AM - 9.00PM",
-                ProfileImageUri = string.Empty,
-                //ServicesProvided = ParseServices(staff.specialities)
+                WorkingHoursText = "9:00 AM - 9:00 PM",
+                ProfileImageUri = "dotnet_bot.png",
+                ServicesProvided = new List<string> 
+                { 
+                    "General Consultation",
+                    "Health Checkup",
+                    "Medical Screening"
+                }
             };
 
             _extrasByDoctorId[doctorId] = extras;

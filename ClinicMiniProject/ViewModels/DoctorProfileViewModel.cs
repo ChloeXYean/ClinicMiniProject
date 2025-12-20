@@ -30,7 +30,13 @@ namespace ClinicMiniProject.ViewModels
         public string Name
         {
             get => _name;
-            set => SetProperty(ref _name, value);
+            set
+            {
+                if (SetProperty(ref _name, value))
+                {
+                    OnPropertyChanged(nameof(DoctorName));
+                }
+            }
         }
 
         public string DoctorName
@@ -42,7 +48,13 @@ namespace ClinicMiniProject.ViewModels
         public string PhoneNo
         {
             get => _phoneNo;
-            set => SetProperty(ref _phoneNo, value);
+            set
+            {
+                if (SetProperty(ref _phoneNo, value))
+                {
+                    OnPropertyChanged(nameof(PhoneNumber));
+                }
+            }
         }
 
         public string PhoneNumber
@@ -54,7 +66,13 @@ namespace ClinicMiniProject.ViewModels
         public string WorkingHoursText
         {
             get => _workingHoursText;
-            set => SetProperty(ref _workingHoursText, value);
+            set
+            {
+                if (SetProperty(ref _workingHoursText, value))
+                {
+                    OnPropertyChanged(nameof(WorkingHours));
+                }
+            }
         }
 
         public string WorkingHours
@@ -125,33 +143,52 @@ namespace ClinicMiniProject.ViewModels
             if (doctor == null)
             {
                 System.Diagnostics.Debug.WriteLine("No current user found - user might not be logged in");
+                await Application.Current.MainPage.DisplayAlert("Error", "No user logged in", "OK");
                 return;
             }
 
             System.Diagnostics.Debug.WriteLine($"Attempting to load profile for doctor ID: {doctor.staff_ID}");
             
             var dto = await _doctorProfileService.GetDoctorProfileAsync(doctor.staff_ID);
-            System.Diagnostics.Debug.WriteLine($"GetDoctorProfileAsync result: {dto?.DoctorId}, Name: {dto?.Name}, Phone: {dto?.PhoneNo}");
+            System.Diagnostics.Debug.WriteLine($"GetDoctorProfileAsync result: {dto?.DoctorId}, Name: {dto?.Name}, Phone: {dto?.PhoneNo}, WorkingHours: {dto?.WorkingHoursText}");
             
             if (dto == null)
             {
                 System.Diagnostics.Debug.WriteLine("DoctorProfileDto returned null - service might not be working");
+                await Application.Current.MainPage.DisplayAlert("Error", "Failed to load profile", "OK");
                 return;
             }
 
+            System.Diagnostics.Debug.WriteLine($"Setting DoctorId to: {dto.DoctorId}");
             DoctorId = dto.DoctorId;
+            
+            System.Diagnostics.Debug.WriteLine($"Setting Name to: {dto.Name}");
             Name = dto.Name;
+            
+            System.Diagnostics.Debug.WriteLine($"Setting PhoneNo to: {dto.PhoneNo}");
             PhoneNo = dto.PhoneNo;
+            
             // Set default working hours to 9am-9pm if not set
-            WorkingHoursText = string.IsNullOrEmpty(dto.WorkingHoursText) ? "9:00 AM - 9:00 PM" : dto.WorkingHoursText;
+            var workingHours = string.IsNullOrEmpty(dto.WorkingHoursText) ? "9:00 AM - 9:00 PM" : dto.WorkingHoursText;
+            System.Diagnostics.Debug.WriteLine($"Setting WorkingHoursText to: {workingHours}");
+            WorkingHoursText = workingHours;
+            
+            System.Diagnostics.Debug.WriteLine($"Setting ProfileImageUri to: {dto.ProfileImageUri}");
             ProfileImageUri = dto.ProfileImageUri;
 
             ServicesProvided.Clear();
             foreach (var s in dto.ServicesProvided)
                 ServicesProvided.Add(new ServiceItem { Name = s });
                 
-            System.Diagnostics.Debug.WriteLine($"Profile loaded successfully - DoctorId: {DoctorId}, Name: {DoctorName}, Phone: {PhoneNumber}, WorkingHours: {WorkingHoursText}");
-            System.Diagnostics.Debug.WriteLine($"Services count: {ServicesProvided.Count}");
+            System.Diagnostics.Debug.WriteLine($"Profile loaded successfully:");
+            System.Diagnostics.Debug.WriteLine($"  DoctorId: {DoctorId}");
+            System.Diagnostics.Debug.WriteLine($"  Name: {Name}");
+            System.Diagnostics.Debug.WriteLine($"  DoctorName: {DoctorName}");
+            System.Diagnostics.Debug.WriteLine($"  PhoneNo: {PhoneNo}");
+            System.Diagnostics.Debug.WriteLine($"  PhoneNumber: {PhoneNumber}");
+            System.Diagnostics.Debug.WriteLine($"  WorkingHoursText: {WorkingHoursText}");
+            System.Diagnostics.Debug.WriteLine($"  WorkingHours: {WorkingHours}");
+            System.Diagnostics.Debug.WriteLine($"  Services count: {ServicesProvided.Count}");
             System.Diagnostics.Debug.WriteLine("=== RefreshAsync Completed ===");
         }
 
@@ -161,18 +198,27 @@ namespace ClinicMiniProject.ViewModels
             if (doctor == null)
                 return;
 
-            var update = new DoctorProfileUpdateDto
+            try
             {
-                Name = Name,
-                PhoneNo = PhoneNo,
-                WorkingHoursText = WorkingHoursText,
-                ServicesProvided = ServicesProvided.Select(s => s.Name).ToList(),
-                ProfileImageUri = ProfileImageUri
-            };
+                var update = new DoctorProfileUpdateDto
+                {
+                    Name = Name,
+                    PhoneNo = PhoneNo,
+                    WorkingHoursText = WorkingHoursText,
+                    ServicesProvided = ServicesProvided.Select(s => s.Name).ToList(),
+                    ProfileImageUri = ProfileImageUri
+                };
 
-            await _doctorProfileService.UpdateDoctorProfileAsync(doctor.staff_ID, update);
+                await _doctorProfileService.UpdateDoctorProfileAsync(doctor.staff_ID, update);
 
-            IsEditMode = false;
+                IsEditMode = false;
+                
+                await Application.Current.MainPage.DisplayAlert("Success", "Profile updated successfully and saved to database!", "OK");
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", $"Failed to save profile: {ex.Message}", "OK");
+            }
         }
 
         private void OnToggleEditMode()

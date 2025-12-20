@@ -17,7 +17,8 @@ namespace ClinicMiniProject.ViewModels
 
         private string _searchQuery = string.Empty;
         private string _selectedStatus = "All";
-        private DateTime? _selectedDate;
+        private DateTime _filterDate = DateTime.Today;
+        private bool _isDateFilterActive = false;
         private string _uploadedPhotoPath = string.Empty;
         private string _photoNotes = string.Empty;
 
@@ -33,6 +34,12 @@ namespace ClinicMiniProject.ViewModels
             _appointmentService = appointmentService;
 
             FilterCommand = new Command(async () => await LoadAsync());
+            ClearDateCommand = new Command(() => 
+            { 
+                _isDateFilterActive = false;
+                FilterDate = DateTime.Today;
+                _ = LoadAsync();
+            });
             ViewInquiryDetailsCommand = new Command<string>(OnViewDetails);
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
             NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorInquiryHistory"));
@@ -65,13 +72,14 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
-        public DateTime? SelectedDate
+        public DateTime FilterDate
         {
-            get => _selectedDate;
+            get => _filterDate;
             set 
             {
-                if (SetProperty(ref _selectedDate, value))
+                if (SetProperty(ref _filterDate, value))
                 {
+                    _isDateFilterActive = true;
                     _ = LoadAsync(); // Auto-filter when date changes
                 }
             }
@@ -116,6 +124,7 @@ namespace ClinicMiniProject.ViewModels
 
         public ICommand BackCommand { get; }
         public ICommand FilterCommand { get; }
+        public ICommand ClearDateCommand { get; }
         public ICommand ViewInquiryDetailsCommand { get; }
         public ICommand NavigateToHomeCommand { get; }
         public ICommand NavigateToInquiryCommand { get; }
@@ -128,7 +137,14 @@ namespace ClinicMiniProject.ViewModels
         {
             InquiryList.Clear();
 
-            var items = await _inquiryService.GetInquiriesAsync(SearchQuery);
+            // Get current doctor
+            var currentUser = _authService?.GetCurrentUser();
+            if (currentUser == null || !currentUser.isDoctor)
+            {
+                return; // Only load for doctors
+            }
+
+            var items = await _inquiryService.GetInquiriesByDoctorAsync(currentUser.staff_ID, SearchQuery);
             
             // Apply filters
             var filteredItems = items.Where(i =>
@@ -137,8 +153,8 @@ namespace ClinicMiniProject.ViewModels
                 if (SelectedStatus != "All" && !string.Equals(i.Status, SelectedStatus, StringComparison.OrdinalIgnoreCase))
                     return false;
                 
-                // Date filter
-                if (SelectedDate.HasValue && i.CreatedAt.Date != SelectedDate.Value.Date)
+                // Date filter (only if active)
+                if (_isDateFilterActive && i.CreatedAt.Date != FilterDate.Date)
                     return false;
                 
                 return true;
@@ -290,7 +306,7 @@ namespace ClinicMiniProject.ViewModels
             if (string.IsNullOrWhiteSpace(inquiryId))
                 return;
 
-            Shell.Current.GoToAsync($"///InquiryDetails?inquiryId={Uri.EscapeDataString(inquiryId)}");
+            Shell.Current.GoToAsync($"///InquiryDetailsPage?inquiryId={Uri.EscapeDataString(inquiryId)}");
         }
 
         private static string BuildSnippet(string text)

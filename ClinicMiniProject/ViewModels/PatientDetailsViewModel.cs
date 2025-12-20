@@ -43,11 +43,19 @@ namespace ClinicMiniProject.ViewModels
                 if (value == "Patient")
                 {
                     IsNurseView = false;
+                    IsDoctorView = false;
                     LoadCurrentPatientProfile();
                 }
                 else if (value == "Nurse")
                 {
                     IsNurseView = true;
+                    IsDoctorView = false;
+                }
+                else if (value == "Doctor")
+                {
+                    IsNurseView = false;
+                    IsDoctorView = true;
+                    LoadCurrentPatientProfile();
                 }
             }
         }
@@ -74,9 +82,22 @@ namespace ClinicMiniProject.ViewModels
                 isNurseView = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsPatientView));
+                OnPropertyChanged(nameof(IsDoctorView));
             }
         }
-        public bool IsPatientView => !IsNurseView;
+        public bool IsPatientView => !IsNurseView && !IsDoctorView;
+        
+        private bool isDoctorView;
+        public bool IsDoctorView
+        {
+            get => isDoctorView;
+            private set
+            {
+                isDoctorView = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsPatientView));
+            }
+        }
 
         // --- DISPLAY PROPERTIES (Kept exact names for XAML) ---
         private string patientName = "Loading...";

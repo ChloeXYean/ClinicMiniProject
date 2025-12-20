@@ -2,9 +2,16 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
+             xmlns:conv="clr-namespace:ClinicMiniProject.Converters"
              x:Class="ClinicMiniProject.UI.Doctor.DoctorDashboardPage"
              BackgroundColor="#F8F9FD" 
              Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:InquiryStatusToColorConverter x:Key="InquiryStatusToColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
         <control:TopNavBar Grid.Row="0"
