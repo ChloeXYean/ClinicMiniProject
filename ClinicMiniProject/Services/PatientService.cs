@@ -58,9 +58,12 @@ namespace ClinicMiniProject.Services
         {
             System.Diagnostics.Debug.WriteLine($"[PatientService] Fetching upcoming appointment for IC: {patient_IC}");
 
+            var now = DateTime.Now;
             var appointment = await _context.Appointments
                 .Include(a => a.Staff)
-                .Where(a => a.patient_IC == patient_IC && (a.status == "Pending" || a.status == "Scheduled"))
+                .Where(a => a.patient_IC == patient_IC && 
+                            a.status == "Pending" &&
+                            a.appointedAt >= now)
                 .OrderBy(a => a.appointedAt)
                 .FirstOrDefaultAsync();
 

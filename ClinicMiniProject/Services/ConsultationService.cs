@@ -27,7 +27,7 @@ namespace ClinicMiniProject.Services
             // Define "current time slot" as the earliest appointment that is not completed and is scheduled for today.
             // If you have a fixed slot system, replace this selection logic.
             var current = todayAppointments
-                .Where(a => a.appointedAt.Value.Date == today && (a.status == "Scheduled" || a.status == "Pending" || a.status == "Confirmed"))
+                .Where(a => a.appointedAt.Value.Date == today && (a.status == "Pending" || a.status == "Confirmed"))
                 .OrderBy(a => a.appointedAt)
                 .FirstOrDefault();
 
@@ -127,7 +127,7 @@ namespace ClinicMiniProject.Services
                 appointedAt = appointment.appointedAt,
                 staff_ID = appointment.staff_ID,
                 patient_IC = walkIn.patient_IC,
-                status = "Scheduled"
+                status = "Pending"
             };
 
             // TODO: link with database (persist reassignment)

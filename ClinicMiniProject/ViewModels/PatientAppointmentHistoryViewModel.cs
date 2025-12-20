@@ -15,6 +15,7 @@ namespace ClinicMiniProject.ViewModels
         private readonly IAppointmentService _appointmentService;
         private readonly IAuthService _authService;
         private ObservableCollection<AppointmentHistoryItem> _appointments;
+        private List<AppointmentHistoryItem> _originalAppointments; // Store full list for filtering
 
         public ObservableCollection<AppointmentHistoryItem> Appointments
         {
@@ -30,6 +31,18 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged();
+                FilterAppointments();
+            }
+        }
+
         private string userType;
         public string UserType
         {
@@ -38,7 +51,7 @@ namespace ClinicMiniProject.ViewModels
             {
                 userType = value;
                 OnPropertyChanged();
-                Task.Run(LoadAppointments);
+                _ = LoadAppointments();
             }
         }
 
@@ -54,184 +67,149 @@ namespace ClinicMiniProject.ViewModels
             _appointmentService = appointmentService;
             _authService = authService;
             Appointments = new ObservableCollection<AppointmentHistoryItem>();
+            _originalAppointments = new List<AppointmentHistoryItem>();
 
             LoadAppointmentsCommand = new Command(async () => await LoadAppointments());
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
 
             // Auto load on init
-            Task.Run(LoadAppointments);
+            _ = LoadAppointments();
         }
+
         private async Task LoadAppointments()
         {
-            await MainThread.InvokeOnMainThreadAsync(async () =>
+            try
             {
-                try
-                {
-                    List<Appointment> rawData = new();
+                List<Appointment> rawData = new();
 
-                    // ---------------------------------------------------------
-                    // 1. NURSE LOGIC (From Upper Code)
-                    // ---------------------------------------------------------
-                    if (UserType == "Nurse")
+                // ---------------------------------------------------------
+                // 1. DATA FETCHING (Background)
+                // ---------------------------------------------------------
+                if (UserType == "Nurse")
+                {
+                    rawData = await _nurseController.GetAllAppointmentsHistory();
+                }
+                else if (UserType == "Doctor")
+                {
+                    var staff = _authService.GetCurrentUser();
+                    if (staff != null)
                     {
-                        // Nurse sees EVERYTHING
-                        rawData = await _nurseController.GetAllAppointmentsHistory();
+                        var allApps = await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(staff.staff_ID, DateTime.MinValue, DateTime.MaxValue);
+                        rawData = allApps.ToList();
                     }
-                    // ---------------------------------------------------------
-                    // 2. DOCTOR LOGIC (Explicit handling for Staff ID)
-                    // ---------------------------------------------------------
-                    else if (UserType == "Doctor")
+                }
+                else
+                {
+                    var user = _authService.GetCurrentPatient();
+                    if (user != null)
                     {
-                        var staff = _authService.GetCurrentUser();
-                        if (staff != null)
-                        {
-                            // Fetch only appointments assigned to this Doctor
-                            var allApps = await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(staff.staff_ID, DateTime.MinValue, DateTime.MaxValue);
-                            rawData = allApps.OrderByDescending(a => a.appointedAt).ToList();
-                        }
+                        var allApps = await _appointmentService.GetAppointmentsByPatientIcAsync(user.patient_IC);
+                        rawData = allApps.ToList();
                     }
-                    // ---------------------------------------------------------
-                    // 3. PATIENT LOGIC (From Lower Code + Upper Code Logic)
-                    // ---------------------------------------------------------
+                }
+
+                // ---------------------------------------------------------
+                // 2. MAPPING TO UI ITEMS
+                // ---------------------------------------------------------
+                var uiItems = new List<AppointmentHistoryItem>();
+
+                foreach (var appt in rawData)
+                {
+                    string status = appt.status ?? "Pending";
+                    var (cardBg, badgeBg) = GetColors(status);
+
+                    string nameDisplay;
+                    string doctorInternalName;
+                    if (UserType == "Patient")
+                    {
+                        nameDisplay = $"Dr. {(appt.Staff != null ? appt.Staff.staff_name : "Unknown")}";
+                        doctorInternalName = appt.Staff?.staff_name ?? "Unknown";
+                    }
                     else
                     {
-                        // Logic from Bottom Code: Try getting Patient, fallback to Staff ID if needed (for testing)
-                        var user = _authService.GetCurrentPatient();
-                        string userIc = user?.patient_IC ?? _authService.GetCurrentUser()?.staff_ID;
-
-                        if (!string.IsNullOrEmpty(userIc))
-                        {
-                            var allApps = await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(null, DateTime.MinValue, DateTime.MaxValue);
-
-                            rawData = allApps
-                                .Where(a => a.patient_IC == userIc)
-                                .OrderByDescending(a => a.appointedAt)
-                                .ToList();
-                        }
+                        var p = _nurseController.ViewPatientDetails(appt.patient_IC);
+                        string realName = p != null ? p.patient_name : "Unknown";
+                        nameDisplay = $"Patient: {realName}";
+                        doctorInternalName = realName;
                     }
 
-                    // ---------------------------------------------------------
-                    // 4. MAPPING TO UI (Combining Best Features)
-                    // ---------------------------------------------------------
-                    var uiItems = new List<AppointmentHistoryItem>();
+                    string timeDisplay = appt.appointedAt?.ToString("hh:mm tt") + " - " + appt.appointedAt?.AddHours(1).ToString("hh:mm tt");
 
-                    foreach (var appt in rawData)
+                    uiItems.Add(new AppointmentHistoryItem
                     {
-                        string status = appt.status ?? "Pending";
-                        var (cardBg, badgeBg) = GetColors(status);
-
-                        // LOGIC: "Who am I looking at?"
-                        // If I am a Patient -> Show me the Doctor's Name
-                        // If I am a Nurse/Doctor -> Show me the Patient's Name
-                        string nameDisplay;
-                        if (UserType == "Patient")
-                        {
-                            nameDisplay = $"Dr. {(appt.Staff != null ? appt.Staff.staff_name : "Unknown")}";
-                        }
-                        else
-                        {
-                            // Use NurseController to fetch real patient name if possible
-                            var p = _nurseController.ViewPatientDetails(appt.patient_IC);
-                            string realName = p != null ? p.patient_name : "Unknown";
-                            nameDisplay = $"Patient: {realName}";
-                        }
-
-                        // TIME FORMAT: Using the "Start - End" format from your Bottom Code
-                        string timeDisplay = appt.appointedAt?.ToString("hh:mm tt") + " - " + appt.appointedAt?.AddHours(1).ToString("hh:mm tt");
-
-                        uiItems.Add(new AppointmentHistoryItem
-                        {
-                            Time = timeDisplay,
-                            Date = appt.appointedAt?.ToString("dd MMM yyyy") ?? "-",
-
-                            // Display the Name (Dr. or Patient) + ID
-                            Details = $"{nameDisplay} (#{appt.appointment_ID})",
-
-                            DoctorName = appt.service_type ?? "General Checkup",
-                            Status = status,
-                            StatusColor = Colors.Black,
-                            BadgeColor = badgeBg,
-                            CardBackgroundColor = cardBg
-                        });
-                    }
-
-                    // ---------------------------------------------------------
-                    // 5. UPDATE UI
-                    // ---------------------------------------------------------
-                    Appointments.Clear();
-                    foreach (var item in uiItems)
-                    {
-                        Appointments.Add(item);
-                    }
+                        Time = timeDisplay,
+                        Date = appt.appointedAt?.ToString("dd MMM yyyy") ?? "-",
+                        RawDate = appt.appointedAt ?? DateTime.MinValue,
+                        Details = $"{nameDisplay} (#{appt.appointment_ID})",
+                        DoctorName = (UserType == "Patient") ? doctorInternalName : nameDisplay,
+                        Status = status,
+                        StatusColor = Colors.Black,
+                        BadgeColor = badgeBg,
+                        CardBackgroundColor = cardBg
+                    });
                 }
-                catch (Exception ex)
+
+                // ---------------------------------------------------------
+                // 3. UI UPDATE
+                // ---------------------------------------------------------
+                await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    System.Diagnostics.Debug.WriteLine($"Error loading history: {ex.Message}");
-                }
-            });
+                    _originalAppointments = uiItems;
+                    FilterAppointments();
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading history: {ex.Message}");
+            }
         }
 
-        //private async Task LoadAppointments()
-        //{
-        //    var user = _authService.GetCurrentPatient(); // Getting logged in patient
-        //    // Fallback to staff if null (for testing) or handle generic user
-        //    string userIc = user?.patient_IC ?? _authService.GetCurrentUser()?.staff_ID;
+        private void FilterAppointments()
+        {
+            if (_originalAppointments == null) return;
 
-        //    if (string.IsNullOrEmpty(userIc)) return;
+            var filtered = _originalAppointments.AsEnumerable();
 
-        //    try
-        //    {
-        //        // Fetch all appointments (or filter by patient logic if available in service)
-        //        var allAppointments = await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(null, DateTime.MinValue, DateTime.MaxValue);
+            // 1. FILTER BY SEARCH TEXT
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                string search = SearchText.ToLower();
+                filtered = filtered.Where(a => 
+                    (a.DoctorName != null && a.DoctorName.ToLower().Contains(search)) ||
+                    (a.Details != null && a.Details.ToLower().Contains(search)));
+            }
 
-        //        // Filter by patient ID
-        //        var myAppointments = allAppointments
-        //            .Where(a => a.patient_IC == userIc)
-        //            .OrderByDescending(a => a.appointedAt)
-        //            .ToList();
+            // 2. SORTING: Pending (0) -> Completed (1) -> Cancelled (2)
+            // Then sort by latest date first
+            var sorted = filtered
+                .OrderBy(a => a.Status?.ToLower() switch
+                {
+                    "pending" => 0,
+                    "completed" => 1,
+                    "cancelled" => 2,
+                    _ => 3
+                })
+                .ThenBy(a => a.RawDate)
+                .ToList();
 
-        //        var items = new List<AppointmentHistoryItem>();
-        //        foreach (var appt in myAppointments)
-        //        {
-        //            string status = appt.status ?? "Pending";
-        //            var (cardBg, badgeBg) = GetColors(status);
+            Appointments.Clear();
+            foreach (var item in sorted)
+            {
+                Appointments.Add(item);
+            }
 
-        //            items.Add(new AppointmentHistoryItem
-        //            {
-        //                Time = appt.appointedAt?.ToString("hh:mm tt") + " - " + appt.appointedAt?.AddHours(1).ToString("hh:mm tt"), // Assuming 1h duration
-        //                Date = appt.appointedAt?.ToString("dd MMM yyyy") ?? "",
-        //                Details = $"Clinic Visit (#{appt.appointment_ID})", // Example format
-        //                DoctorName = appt.Staff != null ? appt.Staff.staff_name : "Dr. Unknown",
-        //                Status = status,
-        //                StatusColor = Colors.Black, // Text color for badge
-        //                BadgeColor = badgeBg,
-        //                CardBackgroundColor = cardBg
-        //            });
-        //        }
-
-        //        MainThread.BeginInvokeOnMainThread(() =>
-        //        {
-        //            Appointments.Clear();
-        //            foreach (var item in items)
-        //            {
-        //                Appointments.Add(item);
-        //            }
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        System.Diagnostics.Debug.WriteLine($"Error loading history: {ex.Message}");
-        //    }
-        //}
+            // Sync visibility properties
+            OnPropertyChanged(nameof(HasNoAppointments));
+            OnPropertyChanged(nameof(HasAppointments));
+        }
 
         private (Color CardBg, Color BadgeBg) GetColors(string status)
         {
             return status?.ToLower() switch
             {
-                "completed" => (Color.FromArgb("#E8F5E9"), Color.FromArgb("#4CAF50")), // Green
+                "pending" => (Color.FromArgb("#E3F2FD"), Color.FromArgb("#42A5F5")),   // Blue
                 "cancelled" => (Color.FromArgb("#FFEBEE"), Color.FromArgb("#EF5350")), // Red
-                "pending" => (Color.FromArgb("#FFFDE7"), Color.FromArgb("#FFCA28")),   // Yellow
-                "scheduled" => (Color.FromArgb("#E3F2FD"), Color.FromArgb("#42A5F5")), // Blue (Adding scheduled as blue)
+                "completed" => (Color.FromArgb("#FFFDE7"), Color.FromArgb("#FFCA28")), // Yellow
                 _ => (Colors.White, Colors.Gray)
             };
         }
@@ -241,6 +219,7 @@ namespace ClinicMiniProject.ViewModels
     {
         public string Time { get; set; }
         public string Date { get; set; }
+        public DateTime RawDate { get; set; } // Added for sorting
         public string Details { get; set; }
         public string DoctorName { get; set; }
         public string Status { get; set; }

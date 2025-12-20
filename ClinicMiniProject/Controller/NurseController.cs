@@ -114,7 +114,7 @@ namespace ClinicMiniProject.Controller
                     service_type = serviceType
                 };
 
-                _appointmentService.AddAppointment(appointment);
+                await _appointmentService.AddAppointmentAsync(appointment);
 
                 return "Success";
             }
@@ -148,7 +148,7 @@ namespace ClinicMiniProject.Controller
                 );
 
             return appointments
-                .Where(a => a.status == "Pending" || a.status == "Scheduled")
+                .Where(a => a.status == "Pending")
                 .OrderBy(a => a.appointedAt)
                 .ToList();
         }

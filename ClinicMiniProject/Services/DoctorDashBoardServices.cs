@@ -74,7 +74,7 @@ namespace ClinicMiniProject.Services
         {
             var upcomingAppointments = appointments?
                 .Where(a => a.appointedAt > now && 
-                           (a.status == "Scheduled" || a.status == "Pending"))
+                           (a.status == "Pending"))
                 .OrderBy(a => a.appointedAt)
                 .ToList() ?? new List<Appointment>();
 

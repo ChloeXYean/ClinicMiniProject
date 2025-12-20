@@ -11,7 +11,7 @@ namespace ClinicMiniProject.Services.Interfaces
 
         // Add these new methods
 
-        public void AddAppointment(Appointment appt);
+        public Task AddAppointmentAsync(Appointment appt);
 
         public DateTime? AssignWalkInTimeSlot(string doctorId, DateTime preferredDate, int workStartHour = 9, int workEndHour = 17, TimeSpan slotDuration = default);
         Task<IEnumerable<Appointment>> GetAppointmentsByStaffAndDateRangeAsync(
@@ -35,5 +35,7 @@ namespace ClinicMiniProject.Services.Interfaces
         Task<Patient?> GetRandomWalkInPatientAsync();
 
         Task<IEnumerable<Appointment>> GetAppointmentsByDateAsync(DateTime date);
+
+        Task<IEnumerable<Appointment>> GetAppointmentsByPatientIcAsync(string patientIc);
     }
 }

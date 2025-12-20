@@ -25,7 +25,7 @@ namespace ClinicMiniProject.ViewModels
             {
                 _selectedDate = value;
                 OnPropertyChanged();
-                Task.Run(LoadDoctors);
+                _ = LoadDoctorsAsync();
             }
         }
 
@@ -77,44 +77,51 @@ namespace ClinicMiniProject.ViewModels
             GoBackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
         }
 
-        public async void LoadDoctors()
+        public async Task LoadDoctorsAsync()
         {
             if (SelectedDate == default) return;
 
             try
             {
-                await MainThread.InvokeOnMainThreadAsync(async () =>
+                var dayOfWeek = SelectedDate.DayOfWeek;
+                var appointmentDateTime = SelectedDate.Date + SelectedTime;
+
+                // Do DB work on background thread
+                var doctors = await _context.Staffs
+                    .Include(s => s.Availability)
+                    .Where(s => s.isDoctor)
+                    .ToListAsync();
+
+                var available = new List<Staff>();
+                foreach (var doc in doctors)
+                {
+                    if (doc.Availability == null) continue;
+                    if (!doc.Availability.IsAvailable(dayOfWeek)) continue;
+
+                    bool conflict = await _context.Appointments
+                        .AnyAsync(a => a.staff_ID == doc.staff_ID
+                                       && a.appointedAt == appointmentDateTime
+                                       && a.status != "Cancelled");
+
+                    if (!conflict)
+                    {
+                        available.Add(doc);
+                    }
+                }
+
+                // Update UI on Main thread
+                await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     AvailableDoctors.Clear();
-
-                    var dayOfWeek = SelectedDate.DayOfWeek;
-                    var appointmentDateTime = SelectedDate.Date + SelectedTime;
-
-                    var doctors = await _context.Staffs
-                        .Include(s => s.Availability)
-                        .Where(s => s.isDoctor)
-                        .ToListAsync();
-
-                    foreach (var doc in doctors)
+                    foreach (var doc in available)
                     {
-                        if (doc.Availability == null) continue;
-                        if (!doc.Availability.IsAvailable(dayOfWeek)) continue;
-
-                        bool conflict = await _context.Appointments
-                            .AnyAsync(a => a.staff_ID == doc.staff_ID
-                                           && a.appointedAt == appointmentDateTime
-                                           && a.status != "Cancelled");
-
-                        if (!conflict)
-                        {
-                            AvailableDoctors.Add(doc);
-                        }
+                        AvailableDoctors.Add(doc);
                     }
                 });
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Error", $"Failed to load doctors: {ex.Message}", "OK");
+                System.Diagnostics.Debug.WriteLine($"Error loading doctors: {ex.Message}");
             }
         }
 
@@ -150,7 +157,7 @@ namespace ClinicMiniProject.ViewModels
                     };
 
                     // 3. FIX: Use Service to Save (Generates ID automatically)
-                    await Task.Run(() => _appointmentService.AddAppointment(newAppointment));
+                    await _appointmentService.AddAppointmentAsync(newAppointment);
 
                     await Shell.Current.DisplayAlert("Success", "Appointment Request Sent!", "OK");
                     await Shell.Current.GoToAsync("///PatientHomePage");

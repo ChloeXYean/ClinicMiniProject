@@ -15,7 +15,7 @@ namespace ClinicMiniProject.Services
             _context = context;
             _repo = repo;
         }
-        public void AddAppointment(Appointment appt)
+        public async Task AddAppointmentAsync(Appointment appt)
         {
             if (appt == null) return;
 
@@ -23,7 +23,7 @@ namespace ClinicMiniProject.Services
                 appt.appointment_ID = "A" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
 
             _context.Appointments.Add(appt);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
         public async Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync(string staffId)
         {
@@ -33,7 +33,7 @@ namespace ClinicMiniProject.Services
                 .Where(a => a.staff_ID == staffId &&
                             a.appointedAt.HasValue &&
                             a.appointedAt > now &&
-                            (a.status == "Scheduled" || a.status == "Pending"))
+                            (a.status == "Pending"))
                 .OrderBy(a => a.appointedAt)
                 .ToListAsync();
         }
@@ -130,17 +130,13 @@ namespace ClinicMiniProject.Services
             return await _repo.GetAppointmentsByDateAsync(date);
         }
 
-        //public async Task<Patient?> GetRandomWalkInPatientAsync()
-        //{
-        //    return await (
-        //        from p in _context.Patients
-        //        join a in _context.Appointments
-        //            on p.patient_IC equals a.patient_IC
-        //        where !p.isAppUser
-        //        orderby a.bookedAt
-        //        select p).FirstOrDefaultAsync();
-        //}
-
-
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByPatientIcAsync(string patientIc)
+        {
+            return await _context.Appointments
+                .Include(a => a.Staff)
+                .Where(a => a.patient_IC == patientIc)
+                .OrderByDescending(a => a.appointedAt)
+                .ToListAsync();
+        }
     }
 }
