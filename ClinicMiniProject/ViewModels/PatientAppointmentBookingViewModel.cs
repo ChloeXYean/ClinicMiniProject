@@ -59,7 +59,7 @@ namespace ClinicMiniProject.ViewModels
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
 
             GenerateCalendar();
-            GenerateTimeSlots();
+            _ = GenerateTimeSlots(); // Fire and forget for initial load
         }
 
         // --- CALENDAR LOGIC ---
@@ -116,32 +116,48 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
-        private void OnDateSelected(CalendarDay day)
+        private async void OnDateSelected(CalendarDay day)
         {
             if (day == null || !day.IsEnabled) return;
 
             foreach (var d in Days) d.IsSelected = false;
             day.IsSelected = true;
             _selectedDate = day.Date;
-            GenerateTimeSlots(); // Refresh time slots for the new date
+            await GenerateTimeSlots(); // Refresh time slots for the new date
         }
 
         // --- TIME SLOT LOGIC ---
-        private void GenerateTimeSlots()
+        private async Task GenerateTimeSlots()
         {
             TimeSlots.Clear();
             var startTime = new TimeSpan(9, 0, 0);
             var endTime = new TimeSpan(17, 0, 0);
             var now = DateTime.Now;
 
+            // Get current patient's IC
+            var currentPatient = _authService.GetCurrentPatient();
+            if (currentPatient == null) return;
+
+            // Get all time slots this patient has booked on the selected date (across all doctors)
+            var patientBookedSlots = await _appointmentService.GetPatientBookedTimeSlotsForDateAsync(
+                currentPatient.patient_IC, _selectedDate);
+
+            // FIX: Get all unavailable slots in a SINGLE query to avoid DbContext threading issues
+            var unavailableSlots = await _appointmentService.GetUnavailableTimeSlotsForDateAsync(_selectedDate);
+
             while (startTime < endTime)
             {
                 bool isPast = _selectedDate.Date == DateTime.Today && startTime < now.TimeOfDay;
+                bool isBookedByPatient = patientBookedSlots.Contains(startTime);
+                bool allDoctorsBooked = unavailableSlots.Contains(startTime);
 
                 TimeSlots.Add(new TimeSlotItem 
                 { 
                     Time = startTime,
-                    IsEnabled = !isPast
+                    // Disable if: past time, patient already booked, OR no doctors available
+                    IsEnabled = !isPast && !isBookedByPatient && !allDoctorsBooked,
+                    IsBookedByPatient = isBookedByPatient,
+                    AllDoctorsBooked = allDoctorsBooked
                 });
                 startTime = startTime.Add(TimeSpan.FromHours(1));
             }
@@ -234,6 +250,7 @@ namespace ClinicMiniProject.ViewModels
                 }
             }
         }
+        
         private bool _isEnabled = true;
         public bool IsEnabled
         {
@@ -245,11 +262,62 @@ namespace ClinicMiniProject.ViewModels
                     _isEnabled = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Opacity));
+                    OnPropertyChanged(nameof(BackgroundColor));
+                    OnPropertyChanged(nameof(TextColor));
                 }
             }
         }
-        public Color BackgroundColor => IsSelected ? Color.FromArgb("#5FA8FF") : Colors.White;
-        public Color TextColor => IsSelected ? Colors.White : Color.FromArgb("#5FA8FF");
+        
+        private bool _isBookedByPatient;
+        public bool IsBookedByPatient
+        {
+            get => _isBookedByPatient;
+            set
+            {
+                if (_isBookedByPatient != value)
+                {
+                    _isBookedByPatient = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(BackgroundColor));
+                    OnPropertyChanged(nameof(TextColor));
+                }
+            }
+        }
+        
+        private bool _allDoctorsBooked;
+        public bool AllDoctorsBooked
+        {
+            get => _allDoctorsBooked;
+            set
+            {
+                if (_allDoctorsBooked != value)
+                {
+                    _allDoctorsBooked = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public Color BackgroundColor
+        {
+            get
+            {
+                if (IsSelected) return Color.FromArgb("#5FA8FF");
+                if (!IsEnabled) return Color.FromArgb("#F0F0F0"); // Light gray for disabled
+                return Colors.White;
+            }
+        }
+        
+        public Color TextColor
+        {
+            get
+            {
+                if (IsSelected) return Colors.White;
+                if (!IsEnabled) return Color.FromArgb("#CCCCCC"); // Lighter gray for disabled text
+                return Color.FromArgb("#5FA8FF");
+            }
+        }
+        
         public double Opacity => IsEnabled ? 1.0 : 0.5;
     }
 }
