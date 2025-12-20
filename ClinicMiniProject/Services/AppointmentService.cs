@@ -180,6 +180,7 @@ namespace ClinicMiniProject.Services
                 .Include(a => a.Patient) // Important: Load Patient info!
                 .OrderByDescending(a => a.appointedAt)
                 .ToListAsync();
+        }
 
         // New methods for synchronized appointment booking
         public async Task<List<TimeSpan>> GetBookedTimeSlotsAsync(string doctorId, DateTime date)
