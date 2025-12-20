@@ -33,6 +33,7 @@ namespace ClinicMiniProject.ViewModels
             UploadPhotoCommand = new Command(async () => await UploadPhotoAsync());
             ViewPhotosCommand = new Command(async () => await Shell.Current.GoToAsync("InquiryPhotos"));
 
+            BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
             _ = LoadAsync();
         }
 
@@ -84,6 +85,7 @@ namespace ClinicMiniProject.ViewModels
 
         public ObservableCollection<InquiryListItemVm> InquiryList { get; } = new();
 
+        public ICommand BackCommand { get; }
         public ICommand FilterCommand { get; }
         public ICommand ViewInquiryDetailsCommand { get; }
         public ICommand NavigateToHomeCommand { get; }
