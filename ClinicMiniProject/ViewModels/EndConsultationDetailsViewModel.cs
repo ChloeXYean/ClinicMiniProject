@@ -8,6 +8,7 @@ namespace ClinicMiniProject.ViewModels
     public class EndConsultationDetailsViewModel : INotifyPropertyChanged, IQueryAttributable
     {
         private readonly IConsultationService _consultationService;
+        private readonly IAuthService _authService;
 
         private string _appointmentId;
         private string _patientName;
@@ -25,10 +26,22 @@ namespace ClinicMiniProject.ViewModels
         public string NurseRemark { get => _nurseRemark; set => SetProperty(ref _nurseRemark, value); }
 
         public ICommand EndConsultationCommand { get; }
+        public bool IsDoctor
+        {
+            get
+            {
+                var user = _authService.GetCurrentUser();
+                return user != null && user.isDoctor;
+            }
+        }
 
-        public EndConsultationDetailsViewModel(IConsultationService consultationService)
+        public bool IsNurse => !IsDoctor;
+
+
+        public EndConsultationDetailsViewModel(IConsultationService consultationService, IAuthService authService)
         {
             _consultationService = consultationService;
+            _authService = authService; 
             EndConsultationCommand = new Command(async () => await EndAsync());
         }
 
@@ -53,6 +66,8 @@ namespace ClinicMiniProject.ViewModels
                 ServiceType = details.SelectedServiceType ?? "General Consultation";
                 NurseRemark = details.NurseRemark;
                 DoctorRemark = details.DoctorRemark;
+                OnPropertyChanged(nameof(IsDoctor));
+                OnPropertyChanged(nameof(IsNurse));
 
             }
         }
@@ -65,9 +80,6 @@ namespace ClinicMiniProject.ViewModels
             bool confirm = await Shell.Current.DisplayAlert("Confirm", "End this consultation?", "Yes", "No");
             if (!confirm) return;
 
-            // Save Nurse Remark and set status to Completed
-            // Pass _doctorRemark (or empty) if you don't want to overwrite doctor's notes, 
-            // but usually we just pass back what we have or handle it in service.
             await _consultationService.EndConsultationAsync(_appointmentId, DoctorRemark ?? "", NurseRemark);
 
             await Shell.Current.DisplayAlert("Success", "Consultation ended successfully.", "OK");

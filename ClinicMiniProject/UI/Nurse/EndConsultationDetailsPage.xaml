@@ -63,12 +63,12 @@
                             <RoundRectangle CornerRadius="12"/>
                         </Border.StrokeShape>
                         <Editor Text="{Binding DoctorRemark}"
-                                IsReadOnly="True"
-                                Placeholder="No remarks from doctor."
-                                BackgroundColor="Transparent"
-                                AutoSize="TextChanges"
-                                FontSize="14"
-                                TextColor="#555"/>
+                IsReadOnly="{Binding IsNurse}" 
+                Placeholder="Enter diagnosis or remarks..."
+                BackgroundColor="Transparent"
+                AutoSize="TextChanges"
+                FontSize="14"
+                TextColor="#555"/>
                     </Border>
                 </VerticalStackLayout>
 
@@ -79,11 +79,12 @@
                             <RoundRectangle CornerRadius="12"/>
                         </Border.StrokeShape>
                         <Editor Text="{Binding NurseRemark}"
-                                Placeholder="Enter medication, instructions, or follow-up notes..."
-                                BackgroundColor="Transparent"
-                                AutoSize="TextChanges"
-                                HeightRequest="120"
-                                FontSize="14"/>
+                IsReadOnly="{Binding IsDoctor}"
+                Placeholder="Enter medication, instructions, or follow-up notes..."
+                BackgroundColor="Transparent"
+                AutoSize="TextChanges"
+                HeightRequest="120"
+                FontSize="14"/>
                     </Border>
                 </VerticalStackLayout>
 

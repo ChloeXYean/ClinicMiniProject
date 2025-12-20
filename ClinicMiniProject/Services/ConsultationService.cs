@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ClinicMiniProject.Models;
 using ClinicMiniProject.Services.Interfaces;
+using ClinicMiniProject.Dtos;
 
 namespace ClinicMiniProject.Services
 {
@@ -15,7 +16,37 @@ namespace ClinicMiniProject.Services
         {
             _appointmentService = appointmentService;
         }
+        public async Task<IEnumerable<ConsultationQueueDto>> GetConsultationQueueAsync(string doctorId, DateTime date)
+        {
+            var start = date.Date;
+            var end = start.AddDays(1);
 
+            // Fetch appointments for the specific date
+            var appointments = await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(doctorId, start, end);
+
+            if (appointments == null) return Enumerable.Empty<ConsultationQueueDto>();
+
+            var queue = new List<ConsultationQueueDto>();
+
+            foreach (var appt in appointments.Where(a => a.status != "Cancelled").OrderBy(a => a.appointedAt))
+            {
+                var patient = await _appointmentService.GetPatientByIcAsync(appt.patient_IC);
+
+                queue.Add(new ConsultationQueueDto
+                {
+                    ConsultationId = appt.appointment_ID,
+                    PatientName = patient?.patient_name ?? "Unknown",
+                    PatientIC = appt.patient_IC,
+                    ServiceType = appt.service_type.ToString(),
+                    AppointedTime = appt.appointedAt?.ToString("h:mm tt") ?? "-",
+                    Date = appt.appointedAt?.ToString("dd/MM/yyyy") ?? "-",
+                    DoctorRemark = appt.doc_remark,
+                    NurseRemark = appt.nurse_remark
+                });
+            }
+
+            return queue;
+        }
         public async Task<ConsultationDetailsDto?> GetCurrentConsultationDetailsAsync(string doctorId, DateTime now)
         {
             var today = now.Date;
@@ -26,7 +57,7 @@ namespace ClinicMiniProject.Services
 
             // 1. Sort by Time (Earliest first) so 3 PM comes before 4 PM
             var current = todayAppointments
-                .Where(a => a.appointedAt.Value.Date == today && (a.status == "Pending" || a.status == "Confirmed" || a.status == "Pending"))
+                .Where(a => a.appointedAt.Value.Date == today && (a.status == "Pending" || a.status == "Confirmed" || a.status == "InProgress"))
                 .OrderBy(a => a.appointedAt)
                 .FirstOrDefault();
 

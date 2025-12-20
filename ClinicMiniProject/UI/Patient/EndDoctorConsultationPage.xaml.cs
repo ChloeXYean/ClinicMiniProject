@@ -4,6 +4,6 @@ public partial class EndDoctorConsultationPage : ContentPage
 {
 	public EndDoctorConsultationPage()
 	{
-		InitializeComponent();
+        InitializeComponent();
 	}
 }

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ClinicMiniProject.Dtos;
 
 namespace ClinicMiniProject.Services.Interfaces
 {
     public interface IConsultationService
     {
+        Task<IEnumerable<ConsultationQueueDto>> GetConsultationQueueAsync(string doctorId, DateTime date);
         Task<ConsultationDetailsDto?> GetCurrentConsultationDetailsAsync(string doctorId, DateTime now);
 
         Task<IEnumerable<PatientLookupDto>> SearchPatientsByNameAsync(string nameQuery);
