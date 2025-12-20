@@ -40,6 +40,7 @@ namespace ClinicMiniProject.ViewModels
         public ICommand SelectDateCommand { get; }
         public ICommand SelectTimeCommand { get; }
         public ICommand ConfirmSelectionCommand { get; } // Now navigates to Doctor Selection
+        public ICommand BackCommand { get; }
 
         // --- CONSTRUCTOR ---
         public PatientAppointmentBookingViewModel(IAppointmentService appointmentService, IAuthService authService)
@@ -54,6 +55,8 @@ namespace ClinicMiniProject.ViewModels
 
             // FIX: This now navigates instead of saving
             ConfirmSelectionCommand = new Command(async () => await OnNavigateToDoctorSelection());
+
+            BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
 
             GenerateCalendar();
             GenerateTimeSlots();

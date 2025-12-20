@@ -1,12 +1,15 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:ClinicMiniProject.ViewModels"
+             xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Patient.AppointmentBooking_Patient"
              BackgroundColor="White"
+             Shell.NavBarIsVisible="False"
              Title="Appointment Booking">
 
-    <Grid RowDefinitions="Auto, *, Auto, Auto">
-        <Grid Grid.Row="0" RowDefinitions="Auto, Auto, *" Padding="10" BackgroundColor="#FFFEFA">
+    <Grid RowDefinitions="Auto, Auto, *, Auto, Auto">
+        <control:BackNavBar Grid.Row="0" Title="Appointment Booking" BackCommand="{Binding BackCommand}" />
+        <Grid Grid.Row="1" RowDefinitions="Auto, Auto, *" Padding="10" BackgroundColor="#FFFEFA">
             <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Margin="0,0,0,10" BackgroundColor="#CAE1FD">
                 <Button Text="&lt;" Command="{Binding PreviousMonthCommand}" BackgroundColor="Transparent" TextColor="#5FA8FF" FontSize="20"/>
                 <Label Grid.Column="1" Text="{Binding CurrentMonthName}" HorizontalOptions="Center" VerticalOptions="Center" FontSize="18" FontAttributes="Bold" TextColor="#333"/>
@@ -44,7 +47,7 @@
             </CollectionView>
         </Grid>
 
-        <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="15">
+        <VerticalStackLayout Grid.Row="2" Padding="20" Spacing="15">
             <Border Stroke="#DDDDDD" StrokeThickness="1" StrokeShape="RoundRectangle 10">
                 <Picker Title="Select Service Type" ItemsSource="{Binding ServiceTypes}" SelectedItem="{Binding SelectedService}" TextColor="#333" TitleColor="Gray" FontSize="16"/>
             </Border>
@@ -71,6 +74,6 @@
             </ScrollView>
         </VerticalStackLayout>
 
-        <Button Grid.Row="2" Text="Confirm" Command="{Binding ConfirmSelectionCommand}" BackgroundColor="#5FA8FF" TextColor="White" CornerRadius="25" HeightRequest="50" FontAttributes="Bold" FontSize="18" Margin="20,0,20,20"/>
+        <Button Grid.Row="3" Text="Confirm" Command="{Binding ConfirmSelectionCommand}" BackgroundColor="#5FA8FF" TextColor="White" CornerRadius="25" HeightRequest="50" FontAttributes="Bold" FontSize="18" Margin="20,0,20,20"/>
     </Grid>
 </ContentPage>
