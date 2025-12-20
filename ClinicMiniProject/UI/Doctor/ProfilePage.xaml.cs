@@ -1,24 +1,21 @@
-using Microsoft.Extensions.DependencyInjection;
 using ClinicMiniProject.ViewModels;
 
 namespace ClinicMiniProject.UI.Doctor;
 
 public partial class ProfilePage : ContentPage
 {
-    private DoctorProfileViewModel? _vm;
+    private readonly DoctorProfileViewModel _vm;
 
-    public ProfilePage()
+    public ProfilePage(DoctorProfileViewModel viewModel)
     {
         InitializeComponent();
+        
+        _vm = viewModel;
+        BindingContext = _vm;
 
-		var sp = Application.Current?.Handler?.MauiContext?.Services;
-		_vm = sp?.GetService<DoctorProfileViewModel>();
-		if (_vm != null)
-			BindingContext = _vm;
-
-		BottomBar.HomeCommand = new Command(async () => await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}"));
-		BottomBar.ChatCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
-		BottomBar.ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
+        BottomBar.HomeCommand = new Command(async () => await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}"));
+        BottomBar.ChatCommand = new Command(async () => await Shell.Current.GoToAsync("Inquiry"));
+        BottomBar.ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("Profile"));
     }
 
     private async void OnBackClicked(object sender, EventArgs e)
@@ -29,10 +26,7 @@ public partial class ProfilePage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        if (_vm != null)
-        {
-            await _vm.RefreshAsync();
-            System.Diagnostics.Debug.WriteLine($"Profile loaded - DoctorId: {_vm.DoctorId}, Name: {_vm.DoctorName}, Phone: {_vm.PhoneNumber}");
-        }
+        await _vm.RefreshAsync();
+        System.Diagnostics.Debug.WriteLine($"Profile loaded - DoctorId: {_vm.DoctorId}, Name: {_vm.DoctorName}, Phone: {_vm.PhoneNumber}");
     }
 }

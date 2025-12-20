@@ -10,6 +10,7 @@ namespace ClinicMiniProject
         public DbSet<Staff> Staffs { get; set; } = null!;
         public DbSet<Appointment> Appointments { get; set; } = null!;
         public DbSet<DocAvailable> DocAvailables { get; set; } = null!;
+        public DbSet<Inquiry> Inquiries { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -18,7 +19,7 @@ namespace ClinicMiniProject
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-{
+            {
                 // local database
                 /*string serverIp = "localhost";
                     var connStr =
@@ -74,14 +75,22 @@ namespace ClinicMiniProject
                 .WithMany(s => s.Appointments)
                 .HasForeignKey(a => a.staff_ID);
 
-            // Ensure all column names match exactly with the database schema
-            //foreach (var entity in modelBuilder.Model.GetEntityTypes())
-            //{
-            //    foreach (var property in entity.GetProperties())
-            //    {
-            //        property.SetColumnName(property.GetColumnName());
-            //    }
-            //}
+            modelBuilder.Entity<Inquiry>(entity =>
+            {
+                entity.HasIndex(e => e.InquiryId).IsUnique(); // inquiry_ID unique
+
+                entity.HasOne(d => d.Patient)
+                      .WithMany()
+                      .HasForeignKey(d => d.PatientIc)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(d => d.Doctor)
+                      .WithMany()
+                      .HasForeignKey(d => d.DoctorId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+            
+            });
         }
     }
 }

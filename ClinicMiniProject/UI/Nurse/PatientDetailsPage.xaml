@@ -6,7 +6,7 @@
              BackgroundColor="White"
              Title="Patient Profile">
 
-    <Grid RowDefinitions="*, Auto">
+    <Grid RowDefinitions="*, Auto, Auto">
 
         <ScrollView Grid.Row="0">
             <VerticalStackLayout Padding="20" Spacing="20">
@@ -115,5 +115,8 @@
                     HeightRequest="50"
                     Command="{Binding LogoutCommand}"/>
         </VerticalStackLayout>
+        
+        <!-- Doctor View - No buttons, just empty space -->
+        <Grid Grid.Row="2" IsVisible="{Binding IsDoctorView}" />
     </Grid>
 </ContentPage>

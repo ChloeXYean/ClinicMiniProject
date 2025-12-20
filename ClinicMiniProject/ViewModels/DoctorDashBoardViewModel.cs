@@ -15,6 +15,7 @@ namespace ClinicMiniProject.ViewModels
     {
         private readonly IAuthService _authService;
         private readonly IDoctorDashboardService _dashboardService;
+        private readonly IInquiryService _inquiryService;
         private string _greeting = "Welcome";
         private TodayStatsDto _todayStats = new();
         private UpcomingScheduleDto _upcomingSchedule = new();
@@ -96,10 +97,11 @@ namespace ClinicMiniProject.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public DoctorDashboardViewModel(IAuthService authService, IDoctorDashboardService dashboardService)
+        public DoctorDashboardViewModel(IAuthService authService, IDoctorDashboardService dashboardService, IInquiryService inquiryService)
         {
             _authService = authService;
             _dashboardService = dashboardService;
+            _inquiryService = inquiryService;
 
             // --- Navigation Logic ---
             NavigateToAppointmentScheduleCommand = new Command(async () => await Shell.Current.GoToAsync("///AppointmentSchedulePage"));
@@ -128,7 +130,9 @@ namespace ClinicMiniProject.ViewModels
 
             // Initialize Data
             LoadDashboardData();
-            LoadInquiryData();
+            
+            // Load inquiry data asynchronously without blocking constructor
+            _ = Task.Run(async () => await LoadInquiryData());
         }
 
         private async void LoadDashboardData()
@@ -168,42 +172,42 @@ namespace ClinicMiniProject.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void LoadInquiryData()
+        private async Task LoadInquiryData()
         {
-            System.Diagnostics.Debug.WriteLine("=== Loading hardcoded inquiry data ===");
+            System.Diagnostics.Debug.WriteLine("=== Loading inquiry data from database ===");
             
-            // Load sample inquiry data for demonstration
-            AllInquiries.Clear();
-            AllInquiries.Add(new InquiryDto 
-            { 
-                InquiryId = "1", 
-                PatientName = "John Doe", 
-                CreatedAt = DateTime.Now.AddDays(-2),
-                FullSymptomDescription = "I have been experiencing headaches for the past few days..."
-            });
-            AllInquiries.Add(new InquiryDto 
-            { 
-                InquiryId = "2", 
-                PatientName = "Jane Smith", 
-                CreatedAt = DateTime.Now.AddDays(-1),
-                FullSymptomDescription = "I need a prescription refill for my blood pressure medication..."
-            });
-            AllInquiries.Add(new InquiryDto 
-            { 
-                InquiryId = "3", 
-                PatientName = "Mike Johnson", 
-                CreatedAt = DateTime.Now,
-                FullSymptomDescription = "I have a fever and sore throat, should I come in for a checkup?"
-            });
-
-            // Initialize filtered inquiries with all inquiries
-            FilteredInquiries.Clear();
-            foreach (var inquiry in AllInquiries)
+            try
             {
-                FilteredInquiries.Add(inquiry);
+                AllInquiries.Clear();
+                FilteredInquiries.Clear();
+                
+                // Get current doctor
+                var currentUser = _authService.GetCurrentUser();
+                if (currentUser == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("No current user found");
+                    return;
+                }
+                
+                System.Diagnostics.Debug.WriteLine($"Current user: {currentUser.staff_name}, ID: {currentUser.staff_ID}, IsDoctor: {currentUser.isDoctor}");
+                
+                // Fetch inquiries for current doctor only
+                var inquiries = await _inquiryService.GetInquiriesByDoctorAsync(currentUser.staff_ID);
+                
+                foreach (var inquiry in inquiries)
+                {
+                    AllInquiries.Add(inquiry);
+                    FilteredInquiries.Add(inquiry);
+                    System.Diagnostics.Debug.WriteLine($"Added inquiry: {inquiry.InquiryId} - {inquiry.PatientName}");
+                }
+                
+                System.Diagnostics.Debug.WriteLine($"=== Loaded {AllInquiries.Count} inquiries for Dr. {currentUser.staff_name} ===");
             }
-            
-            System.Diagnostics.Debug.WriteLine($"=== Loaded {AllInquiries.Count} hardcoded inquiries ===");
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading inquiry data: {ex.Message}");
+                Console.WriteLine($"Error loading inquiry data: {ex.Message}");
+            }
         }
 
         private async Task NavigateToInquiryDetails(string inquiryId)

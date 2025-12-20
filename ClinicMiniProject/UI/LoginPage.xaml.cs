@@ -61,6 +61,7 @@ namespace ClinicMiniProject.UI
                     }
                 }
             }
+            
             catch (InvalidOperationException ex)
             {
                 await DisplayAlert("Error", ex.Message, "OK");
@@ -69,6 +70,7 @@ namespace ClinicMiniProject.UI
             {
                 await DisplayAlert("Error", "An error occurred during login. Please try again.", "OK");
             }
+            
         }
 
         private void OnShowPasswordClicked(object sender, EventArgs e)
