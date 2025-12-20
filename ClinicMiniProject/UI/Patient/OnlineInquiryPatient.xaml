@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
     x:Class="ClinicMiniProject.UI.Patient.OnlineInquiryPatient"
-	Shell.NavBarIsVisible="False"
+	Title="Online Medical Inquiry"
     BackgroundColor="#F6F7F9">
     <Grid RowDefinitions="Auto, *">
         <control:BackNavBar Grid.Row="0" Title="Online Medical Inquiry" BackCommand="{Binding BackCommand}" />
@@ -60,7 +60,6 @@
                 </Image.GestureRecognizers>
             </Image>
         </Border>
-
         <Button Text="Submit"
                 BackgroundColor="#5DA9FF"
                 TextColor="White"

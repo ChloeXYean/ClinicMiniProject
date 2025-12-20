@@ -34,37 +34,33 @@
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="Select Doctor (Optional)"
-                       FontAttributes="Bold"
-                       FontSize="16"
-                       TextColor="Black" />
-
-                    <Border BackgroundColor="#F0F0F0"
-                        StrokeThickness="0"
-                        StrokeShape="RoundRectangle 10"
-                        HeightRequest="70">
-
-                        <Picker x:Name="DoctorPicker"
-                            Title="Auto-assign if not selected"
-                            Margin="15,0"
-                            VerticalOptions="Center"
-                            HorizontalOptions="Fill"
-                            TextColor="Black"/>
-                    </Border>
-                </VerticalStackLayout>
-
-
-                <VerticalStackLayout Spacing="8">
                     <Label Text="Select Service Type" FontAttributes="Bold" FontSize="16" TextColor="Black" />
 
                     <Border BackgroundColor="#6EA8FE" StrokeThickness="0" StrokeShape="RoundRectangle 10" HeightRequest="70">
                         <Picker x:Name="ServiceTypePicker"
+                                ItemsSource="{Binding ServiceTypes}"
+                                SelectedItem="{Binding SelectedServiceType}"
                                 Title="Select a service"
                                 TextColor="White"
                                 TitleColor="#E0E0E0"
                                 Margin="15,0"
                                 VerticalOptions="Center"
                                 HorizontalOptions="Fill"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Emergency Status" FontAttributes="Bold" FontSize="16" TextColor="Red" />
+                    
+                    <Border BackgroundColor="#F0F0F0" StrokeThickness="0" StrokeShape="RoundRectangle 10" Padding="15">
+                        <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                            <CheckBox x:Name="EmergencyCheckBox" 
+                                      IsChecked="{Binding IsEmergency}"
+                                      VerticalOptions="Center"/>
+                            <Label Text="Mark as Emergency (Priority Queue)" 
+                                   VerticalOptions="Center" 
+                                   TextColor="Black"/>
+                        </HorizontalStackLayout>
                     </Border>
                 </VerticalStackLayout>
 

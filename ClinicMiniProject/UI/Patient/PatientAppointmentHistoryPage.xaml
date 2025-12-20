@@ -3,13 +3,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
     x:Class="ClinicMiniProject.UI.Patient.PatientAppointmentHistoryPage"
-    BackgroundColor="White"
-    Shell.NavBarIsVisible="False">
+    Title="Appointment History"
+    BackgroundColor="White">
 
     <Grid RowDefinitions="Auto, Auto, *">
         
-        <!-- Custom Header -->
-        <control:BackNavBar Grid.Row="0" Title="Appointment History" BackCommand="{Binding BackCommand}" />
 
         <!-- Search Bar Area -->
         <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Padding="20,10">

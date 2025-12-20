@@ -34,32 +34,63 @@ namespace ClinicMiniProject.UI
             var icEntry = FindByName("IcEntry") as Entry;
             var passwordEntry = FindByName("PasswordEntry") as Entry;
             
-            var user = _authService.Login(icEntry?.Text ?? "", passwordEntry?.Text ?? "", out string message);
-
-            if (user != null)
+            try
             {
-                await DisplayAlert("Success", "Login successful", "OK");
+                var user = await _authService.LoginAsync(icEntry?.Text ?? "", passwordEntry?.Text ?? "");
 
-                if (user is Models.Patient)
+                if (user != null)
                 {
-                    await Shell.Current.GoToAsync("///PatientHomePage");
-                }
-                else if (user is Staff staff)
-                {
-                    if (staff.isDoctor)
+                    await DisplayAlert("Success", "Login successful", "OK");
+
+                    if (user is Models.Patient)
                     {
-                        // Go to Doctor Dashboard
-                        await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}");
+                        await Shell.Current.GoToAsync("///PatientHomePage");
                     }
-                    else
+                    else if (user is Staff staff)
                     {
-                        // Go to Nurse Home Page
-                        await Shell.Current.GoToAsync($"///{nameof(NurseHomePage)}");
+                        if (staff.isDoctor)
+                        {
+                            // Go to Doctor Dashboard
+                            await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}");
+                        }
+                        else
+                        {
+                            // Go to Nurse Home Page
+                            await Shell.Current.GoToAsync($"///{nameof(NurseHomePage)}");
+                        }
                     }
                 }
             }
-            else
-                await DisplayAlert("Error", message, "OK");
+            catch (InvalidOperationException ex)
+            {
+                await DisplayAlert("Error", ex.Message, "OK");
+            }
+            catch (Exception)
+            {
+                await DisplayAlert("Error", "An error occurred during login. Please try again.", "OK");
+            }
+        }
+
+        private void OnShowPasswordClicked(object sender, EventArgs e)
+        {
+            // Toggle the IsPassword property
+            var passwordEntry = FindByName("PasswordEntry") as Entry;
+            var showPasswordBtn = FindByName("ShowPasswordBtn") as ImageButton;
+            
+            if (passwordEntry != null && showPasswordBtn != null)
+            {
+                passwordEntry.IsPassword = !passwordEntry.IsPassword;
+
+                // Change the icon based on the state
+                if (passwordEntry.IsPassword)
+                {
+                    showPasswordBtn.Source = "eye_off.png"; // Icon for hidden state
+                }
+                else
+                {
+                    showPasswordBtn.Source = "eye_on.png";  // Icon for visible state
+                }
+            }
         }
 
         private async void OnGoToRegister(object sender, EventArgs e)

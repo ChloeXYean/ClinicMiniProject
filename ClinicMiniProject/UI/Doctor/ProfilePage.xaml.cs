@@ -30,6 +30,9 @@ public partial class ProfilePage : ContentPage
     {
         base.OnAppearing();
         if (_vm != null)
+        {
             await _vm.RefreshAsync();
+            System.Diagnostics.Debug.WriteLine($"Profile loaded - DoctorId: {_vm.DoctorId}, Name: {_vm.DoctorName}, Phone: {_vm.PhoneNumber}");
+        }
     }
 }
