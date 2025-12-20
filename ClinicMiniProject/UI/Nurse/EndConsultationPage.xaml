@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:controls ="clr-namespace:ClinicMiniProject.UI.Control"
+             xmlns:controls="clr-namespace:ClinicMiniProject.UI.Control"
+             xmlns:viewmodels="clr-namespace:ClinicMiniProject.ViewModels"
+             
+             xmlns:sys="clr-namespace:System;assembly=mscorlib" 
+             
              x:Class="ClinicMiniProject.UI.Nurse.EndConsultationPage"
              BackgroundColor="White"
              NavigationPage.HasNavigationBar="False">
 
     <Grid RowDefinitions="Auto, *">
 
-        <controls:BackNavBar Grid.Row="0" 
-                             Title="End Doctor Consultation" 
-                             BackClicked="OnBackClicked" />
+        <controls:BackNavBar BackCommand="{Binding BackCommand}" Title="End Doctor Consultation" />
 
         <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="20">
 
-            <Label Text="Date: 12 November 2025" 
+            <Label Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat='Date: {0:dd MMMM yyyy}'}" 
                    TextColor="Black" 
                    FontSize="14" 
                    Margin="5,0,0,0"/>
 
-            <CollectionView x:Name="ConsultationsList">
+            <CollectionView x:Name="ConsultationsList" ItemsSource="{Binding ActiveConsultations}">
 
                 <CollectionView.ItemsLayout>
                     <LinearItemsLayout Orientation="Vertical" ItemSpacing="15" />
@@ -36,25 +38,45 @@
                                 <Shadow Brush="Black" Opacity="0.5" Radius="5" Offset="2,2"/>
                             </Border.Shadow>
 
-                            <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, *">
+                            <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="Auto, *">
 
                                 <Image Grid.Row="0" Grid.Column="0" Source="person.png" HeightRequest="20" VerticalOptions="Center"/>
                                 <Label Grid.Row="0" Grid.Column="1" 
                                        Text="{Binding PatientName, StringFormat='Patient Name: {0}'}" 
                                        TextColor="Black" FontAttributes="Bold" FontSize="14" VerticalOptions="Center" Margin="10,0,0,0"/>
 
-                                <Image Grid.Row="1" Grid.Column="0" Source="clock.png" HeightRequest="15" VerticalOptions="Center" Margin="2,10,0,0"/>
                                 <Label Grid.Row="1" Grid.Column="1" 
-                                       Text="{Binding EndTime, StringFormat='Consultation End Time: {0}'}" 
-                                       TextColor="Black" FontSize="13" VerticalOptions="Center" Margin="10,10,0,0"/>
+                                       TextColor="#555555" FontSize="12" Margin="10,2,0,0">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding PatientIC}" />
+                                            <Span Text=" | " />
+                                            <Span Text="{Binding ServiceType}" TextColor="#2D5AF0" FontAttributes="Italic"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
 
-                                <Label Grid.Row="2" Grid.Column="1" 
-                                       Text="View Consultation Details" 
-                                       TextColor="#2D5AF0" FontSize="11" TextDecorations="Underline" HorizontalOptions="End" Margin="0,15,0,0">
+                                <Image Grid.Row="2" Grid.Column="0" Source="clock.png" HeightRequest="15" VerticalOptions="Center" Margin="2,10,0,0"/>
+                                <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Spacing="5" Margin="10,10,0,0" VerticalOptions="Center">
+                                    <Label Text="{Binding Date}" TextColor="Black" FontSize="13"/>
+                                    <Label Text="-" TextColor="Black" FontSize="13"/>
+                                    <Label Text="{Binding AppointedTime}" TextColor="Black" FontAttributes="Bold" FontSize="13"/>
+                                </HorizontalStackLayout>
+                                <Label Grid.Row="3" Grid.Column="1" 
+                                       Text="View Details" 
+                                       TextColor="#2D5AF0" 
+                                       FontSize="12" 
+                                       FontAttributes="Bold" 
+                                       TextDecorations="Underline" 
+                                       HorizontalOptions="End" 
+                                       Margin="0,15,0,0">
+
                                     <Label.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnDetailsClicked"/>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:EndConsultationViewModel}}, Path=ViewDetailsCommand}"
+                              CommandParameter="{Binding .}"/>
                                     </Label.GestureRecognizers>
                                 </Label>
+
                             </Grid>
                         </Border>
                     </DataTemplate>

@@ -10,20 +10,6 @@ public partial class DoctorDashboardPage : ContentPage
     {
         InitializeComponent();
         BindingContext = viewModel;
-    }
-
-    private void NavigateToAppointmentScheduleCommand(object sender, EventArgs e)
-    {
-        _viewModel.NavigateToAppointmentScheduleCommand.Execute(null);
-    }
-
-    private void NavigateToAppointmentHistoryCommand(object sender, EventArgs e)
-    {
-        _viewModel.NavigateToAppointmentHistoryCommand.Execute(null);
-    }
-
-    private void NavigateToReportingManagementCommand(object sender, EventArgs e)
-    {
-        _viewModel.NavigateToReportingManagementCommand.Execute(null);
+        _viewModel = viewModel;
     }
 }

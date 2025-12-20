@@ -1,10 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
+using ClinicMiniProject.Services;
+using ClinicMiniProject.Services.Interfaces;
 
 namespace ClinicMiniProject.UI.Doctor;
 
 public partial class AppointmentHistoryPage : ContentPage
 {
-    public AppointmentHistoryPage()
+
+    public AppointmentHistoryPage(string userType = "Doctor")
     {
         InitializeComponent();
 
@@ -13,8 +16,15 @@ public partial class AppointmentHistoryPage : ContentPage
         var name = auth?.GetCurrentUser()?.staff_name ?? string.Empty;
         TopBar.UserName = name;
 
-        BottomBar.HomeCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(DoctorDashboardPage)));
-        BottomBar.ChatCommand = new Command(async () => await Shell.Current.GoToAsync("Inquiry"));
-        BottomBar.ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("Profile"));
+        if (userType == "Nurse")
+        {
+            BottomBar.HomeCommand = new Command(async () => await Shell.Current.GoToAsync("///NurseHomePage"));
+        }
+        else
+        {
+            BottomBar.HomeCommand = new Command(async () => await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}"));
+        }
+        BottomBar.ChatCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
+        BottomBar.ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///Profile"));
     }
 }

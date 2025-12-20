@@ -5,20 +5,22 @@ namespace ClinicMiniProject.UI.Nurse;
 public partial class WalkInPatientQueuePage : ContentPage
 {
     private readonly WalkInPatientQueueViewModel _viewModel;
-
     public WalkInPatientQueuePage(WalkInPatientQueueViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = _viewModel = viewModel;
+        BindingContext = viewModel;
+        _viewModel = viewModel;
+    }
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (WalkInPatientList.SelectedItem != null)
+        {
+            WalkInPatientList.SelectedItem = null;
+        }
+
+        await _viewModel.LoadQueue();
     }
 
-    private void OnBackClicked(object sender, EventArgs e)
-    {
-        _viewModel.BackCommand.Execute(null);
-    }
-
-    private void OnClickViewDetails(object sender, EventArgs e)
-    {
-        _viewModel.ViewDetailsCommand.Execute(null);
-    }
 }

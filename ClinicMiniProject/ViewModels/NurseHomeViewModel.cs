@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ClinicMiniProject.Controller;
 using ClinicMiniProject.UI.Nurse;
+using ClinicMiniProject.UI.Doctor;
 
 namespace ClinicMiniProject.ViewModels
 {
@@ -11,28 +12,28 @@ namespace ClinicMiniProject.ViewModels
     {
         private readonly NurseController _controller;
 
-        private string date;
+        private string date = string.Empty;
         public string AppDate
         {
             get => date;
             set => SetProperty(ref date, value); //Update UI + refresh 
         }
 
-        private string time;
+        private string time = string.Empty;
         public string AppTime
         {
             get => time;
             set => SetProperty(ref time, value);
         }
 
-        private string doctor;
+        private string doctor = string.Empty;
         public string AppDoc
         {
             get => doctor;
             set => SetProperty(ref doctor, value);
         }
 
-        private string pendingCount;
+        private string pendingCount = "0";
         public string PendingCount
         {
             get => pendingCount;
@@ -56,13 +57,13 @@ namespace ClinicMiniProject.ViewModels
 
             HomeCommand = new Command(async () => await Shell.Current.GoToAsync($"///{nameof(NurseHomePage)}"));
             InquiryCommand = new Command(async () => await Shell.Current.GoToAsync("Inquiry"));
-            ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("PatientDetails"));
+            ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///NurseProfile"));
 
             RegisterPatientCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(RegisterPatientPage)));
             EndConsultationCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(EndConsultationPage)));
-            ViewAppointmentCommand = new Command(async () => await Shell.Current.GoToAsync("AppointmentSchedule")); 
-            AppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("AppointmentHistory"));
-            ReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("ReportingManagement"));
+            ViewAppointmentCommand = new Command(async () => await Shell.Current.GoToAsync($"{nameof(AppointmentSchedulePage)}?UserType=Nurse"));
+            AppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("PatientAppointmentHistory?UserType=Nurse"));
+            ReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync($"NurseReporting?UserType=Nurse"));
             WalkInQueueCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(WalkInPatientQueuePage)));
 
             LoadDashboardData();
@@ -95,16 +96,16 @@ namespace ClinicMiniProject.ViewModels
         }
 
         //Get notified once UI change
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         //Tell UI changed 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         //Update 
-        protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
+        protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string? propertyName = null)
         {
             if (Equals(storage, value)) return false;
             storage = value;

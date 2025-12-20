@@ -11,7 +11,7 @@ namespace ClinicMiniProject.ViewModels
         private readonly NurseController _controller;
         private readonly IStaffService _staffService;
 
-        private string name;
+        private string name = string.Empty;
         public string Name { 
             get => name; 
             set {
@@ -20,7 +20,7 @@ namespace ClinicMiniProject.ViewModels
             } 
         }
 
-        private string icNumber;
+        private string icNumber = string.Empty;
         public string IcNumber { 
             get => icNumber; 
             set {
@@ -29,7 +29,7 @@ namespace ClinicMiniProject.ViewModels
             } 
         }
 
-        private string phNum;
+        private string phNum = string.Empty;
         public string PhoneNumber { 
             get => phNum; 
             set {
@@ -37,27 +37,19 @@ namespace ClinicMiniProject.ViewModels
                 OnPropertyChanged(); 
             } 
         }
-
-        // Dropdown Data Sources
-        public ObservableCollection<Staff> Doctors { get; set; } = new();
         public List<string> ServiceTypes { get; set; } = new()
-        {
-            "General Consultation", "Follow up treatment", "Test Result Discussion",
-            "Vaccination/Injection", "Blood test", "Blood pressure test", "Sugar test"
-        };
+{
+    "General Consultation",
+    "Vaccination/Injection",
+    "Follow Up Treatment",
+    "Test Result Discussion",
+    "Medical Checkup",
+    "Follow-up",
+    "Online"
+};
 
-        // Selected Items
-        private Staff selectedDoctor;
-        public Staff SelectedDoctor { 
-            get => selectedDoctor; 
-            set {
-                selectedDoctor = value; 
-                OnPropertyChanged(); 
-            } 
-        }
-
-        private string _selectedServiceType;
-        public string SelectedServiceType {
+        private string? _selectedServiceType;
+        public string? SelectedServiceType {
             get => _selectedServiceType; 
             set { 
                 _selectedServiceType = value; 
@@ -68,48 +60,34 @@ namespace ClinicMiniProject.ViewModels
         public ICommand RegisterCommand { get; }
         public ICommand BackCommand { get; }
 
-        public RegisterPatientViewModel(NurseController controller, IStaffService staffService)
+        public RegisterPatientViewModel(NurseController controller)
         {
             _controller = controller;
-            _staffService = staffService;
-
             RegisterCommand = new Command(OnRegisterClicked);
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
-
-            LoadDoctors();
-        }
-
-        private void LoadDoctors()
-        {
-            var doctorList = _staffService.GetAllDocs();
-            Doctors.Clear();
-            foreach (var doc in doctorList)
-            {
-                Doctors.Add(doc);
-            }
         }
 
         private async void OnRegisterClicked()
         {
             if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(IcNumber) ||
-                string.IsNullOrWhiteSpace(PhoneNumber) || SelectedServiceType == null)
+                string.IsNullOrWhiteSpace(PhoneNumber) || string.IsNullOrEmpty(SelectedServiceType))
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "Please fill in all required fields.", "OK");
                 return;
             }
 
-            bool success = await _controller.RegisterWalkInPatient(
-                Name, IcNumber, PhoneNumber, SelectedDoctor?.staff_ID
-            );
+            string result = await _controller.RegisterWalkInPatient(
+               Name, IcNumber, PhoneNumber, SelectedServiceType
+           );
 
-            if (success)
+            if (result == "Success")
             {
                 await Application.Current.MainPage.DisplayAlert("Success", "Patient registered successfully.", "OK");
-                await Shell.Current.GoToAsync(".."); // Go back
+                await Shell.Current.GoToAsync("WalkInPatientQueuePage");
             }
             else
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Failed to register patient.", "OK");
+                await Shell.Current.DisplayAlert("Error", "Failed to register patient.", "OK");
             }
         }
     }

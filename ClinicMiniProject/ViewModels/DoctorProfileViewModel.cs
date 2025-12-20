@@ -91,6 +91,7 @@ namespace ClinicMiniProject.ViewModels
         public ICommand ChangeProfilePictureCommand { get; }
         public ICommand AddServiceCommand { get; }
         public ICommand RemoveServiceCommand { get; }
+        public ICommand LogoutCommand { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -105,6 +106,11 @@ namespace ClinicMiniProject.ViewModels
             ChangeProfilePictureCommand = new Command(async () => await ChangeProfilePictureAsync());
             AddServiceCommand = new Command(async () => await AddServiceAsync());
             RemoveServiceCommand = new Command<ServiceItem>(OnRemoveService);
+            LogoutCommand = new Command(async () =>
+            {
+                _authService.Logout();
+                await Shell.Current.GoToAsync($"///LoginPage");
+            });
         }
 
         public async Task RefreshAsync()

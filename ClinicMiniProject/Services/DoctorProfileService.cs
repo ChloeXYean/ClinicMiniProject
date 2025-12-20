@@ -82,7 +82,7 @@ namespace ClinicMiniProject.Services
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToList();
 
-                current.specialities = string.Join(", ", tags);
+                //current.specialities = string.Join(", ", tags);
             }
 
             var extras = GetOrCreateExtras(doctorId, current);
@@ -90,8 +90,8 @@ namespace ClinicMiniProject.Services
             if (!string.IsNullOrWhiteSpace(update.WorkingHoursText))
                 extras.WorkingHoursText = update.WorkingHoursText;
 
-            if (update.ServicesProvided != null)
-                extras.ServicesProvided = ParseServices(current.specialities);
+            //if (update.ServicesProvided != null)
+            //    extras.ServicesProvided = ParseServices(current.specialities);
 
             if (!string.IsNullOrWhiteSpace(update.ProfileImageUri))
                 extras.ProfileImageUri = update.ProfileImageUri;
@@ -113,14 +113,14 @@ namespace ClinicMiniProject.Services
             {
                 WorkingHoursText = "9.00AM - 9.00PM",
                 ProfileImageUri = string.Empty,
-                ServicesProvided = ParseServices(staff.specialities)
+                //ServicesProvided = ParseServices(staff.specialities)
             };
 
             _extrasByDoctorId[doctorId] = extras;
             return extras;
         }
 
-        private static List<string> ParseServices(string specialities)
+        private static List<string> ParseServices(string? specialities)
         {
             if (string.IsNullOrWhiteSpace(specialities))
                 return new List<string>();

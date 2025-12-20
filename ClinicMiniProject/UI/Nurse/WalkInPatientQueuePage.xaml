@@ -2,16 +2,20 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:ClinicMiniProject.UI.Control"
+             
+             xmlns:viewmodels="clr-namespace:ClinicMiniProject.ViewModels"
+             
+             
              x:Class="ClinicMiniProject.UI.Nurse.WalkInPatientQueuePage"
              Title="WalkInPatientQueuePage"
              BackgroundColor="White"
              NavigationPage.HasNavigationBar="False">
-    
+
     <Grid RowDefinitions="Auto, *">
 
-        <controls:BackNavBar Grid.Row="0" 
-                             Title="Walk-in Patient Queue" 
-                             BackClicked="OnBackClicked" />
+        <controls:BackNavBar Title="Patient Details" 
+                             BackCommand="{Binding BackCommand}" 
+                             Grid.Row="0"/>
 
         <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="20">
 
@@ -20,7 +24,8 @@
                    FontSize="14" 
                    Margin="5,0,0,0"/>
 
-            <CollectionView x:Name="WalkInPatientList">
+            <CollectionView x:Name="WalkInPatientList" 
+                ItemsSource="{Binding QueueList}">
 
                 <CollectionView.ItemsLayout>
                     <LinearItemsLayout Orientation="Vertical" ItemSpacing="15" />
@@ -53,7 +58,8 @@
                                        Text="View Details" 
                                        TextColor="#2D5AF0" FontSize="11" TextDecorations="Underline" HorizontalOptions="End" Margin="0,15,0,0">
                                     <Label.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnClickViewDetails"/>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WalkInPatientQueueViewModel}}, Path=ViewDetailsCommand}"
+                                        CommandParameter="{Binding .}"/>
                                     </Label.GestureRecognizers>
                                 </Label>
                             </Grid>

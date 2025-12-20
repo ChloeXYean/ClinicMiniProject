@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
+             x:Class="ClinicMiniProject.UI.Nurse.NurseProfilePage"
+             Title="Nurse Profile">
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Padding="20,15" BackgroundColor="#6EA8FE">
+            <ImageButton Grid.Column="0" Source="menu.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent" Clicked="OnBackClicked" />
+            <Label Grid.Column="1" Text="Nurse Profile" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
+            <ImageButton Grid.Column="2" Source="profile.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent"
+                         Command="{Binding ToggleEditModeCommand}" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="14">
+
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" RowDefinitions="Auto,Auto,Auto" RowSpacing="10">
+
+                        <Border Grid.RowSpan="3" Grid.Column="0" StrokeThickness="0" BackgroundColor="#F5F7FF" HeightRequest="86" WidthRequest="86">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="43" />
+                            </Border.StrokeShape>
+                            <Image Source="{Binding ProfileImageUri}" Aspect="AspectFill" />
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ChangeProfilePictureCommand}" />
+                            </Border.GestureRecognizers>
+                            <Border.VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup Name="CommonStates">
+                                    <VisualState Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#F5F7FF" />
+                                            <Setter Property="Scale" Value="1.0" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#E8EEFF" />
+                                            <Setter Property="Scale" Value="1.05" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </Border.VisualStateManager.VisualStateGroups>
+                        </Border>
+
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding NurseId, StringFormat='Nurse ID: {0}'}" />
+
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding NurseName}" FontAttributes="Bold" IsVisible="{Binding IsReadOnlyMode}" />
+                        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding NurseName, Mode=TwoWay}" IsVisible="{Binding IsEditMode}" />
+
+                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding PhoneNumber, StringFormat='Phone Number: {0}'}" IsVisible="{Binding IsReadOnlyMode}" />
+                        <Entry Grid.Row="2" Grid.Column="1" Text="{Binding PhoneNumber, Mode=TwoWay}" Keyboard="Telephone" IsVisible="{Binding IsEditMode}" />
+
+                    </Grid>
+                </Border>
+
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Working Hours" FontAttributes="Bold" />
+                        <Label Text="{Binding WorkingHours}" IsVisible="{Binding IsReadOnlyMode}" />
+                        <Entry Text="{Binding WorkingHours, Mode=TwoWay}" IsVisible="{Binding IsEditMode}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Department" FontAttributes="Bold" />
+                        <Label Text="{Binding Department}" IsVisible="{Binding IsReadOnlyMode}" />
+                        <Entry Text="{Binding Department, Mode=TwoWay}" IsVisible="{Binding IsEditMode}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Button Text="Save Changes" Command="{Binding SaveProfileCommand}" HeightRequest="52" IsVisible="{Binding IsEditMode}">
+                    <Button.VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup Name="CommonStates">
+                            <VisualState Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#6EA8FE" />
+                                    <Setter Property="TextColor" Value="White" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState Name="PointerOver">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#5A90E6" />
+                                    <Setter Property="TextColor" Value="White" />
+                                    <Setter Property="Scale" Value="1.02" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#4A7BC8" />
+                                    <Setter Property="Scale" Value="0.98" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </Button.VisualStateManager.VisualStateGroups>
+                </Button>
+
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="16" Margin="0,20,0,0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Account Settings" FontAttributes="Bold" FontSize="16" TextColor="#333" />
+                        <Button Text="Logout" 
+                                Command="{Binding LogoutCommand}" 
+                                BackgroundColor="#FF4444" 
+                                TextColor="White"
+                                HeightRequest="48"
+                                CornerRadius="8">
+                            <Button.VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup Name="CommonStates">
+                                    <VisualState Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#FF4444" />
+                                            <Setter Property="Scale" Value="1.0" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#E63939" />
+                                            <Setter Property="Scale" Value="1.02" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#CC2E2E" />
+                                            <Setter Property="Scale" Value="0.98" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </Button.VisualStateManager.VisualStateGroups>
+                        </Button>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <control:BottomNavBar x:Name="BottomBar" Grid.Row="2" SelectedTab="Profile" />
+    </Grid>
+</ContentPage>

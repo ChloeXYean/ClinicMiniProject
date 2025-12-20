@@ -1,0 +1,76 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ClinicMiniProject.ViewModels"
+             x:Class="ClinicMiniProject.UI.Patient.AppointmentBooking_Patient"
+             BackgroundColor="White"
+             Title="Appointment Booking">
+
+    <Grid RowDefinitions="Auto, *, Auto, Auto">
+        <Grid Grid.Row="0" RowDefinitions="Auto, Auto, *" Padding="10" BackgroundColor="#FFFEFA">
+            <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Margin="0,0,0,10" BackgroundColor="#CAE1FD">
+                <Button Text="&lt;" Command="{Binding PreviousMonthCommand}" BackgroundColor="Transparent" TextColor="#5FA8FF" FontSize="20"/>
+                <Label Grid.Column="1" Text="{Binding CurrentMonthName}" HorizontalOptions="Center" VerticalOptions="Center" FontSize="18" FontAttributes="Bold" TextColor="#333"/>
+                <Button Grid.Column="2" Text="&gt;" Command="{Binding NextMonthCommand}" BackgroundColor="Transparent" TextColor="#5FA8FF" FontSize="20"/>
+            </Grid>
+
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*,*,*,*" Margin="0,0,0,5">
+                <Label Text="S" Grid.Column="0" HorizontalOptions="Center" TextColor="Gray"/>
+                <Label Text="M" Grid.Column="1" HorizontalOptions="Center" TextColor="Gray"/>
+                <Label Text="T" Grid.Column="2" HorizontalOptions="Center" TextColor="Gray"/>
+                <Label Text="W" Grid.Column="3" HorizontalOptions="Center" TextColor="Gray"/>
+                <Label Text="T" Grid.Column="4" HorizontalOptions="Center" TextColor="Gray"/>
+                <Label Text="F" Grid.Column="5" HorizontalOptions="Center" TextColor="Gray"/>
+                <Label Text="S" Grid.Column="6" HorizontalOptions="Center" TextColor="Gray"/>
+            </Grid>
+
+            <CollectionView Grid.Row="2" ItemsSource="{Binding Days}">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="7" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="2">
+                            <Frame CornerRadius="20" Padding="0" HeightRequest="40" WidthRequest="40" HasShadow="False"
+                                   BackgroundColor="{Binding BackgroundColor}" BorderColor="Transparent" IsEnabled="{Binding IsEnabled}">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PatientAppointmentBookingViewModel}}, Path=SelectDateCommand}" 
+                                                          CommandParameter="{Binding .}" />
+                                </Frame.GestureRecognizers>
+                                <Label Text="{Binding DayNumber}" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{Binding TextColor}"/>
+                            </Frame>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+
+        <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="15">
+            <Border Stroke="#DDDDDD" StrokeThickness="1" StrokeShape="RoundRectangle 10">
+                <Picker Title="Select Service Type" ItemsSource="{Binding ServiceTypes}" SelectedItem="{Binding SelectedService}" TextColor="#333" TitleColor="Gray" FontSize="16"/>
+            </Border>
+
+            <Label Text="Available Time Slots" FontSize="16" FontAttributes="Bold" TextColor="#333"/>
+
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                <CollectionView ItemsSource="{Binding TimeSlots}" HeightRequest="50">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame Padding="15,10" CornerRadius="20" BackgroundColor="{Binding BackgroundColor}" BorderColor="#5FA8FF" HasShadow="False" Opacity="{Binding Opacity}" IsEnabled="{Binding IsEnabled}">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PatientAppointmentBookingViewModel}}, Path=SelectTimeCommand}" 
+                                                          CommandParameter="{Binding .}" />
+                                </Frame.GestureRecognizers>
+                                <Label Text="{Binding DisplayTime}" TextColor="{Binding TextColor}" FontAttributes="Bold"/>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ScrollView>
+        </VerticalStackLayout>
+
+        <Button Grid.Row="2" Text="Confirm" Command="{Binding ConfirmSelectionCommand}" BackgroundColor="#5FA8FF" TextColor="White" CornerRadius="25" HeightRequest="50" FontAttributes="Bold" FontSize="18" Margin="20,0,20,20"/>
+    </Grid>
+</ContentPage>

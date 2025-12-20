@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
+		<TargetFrameworks>net9.0-android</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
@@ -63,6 +63,7 @@
 	  <None Remove="Resources\AppIcon\appointment.png" />
 	  <None Remove="Resources\AppIcon\back.png" />
 	  <None Remove="Resources\AppIcon\bell.png" />
+	  <None Remove="Resources\AppIcon\consultation.png" />
 	  <None Remove="Resources\AppIcon\history.png" />
 	  <None Remove="Resources\AppIcon\home.png" />
 	  <None Remove="Resources\AppIcon\inquiry.png" />
@@ -76,11 +77,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.6">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.6" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30" />
 		<PackageReference Include="MySql.Data" Version="9.5.0" />
 		<PackageReference Include="MySqlConnector" Version="2.5.0" />
@@ -95,6 +91,7 @@
 	  <MauiImage Include="Resources\AppIcon\appointment.png" />
 	  <MauiImage Include="Resources\AppIcon\back.png" />
 	  <MauiImage Include="Resources\AppIcon\bell.png" />
+	  <MauiImage Include="Resources\AppIcon\consultation.png" />
 	  <MauiImage Include="Resources\AppIcon\history.png" />
 	  <MauiImage Include="Resources\AppIcon\home.png" />
 	  <MauiImage Include="Resources\AppIcon\inquiry.png" />
@@ -105,6 +102,24 @@
 	  <MauiImage Include="Resources\AppIcon\time.png" />
 	  <MauiImage Include="Resources\AppIcon\user.png" />
 	  <MauiImage Include="Resources\AppIcon\walkin.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="UI\Patient\EditPatientProfilePage.xaml.cs">
+	    <DependentUpon>EditPatientProfilePage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="UI\Patient\PatientAppointmentHistoryPage.xaml.cs">
+	    <DependentUpon>PatientAppointmentHistoryPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="UI\Patient\PatientConsultationDetailsPage.xaml.cs">
+	    <DependentUpon>PatientConsultationDetailsPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="UI\Patient\OnlineInquiryPatient.xaml.cs">
+	    <DependentUpon>OnlineInquiryPatient.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="UI\Patient\EndDoctorConsultationPage.xaml.cs">
+	    <DependentUpon>EndDoctorConsultationPage.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -159,6 +174,22 @@
 	  <MauiXaml Update="UI\Nurse\WalkInPatientQueuePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="UI\Patient\AppointmentBooking_Patient.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Patient\AppointmentSchedule.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Patient\EditPatientProfilePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Patient\PatientConsultationDetailsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Patient\EndDoctorConsultationPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+
 	  <MauiXaml Update="UI\Patient\PatientHomePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

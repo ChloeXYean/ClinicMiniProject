@@ -6,6 +6,9 @@ public partial class TopNavBar : ContentView
     public static readonly BindableProperty UserNameProperty =
     BindableProperty.Create(nameof(UserName),typeof(string),typeof(TopNavBar),"User");
 
+    public static readonly BindableProperty UserRoleProperty =
+        BindableProperty.Create(nameof(UserRole),typeof(string),typeof(TopNavBar),"Doctor");
+
     public static readonly BindableProperty MenuCommandProperty =
         BindableProperty.Create(nameof(MenuCommand), typeof(ICommand), typeof(TopNavBar), null);
 
@@ -16,6 +19,12 @@ public partial class TopNavBar : ContentView
     {
         get => (string)GetValue(UserNameProperty);
         set => SetValue(UserNameProperty, value);
+    }
+
+    public string UserRole
+    {
+        get => (string)GetValue(UserRoleProperty);
+        set => SetValue(UserRoleProperty, value);
     }
 
     public ICommand? MenuCommand

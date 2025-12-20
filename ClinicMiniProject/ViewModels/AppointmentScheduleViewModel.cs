@@ -1,38 +1,94 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ClinicMiniProject.Services.Interfaces;
+using ClinicMiniProject.Services;
+using ClinicMiniProject.Models;
 
 namespace ClinicMiniProject.ViewModels
 {
+    [QueryProperty(nameof(UserType), "UserType")]
+
     public sealed class AppointmentScheduleViewModel : INotifyPropertyChanged
     {
         private readonly IAuthService _authService;
         private readonly IAppointmentScheduleService _scheduleService;
+        private readonly IStaffService _staffService;
 
         private DateTime _selectedDate = DateTime.Today;
         private AppointmentScheduleGridDto _grid = new() { Date = DateTime.Today };
+        private bool _isNurseMode = false;
+        private Staff _selectedDoctor;
+        private ObservableCollection<Staff> _doctors = new();
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public ICommand HomeCommand { get; }
+        public bool IsNurseMode
+        {
+            get => _isNurseMode;
+            set => SetProperty(ref _isNurseMode, value);
+        }
+
+        public Staff SelectedDoctor
+        {
+            get => _selectedDoctor;
+            set
+            {
+                if (SetProperty(ref _selectedDoctor, value))
+                {
+                    LoadSchedule();
+                }
+            }
+        }
+
+        public ObservableCollection<Staff> Doctors
+        {
+            get => _doctors;
+            set => SetProperty(ref _doctors, value);
+        }
+
+        public string UserType
+        {
+            set
+            {
+                IsNurseMode = value == "Nurse";
+
+                if (IsNurseMode)
+                {
+                    LoadDoctors();
+                }
+
+                (HomeCommand as Command)?.ChangeCanExecute();
+                HomeCommand = IsNurseMode
+                    ? new Command(async () => await Shell.Current.GoToAsync("///NurseHomePage"))
+                    : new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
+                OnPropertyChanged(nameof(HomeCommand));
+
+                // 4. Load the schedule
+                LoadSchedule();
+            }
+        }
+            
+        public ICommand HomeCommand { get; set; }
         public ICommand ChatCommand { get; }
         public ICommand ProfileCommand { get; }
         public ICommand ViewPatientDetailsCommand { get; }
 
-        public AppointmentScheduleViewModel(IAuthService authService, IAppointmentScheduleService scheduleService)
+        public AppointmentScheduleViewModel(IAuthService authService, IAppointmentScheduleService scheduleService, IStaffService staffService)
         {
             _authService = authService;
             _scheduleService = scheduleService;
+            _staffService = staffService;
 
+            // Default commands (will be updated by UserType setter)
             HomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
-            ChatCommand = new Command(async () => await Shell.Current.GoToAsync("Inquiry"));
-            ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("Profile"));
 
+            ChatCommand = new Command(async () => await Shell.Current.GoToAsync("Inquiry"));
+            ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
             ViewPatientDetailsCommand = new Command<string>(OnViewPatientDetails);
-            LoadSchedule();
         }
 
         public DateTime SelectedDate
@@ -64,17 +120,57 @@ namespace ClinicMiniProject.ViewModels
         public IReadOnlyList<TimeSlotRowDto> Rows => Grid.Rows;
         private async void LoadSchedule()
         {
-            var current = _authService.GetCurrentUser();
-            if (current == null)
-                return;
+            if (IsNurseMode)
+            {
+                if (SelectedDoctor == null)
+                {
+                    Grid = new AppointmentScheduleGridDto { Date = SelectedDate.Date };
+                    return;
+                }
+                try
+                {
+                    Grid = await _scheduleService.GetScheduleGridAsync(SelectedDoctor.staff_ID, SelectedDate.Date);
+                }
+                catch
+                {
+                    Grid = new AppointmentScheduleGridDto { Date = SelectedDate.Date };
+                }
+            }
+            else
+            {
+                var current = _authService.GetCurrentUser();
+                if (current == null)
+                    return;
 
+                try
+                {
+                    Grid = await _scheduleService.GetScheduleGridAsync(current.staff_ID, SelectedDate.Date);
+                }
+                catch
+                {
+                    Grid = new AppointmentScheduleGridDto { Date = SelectedDate.Date };
+                }
+            }
+        }
+
+        private void LoadDoctors()
+        {
             try
             {
-                Grid = await _scheduleService.GetScheduleGridAsync(current.staff_ID, SelectedDate.Date);
+                var doctorList = _staffService.GetAllDocs();
+                Doctors.Clear();
+                foreach (var doc in doctorList)
+                {
+                    Doctors.Add(doc);
+                }
+                if (Doctors.Count > 0)
+                {
+                    SelectedDoctor = Doctors[0];
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                Grid = new AppointmentScheduleGridDto { Date = SelectedDate.Date };
+                Console.WriteLine($"Error loading doctors: {ex.Message}");
             }
         }
 

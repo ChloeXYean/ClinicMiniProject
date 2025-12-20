@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ClinicMiniProject.UI.Control"
+             x:Class="ClinicMiniProject.UI.Patient.EditPatientProfilePage"
+             Title="Edit Profile"
+             BackgroundColor="White"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+        <!-- Header -->
+        <controls:BackNavBar BackCommand="{Binding CancelCommand}" Title="Edit Profile" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="24" Spacing="24">
+
+                <Label Text="Edit Personal Information" 
+                       FontSize="20" 
+                       FontAttributes="Bold" 
+                       TextColor="#2D3142" />
+
+                <!-- Name Field -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Full Name" FontSize="14" TextColor="#4F5D75" FontAttributes="Bold"/>
+                    <Border StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="#E0E0E0" Padding="12,4">
+                        <Entry Text="{Binding Name}" Placeholder="Enter your name" FontSize="15" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- IC Field (Read Only usually, but let's just make it uneditable for safety) -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="IC / Passport Number" FontSize="14" TextColor="#4F5D75" FontAttributes="Bold"/>
+                    <Border StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="#F0F0F0" Padding="12,4" BackgroundColor="#F9F9F9">
+                        <Label Text="{Binding IC}" FontSize="15" VerticalTextAlignment="Center" HeightRequest="45" TextColor="Gray" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Contact Field -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Contact Number" FontSize="14" TextColor="#4F5D75" FontAttributes="Bold"/>
+                    <Border StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="#E0E0E0" Padding="12,4">
+                        <Entry Text="{Binding Contact}" Placeholder="Enter your contact number" Keyboard="Telephone" FontSize="15" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Email Field -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Email Address" FontSize="14" TextColor="#4F5D75" FontAttributes="Bold"/>
+                    <Border StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="#E0E0E0" Padding="12,4">
+                        <Entry Text="{Binding Email}" Placeholder="Enter your email" Keyboard="Email" FontSize="15" />
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Footer Actions -->
+        <Border Grid.Row="2" Padding="20" StrokeThickness="0" BackgroundColor="White">
+            <Border.Shadow>
+                <Shadow Brush="Black" Opacity="0.1" Radius="10" Offset="0,-5"/>
+            </Border.Shadow>
+
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                <Button Text="Cancel" 
+                        BackgroundColor="Transparent" 
+                        TextColor="#4F5D75" 
+                        FontAttributes="Bold" 
+                        CornerRadius="10" 
+                        HeightRequest="50"
+                        Command="{Binding CancelCommand}" />
+
+                <Button Grid.Column="1" 
+                        Text="Save Changes" 
+                        BackgroundColor="#2D5AF0" 
+                        TextColor="White" 
+                        FontAttributes="Bold" 
+                        CornerRadius="10" 
+                        HeightRequest="50"
+                        Command="{Binding SaveCommand}" />
+            </Grid>
+        </Border>
+    </Grid>
+</ContentPage>

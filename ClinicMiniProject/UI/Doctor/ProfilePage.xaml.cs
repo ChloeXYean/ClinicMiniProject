@@ -16,9 +16,9 @@ public partial class ProfilePage : ContentPage
 		if (_vm != null)
 			BindingContext = _vm;
 
-		BottomBar.HomeCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(DoctorDashboardPage)));
-		BottomBar.ChatCommand = new Command(async () => await Shell.Current.GoToAsync("Inquiry"));
-		BottomBar.ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("Profile"));
+		BottomBar.HomeCommand = new Command(async () => await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}"));
+		BottomBar.ChatCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
+		BottomBar.ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
     }
 
     private async void OnBackClicked(object sender, EventArgs e)

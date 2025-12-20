@@ -3,12 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Doctor.ProfilePage"
+			 Shell.NavBarIsVisible="False"
              Title="Profile">
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
 
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Padding="20,15" BackgroundColor="#6EA8FE">
             <ImageButton Grid.Column="0" Source="menu.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent" Clicked="OnBackClicked" />
-            <Label Grid.Column="1" Text="Professional Profile" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
+            <Label Grid.Column="1" Text="Profile" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" />
             <ImageButton Grid.Column="2" Source="profile.png" HeightRequest="22" WidthRequest="22" BackgroundColor="Transparent"
                          Command="{Binding ToggleEditModeCommand}" />
         </Grid>
@@ -31,6 +32,22 @@
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding ChangeProfilePictureCommand}" />
                             </Border.GestureRecognizers>
+                            <Border.VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup Name="CommonStates">
+                                    <VisualState Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#F5F7FF" />
+                                            <Setter Property="Scale" Value="1.0" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#E8EEFF" />
+                                            <Setter Property="Scale" Value="1.05" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </Border.VisualStateManager.VisualStateGroups>
                         </Border>
 
                         <Label Grid.Row="0" Grid.Column="1" Text="{Binding DoctorId, StringFormat='Doctor ID: {0}'}" />
@@ -76,11 +93,96 @@
                             </CollectionView.ItemTemplate>
                         </CollectionView>
 
-                        <Button Text="+ Add Service" Command="{Binding AddServiceCommand}" IsVisible="{Binding IsEditMode}" />
+                        <Button Text="+ Add Service" Command="{Binding AddServiceCommand}" IsVisible="{Binding IsEditMode}">
+                            <Button.VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup Name="CommonStates">
+                                    <VisualState Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#6EA8FE" />
+                                            <Setter Property="TextColor" Value="White" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#5A90E6" />
+                                            <Setter Property="Scale" Value="1.02" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#4A7BC8" />
+                                            <Setter Property="Scale" Value="0.98" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </Button.VisualStateManager.VisualStateGroups>
+                        </Button>
                     </VerticalStackLayout>
                 </Border>
 
-                <Button Text="Save Changes" Command="{Binding SaveProfileCommand}" HeightRequest="52" IsVisible="{Binding IsEditMode}" />
+                <Button Text="Save Changes" Command="{Binding SaveProfileCommand}" HeightRequest="52" IsVisible="{Binding IsEditMode}">
+                    <Button.VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup Name="CommonStates">
+                            <VisualState Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#6EA8FE" />
+                                    <Setter Property="TextColor" Value="White" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState Name="PointerOver">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#5A90E6" />
+                                    <Setter Property="TextColor" Value="White" />
+                                    <Setter Property="Scale" Value="1.02" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#4A7BC8" />
+                                    <Setter Property="Scale" Value="0.98" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </Button.VisualStateManager.VisualStateGroups>
+                </Button>
+
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="16" Margin="0,20,0,0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Account Settings" FontAttributes="Bold" FontSize="16" TextColor="#333" />
+                        <Button Text="Logout" 
+                                Command="{Binding LogoutCommand}" 
+                                BackgroundColor="#FF4444" 
+                                TextColor="White"
+                                HeightRequest="48"
+                                CornerRadius="8">
+                            <Button.VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup Name="CommonStates">
+                                    <VisualState Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#FF4444" />
+                                            <Setter Property="Scale" Value="1.0" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#E63939" />
+                                            <Setter Property="Scale" Value="1.02" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#CC2E2E" />
+                                            <Setter Property="Scale" Value="0.98" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </Button.VisualStateManager.VisualStateGroups>
+                        </Button>
+                    </VerticalStackLayout>
+                </Border>
             </VerticalStackLayout>
         </ScrollView>
 

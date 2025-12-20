@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ClinicMiniProject.Dtos;
 using ClinicMiniProject.Services.Interfaces;
+using ClinicMiniProject.UI.Doctor;
 
 namespace ClinicMiniProject.ViewModels
 {
@@ -12,11 +13,11 @@ namespace ClinicMiniProject.ViewModels
     {
         private readonly IAuthService _authService;
         private readonly IDoctorDashboardService _dashboardService;
-        private string _greeting;
+        private string _greeting = "Welcome";
         private TodayStatsDto _todayStats = new();
         private UpcomingScheduleDto _upcomingSchedule = new();
-        private string _nextAppointmentTime = string.Empty;
-        private string _doctorName = string.Empty;
+        private string _nextAppointmentTime = "Loading...";
+        private string _doctorName = "Doctor";
 
         public string Greeting
         {
@@ -59,11 +60,12 @@ namespace ClinicMiniProject.ViewModels
         public ICommand NavigateToHomeCommand { get; }
         public ICommand NavigateToInquiryCommand { get; }
         public ICommand NavigateToProfileCommand { get; }
+        public ICommand NavigateToInquiryHistoryCommand { get; }
 
         public ICommand ToggleMenuCommand { get; }
         public ICommand NotificationCommand { get; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public DoctorDashboardViewModel(IAuthService authService, IDoctorDashboardService dashboardService)
         {
@@ -71,19 +73,28 @@ namespace ClinicMiniProject.ViewModels
             _dashboardService = dashboardService;
 
             // --- Navigation Logic ---
-            NavigateToAppointmentScheduleCommand = new Command(async () => await Shell.Current.GoToAsync("AppointmentSchedule"));
-            NavigateToAppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("AppointmentHistory"));
-            NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("ReportingManagement"));
+            NavigateToAppointmentScheduleCommand = new Command(async () => await Shell.Current.GoToAsync("///AppointmentSchedulePage"));
+            NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync("///ConsultationDetailsPage"));
+            NavigateToAppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("///AppointmentHistoryPage"));
+            NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("///ReportingManagementPage"));
 
             // Bottom Bar Commands
-            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("Inquiry"));
-            NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("Profile"));
+            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
+            NavigateToInquiryHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
+            NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
+            NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}"));
 
             LogoutCommand = new Command(async () =>
             {
                 _authService.Logout();
                 await Shell.Current.GoToAsync($"///LoginPage");
             });
+            
+            // Initialize missing commands to avoid warnings
+            NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync("ConsultationDetails"));
+            ToggleMenuCommand = new Command(() => { /* TODO: Implement Toggle Menu */ });
+            NotificationCommand = new Command(async () => await Shell.Current.DisplayAlert("Notification", "No new notifications", "OK"));
+            NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
 
             // Initialize Data
             LoadDashboardData();
