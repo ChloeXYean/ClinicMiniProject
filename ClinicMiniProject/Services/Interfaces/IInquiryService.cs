@@ -9,6 +9,7 @@ namespace ClinicMiniProject.Services.Interfaces
         Task<InquiryDto?> GetInquiryByIdAsync(string inquiryId);
         Task SendResponseAsync(string inquiryId, string doctorResponse);
         Task<bool> CreateInquiryAsync(InquiryDto inquiry);
+        Task<IReadOnlyList<InquiryDto>> GetInquiriesByPatientIcAsync(string patientIc);
     }
 
     public sealed class InquiryDto

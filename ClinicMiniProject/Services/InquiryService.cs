@@ -94,5 +94,13 @@ namespace ClinicMiniProject.Services
             _inquiries.Add(inquiry);
             return true;
         }
+
+        public async Task<IReadOnlyList<InquiryDto>> GetInquiriesByPatientIcAsync(string patientIc)
+        {
+            await Task.Yield();
+            return _inquiries.Where(i => string.Equals(i.PatientIc, patientIc, StringComparison.OrdinalIgnoreCase))
+                             .OrderByDescending(i => i.CreatedAt)
+                             .ToList();
+        }
     }
 }

@@ -12,7 +12,7 @@
 
         <SearchBar Placeholder="Search inquiry" />
 
-        <CollectionView ItemsSource="{Binding Inquiries}">
+        <CollectionView ItemsSource="{Binding PatientInquiryHistory}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Frame Margin="0,0,0,10"
