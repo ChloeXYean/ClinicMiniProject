@@ -4,17 +4,16 @@
              xmlns:controls="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Nurse.PatientDetailsPage"
              BackgroundColor="White"
-             Shell.NavBarIsVisible="False">
+             Title="Patient Profile">
 
-    <Grid RowDefinitions="Auto, *, Auto">
-        <controls:BackNavBar BackCommand="{Binding BackCommand}" Title="Patient Details" />
+    <Grid RowDefinitions="*, Auto">
 
-        <ScrollView Grid.Row="1">
+        <ScrollView Grid.Row="0">
             <VerticalStackLayout Padding="20" Spacing="20">
 
                 <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
                     <Border HeightRequest="80" WidthRequest="80" StrokeShape="RoundRectangle 40" BackgroundColor="#E0E0E0" StrokeThickness="0">
-                        <Image Source="profilepicture.png" Aspect="AspectFit" Margin="20"/>
+                        <Image Source="{Binding ProfilePictureSource}" Aspect="AspectFill" Margin="2"/>
                     </Border>
                     <Label Text="{Binding PatientName}" 
                            FontSize="22" 
@@ -68,7 +67,7 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <Border Grid.Row="2" 
+        <Border Grid.Row="1" 
                 Padding="20" 
                 StrokeThickness="0" 
                 BackgroundColor="White"
@@ -87,7 +86,7 @@
         </Border>
 
         <!-- Patient Actions -->
-        <VerticalStackLayout Grid.Row="2" 
+        <VerticalStackLayout Grid.Row="1" 
                              Padding="20" 
                              Spacing="10" 
                              BackgroundColor="White"
@@ -107,10 +106,10 @@
                     Command="{Binding EditProfileCommand}"/>
 
             <Button Text="Logout" 
-                    BackgroundColor="White" 
-                    TextColor="#FF4B4B" 
-                    BorderColor="#FF4B4B"
-                    BorderWidth="1"
+                    BackgroundColor="#FF4444" 
+                    TextColor="White" 
+                    BorderColor="Transparent"
+                    BorderWidth="0"
                     FontAttributes="Bold" 
                     CornerRadius="10" 
                     HeightRequest="50"

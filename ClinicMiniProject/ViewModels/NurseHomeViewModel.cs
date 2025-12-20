@@ -87,7 +87,7 @@ namespace ClinicMiniProject.ViewModels
                     AppDoc = $"Doctor: {nextAppointment.staff_ID}"; 
                 }
 
-                PendingCount = $"Pending: {upcomingList.Count}";
+                PendingCount = upcomingList.Count.ToString();
             }
             catch (Exception ex)
             {
