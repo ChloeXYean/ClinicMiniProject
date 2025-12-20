@@ -27,7 +27,10 @@
                          HeightRequest="32"
                          WidthRequest="32"
                          HorizontalOptions="Start"
-                         Command="{Binding BackCommand, Source={x:Reference thisControl}}"/>
+                         VerticalOptions="Center"
+                         BackgroundColor="Transparent"
+                         Command="{Binding BackCommand, Source={x:Reference thisControl}}"
+                         Clicked="BackBtn_Clicked"/>
                 <Label Grid.Column="1"
                    x:Name="TitleLabel"
                    Text="{Binding Title, Source={x:Reference thisControl}}"

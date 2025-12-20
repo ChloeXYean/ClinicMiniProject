@@ -1,92 +1,87 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:ClinicMiniProject.ViewModels"
+             xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Doctor.ConsultationDetailsPage"
-             x:Name="ConsultationPage"
              Shell.NavBarIsVisible="False"
              BackgroundColor="#F5F7FA">
 
-    <Grid RowDefinitions="Auto, Auto, *">
+    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+        <control:BackNavBar Grid.Row="0" Title="Consultation Details" BackCommand="{Binding BackCommand}" />
 
-        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Padding="20,15" BackgroundColor="#6EA8FE">
-            <ImageButton Grid.Column="0" Source="back.png" HeightRequest="22" WidthRequest="22" 
-                         BackgroundColor="Transparent" Clicked="OnBackClicked" />
-            <Label Grid.Column="1" Text="Select Patient" FontSize="18" FontAttributes="Bold" 
-                   VerticalOptions="Center" TextColor="White" Margin="10,0,0,0"/>
-        </Grid>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="16">
 
-        <Border Grid.Row="1" Margin="15,15,15,5" StrokeShape="RoundRectangle 10" 
-                BackgroundColor="White" StrokeThickness="0" Padding="5,0">
-            <SearchBar Placeholder="Search Patient Name or IC..."
-                       Text="{Binding SearchText}"
-                       FontSize="14"
-                       BackgroundColor="Transparent"/>
-        </Border>
-
-        <RefreshView Grid.Row="2" Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
-            <CollectionView ItemsSource="{Binding PatientQueue}" Margin="15">
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
-                </CollectionView.ItemsLayout>
-
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border StrokeThickness="0" BackgroundColor="White" Padding="15">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="12"/>
-                            </Border.StrokeShape>
-                            <Border.Shadow>
-                                <Shadow Brush="Black" Opacity="0.05" Radius="5" Offset="0,2"/>
-                            </Border.Shadow>
-
-                            <Grid ColumnDefinitions="Auto, *, Auto" RowDefinitions="Auto, Auto">
-                                <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" 
-                                        HeightRequest="50" WidthRequest="50" 
-                                        StrokeShape="RoundRectangle 25"
-                                        BackgroundColor="#E3F2FD"
-                                        Margin="0,0,15,0"
-                                        VerticalOptions="Center">
-                                    <Label Text="{Binding AppointedTime}" 
-                                           FontSize="11" FontAttributes="Bold" 
-                                           TextColor="#2D5AF0"
-                                           HorizontalOptions="Center" 
-                                           VerticalOptions="Center"
-                                           HorizontalTextAlignment="Center"/>
-                                </Border>
-
-                                <Label Grid.Row="0" Grid.Column="1" 
-                                       Text="{Binding PatientName}" 
-                                       FontSize="16" FontAttributes="Bold" TextColor="#333"/>
-
-                                <Label Grid.Row="1" Grid.Column="1" 
-                                       Text="{Binding ServiceType}" 
-                                       FontSize="12" TextColor="#777"/>
-
-                                <Path Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" 
-                                      Data="M 0,0 L 8,8 L 0,16" 
-                                      Stroke="#999" 
-                                      StrokeThickness="2" 
-                                      VerticalOptions="Center" 
-                                      HorizontalOptions="End"
-                                      Margin="0,0,10,0" />
-                            </Grid>
-
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer 
-                                    Command="{Binding BindingContext.SelectPatientCommand, Source={x:Reference ConsultationPage}}"
-                                    CommandParameter="{Binding .}"/>
-                            </Border.GestureRecognizers>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-
-                <CollectionView.EmptyView>
-                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
-                        <Label Text="No appointments found." TextColor="#999"/>
+                <!-- Appointment Date & Time -->
+                <Border BackgroundColor="White" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Appointment Date" FontAttributes="Bold" FontSize="16" TextColor="#333" />
+                        <Label Text="{Binding AppointmentDate}" FontSize="14" TextColor="#666" />
+                        <Label Text="{Binding AppointmentTime}" FontSize="14" TextColor="#666" />
                     </VerticalStackLayout>
-                </CollectionView.EmptyView>
-            </CollectionView>
-        </RefreshView>
+                </Border>
+
+                <!-- Patient Information -->
+                <Border BackgroundColor="White" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Patient Information" FontAttributes="Bold" FontSize="16" TextColor="#333" />
+                        <Label Text="{Binding PatientName}" FontSize="14" TextColor="#666" />
+                        <Label Text="{Binding PatientIC}" FontSize="14" TextColor="#666" />
+                        <Label Text="{Binding ServiceType}" FontSize="14" TextColor="#666" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Doctor Remarks -->
+                <Border BackgroundColor="White" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Doctor Remarks" FontAttributes="Bold" FontSize="16" TextColor="#333" />
+                        <Label Text="{Binding DoctorRemarks}" FontSize="14" TextColor="#666" LineBreakMode="WordWrap" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Nurse Notes -->
+                <Border BackgroundColor="White" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Nurse Notes" FontAttributes="Bold" FontSize="16" TextColor="#333" />
+                        <Label Text="{Binding NurseNotes}" FontSize="14" TextColor="#666" LineBreakMode="WordWrap" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Prescription -->
+                <Border BackgroundColor="White" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Prescription" FontAttributes="Bold" FontSize="16" TextColor="#333" />
+                        <Label Text="{Binding Prescription}" FontSize="14" TextColor="#666" LineBreakMode="WordWrap" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Status -->
+                <Border BackgroundColor="White" StrokeThickness="0" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Consultation Status" FontAttributes="Bold" FontSize="16" TextColor="#333" />
+                        <Label Text="{Binding Status}" FontSize="14" TextColor="#666" />
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
     </Grid>
 </ContentPage>

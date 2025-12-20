@@ -157,10 +157,19 @@ namespace ClinicMiniProject.ViewModels
                     };
 
                     // 3. FIX: Use Service to Save (Generates ID automatically)
-                    await _appointmentService.AddAppointmentAsync(newAppointment);
+                    bool success = await _appointmentService.AddAppointmentAsync(newAppointment);
 
-                    await Shell.Current.DisplayAlert("Success", "Appointment Request Sent!", "OK");
-                    await Shell.Current.GoToAsync("///PatientHomePage");
+                    if (success)
+                    {
+                        await Shell.Current.DisplayAlert("Success", "Appointment Request Sent!", "OK");
+                        await Shell.Current.GoToAsync("///PatientHomePage");
+                    }
+                    else
+                    {
+                        await Shell.Current.DisplayAlert("Booking Conflict", 
+                            "This time slot is no longer available. Either you or the doctor already has an appointment at this time. Please select a different time slot.", 
+                            "OK");
+                    }
                 }
                 catch (Exception ex)
                 {

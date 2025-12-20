@@ -14,83 +14,80 @@
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
+
         <control:TopNavBar x:Name="TopBar" Grid.Row="0" />
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="12">
 
-            <Label Text="Online Medical Inquiry" FontSize="20" FontAttributes="Bold" />
+                <Label Text="Online Medical Inquiry" FontSize="20" FontAttributes="Bold" />
 
-            <!-- Search and Filter Controls -->
-            <Grid RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="10">
-                
-                <!-- Search Row -->
-                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
-                    <Entry Grid.Column="0" 
-                           Placeholder="Search by patient name or symptom" 
-                           Text="{Binding SearchQuery, Mode=TwoWay}" />
-                    <Button Grid.Column="1" 
-                            Text="Search" 
-                            Command="{Binding FilterCommand}"
-                            BackgroundColor="#6EA8FE"
-                            TextColor="White"
-                            WidthRequest="100" />
+                <Grid RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                        <Entry Grid.Column="0" 
+                               Placeholder="Search by patient name or symptom" 
+                               Text="{Binding SearchQuery, Mode=TwoWay}" />
+                        <Button Grid.Column="1" 
+                                Text="Search" 
+                                Command="{Binding FilterCommand}"
+                                BackgroundColor="#6EA8FE"
+                                TextColor="White"
+                                WidthRequest="100" />
+                    </Grid>
+
+                    <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
+                        <Label Grid.Column="0" Text="Status:" VerticalOptions="Center" Margin="0,0,10,0" />
+                        <Picker Grid.Column="1" 
+                                ItemsSource="{Binding StatusOptions}"
+                                SelectedItem="{Binding SelectedStatus, Mode=TwoWay}"
+                                BackgroundColor="White" />
+                    </Grid>
+
+                    <Grid Grid.Row="2" ColumnDefinitions="Auto,*">
+                        <Label Grid.Column="0" Text="Date:" VerticalOptions="Center" Margin="0,0,10,0" />
+                        <DatePicker Grid.Column="1" 
+                                   x:Name="DateFilterPicker"
+                                   Date="{Binding FilterDate, Mode=TwoWay}"
+                                   Format="dd MMM yyyy"
+                                   BackgroundColor="White" />
+                    </Grid>
                 </Grid>
-                
-                <!-- Status Filter Row -->
-                <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
-                    <Label Grid.Column="0" Text="Status:" VerticalOptions="Center" Margin="0,0,10,0" />
-                    <Picker Grid.Column="1" 
-                            ItemsSource="{Binding StatusOptions}"
-                            SelectedItem="{Binding SelectedStatus, Mode=TwoWay}"
-                            BackgroundColor="White" />
-                </Grid>
 
-                <!-- Date Filter Row -->
-                <Grid Grid.Row="2" ColumnDefinitions="Auto,*">
-                    <Label Grid.Column="0" Text="Date:" VerticalOptions="Center" Margin="0,0,10,0" />
-                    <DatePicker Grid.Column="1" 
-                               x:Name="DateFilterPicker"
-                               Date="{Binding FilterDate, Mode=TwoWay}"
-                               Format="dd MMM yyyy"
-                               BackgroundColor="White" />
-                </Grid>
-            </Grid>
+                <CollectionView ItemsSource="{Binding InquiryList}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border StrokeThickness="1" Stroke="#E5E7EB" Padding="12" Margin="0,0,0,10" BackgroundColor="White">
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto" ColumnSpacing="10" RowSpacing="4">
 
-            <CollectionView ItemsSource="{Binding InquiryList}" SelectionMode="None">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border StrokeThickness="1" Stroke="#E5E7EB" Padding="12" Margin="0,0,0,10" BackgroundColor="White">
-                            <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto" ColumnSpacing="10" RowSpacing="4">
+                                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding PatientName}" FontAttributes="Bold" FontSize="16"/>
 
-                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding PatientName}" FontAttributes="Bold" FontSize="16"/>
+                                    <Border Grid.Row="0" Grid.Column="1" Padding="8,2" StrokeThickness="0"
+                                            BackgroundColor="{Binding Status, Converter={StaticResource InquiryStatusToColorConverter}}">
+                                        <Label Text="{Binding Status}" TextColor="White" FontSize="12" />
+                                    </Border>
 
-                                <Border Grid.Row="0" Grid.Column="1" Padding="8,2" StrokeThickness="0"
-                                        BackgroundColor="{Binding Status, Converter={StaticResource InquiryStatusToColorConverter}}">
-                                    <Label Text="{Binding Status}" TextColor="White" FontSize="12" />
-                                </Border>
+                                    <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding SymptomSnippet}" TextColor="#555" />
 
-                                <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding SymptomSnippet}" TextColor="#555" />
+                                    <Label Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding CreatedDate, StringFormat='Sent time: {0:dd MMM yyyy HH:mm}'}" 
+                                           TextColor="#999" FontSize="12" />
 
-                                <Label Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding CreatedDate, StringFormat='Sent time: {0:dd MMM yyyy HH:mm}'}" 
-                                       TextColor="#999" FontSize="12" />
+                                    <Button Grid.Row="3" Grid.ColumnSpan="2" Text="View Details" 
+                                            Command="{Binding BindingContext.ViewInquiryDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                            CommandParameter="{Binding InquiryId}"
+                                            BackgroundColor="#6EA8FE" TextColor="White" 
+                                            HeightRequest="36" FontSize="14" Margin="0,8,0,0"/>
 
-                                <Button Grid.Row="3" Grid.ColumnSpan="2" Text="View Details" 
-                                       Command="{Binding BindingContext.ViewInquiryDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                       CommandParameter="{Binding InquiryId}"
-                                       BackgroundColor="#6EA8FE" TextColor="White" 
-                                       HeightRequest="36" FontSize="14" Margin="0,8,0,0"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-        </VerticalStackLayout>
+            </VerticalStackLayout>
         </ScrollView>
 
-        <control:BottomNavBar x:Name="BottomBar" Grid.Row="2" SelectedTab="InquiryHistory"
+        <control:BottomNavBar x:Name="BottomBar" Grid.Row="2" SelectedTab="Inquiry"
                               HomeCommand="{Binding NavigateToHomeCommand}"
                               ChatCommand="{Binding NavigateToInquiryCommand}"
                               ProfileCommand="{Binding NavigateToProfileCommand}" />
