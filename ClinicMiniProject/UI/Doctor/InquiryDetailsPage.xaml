@@ -6,7 +6,7 @@
              Title=""
              Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto,*,80" RowSpacing="0">
+    <Grid RowDefinitions="Auto,*" RowSpacing="0">
         <control:BackNavBar Grid.Row="0" />
         
         <ScrollView Grid.Row="1">
@@ -67,12 +67,5 @@
 
             </VerticalStackLayout>
         </ScrollView>
-
-        <control:BottomNavBar Grid.Row="2"
-                             SelectedTab="Inquiry"
-                             HomeCommand="{Binding NavigateToHomeCommand}"
-                             ChatCommand="{Binding NavigateToInquiryCommand}"
-                             ProfileCommand="{Binding NavigateToProfileCommand}"
-                             VerticalOptions="End" />
     </Grid>
 </ContentPage>

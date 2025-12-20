@@ -13,8 +13,8 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
-        <control:TopNavBar x:Name="TopBar" Grid.Row="0" />
+    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+        <control:BackNavBar x:Name="TopBar" Grid.Row="0" />
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="12">
@@ -89,7 +89,5 @@
 
         </VerticalStackLayout>
         </ScrollView>
-
-        <control:BottomNavBar x:Name="BottomBar" Grid.Row="2" SelectedTab="Chat" />
     </Grid>
 </ContentPage>
