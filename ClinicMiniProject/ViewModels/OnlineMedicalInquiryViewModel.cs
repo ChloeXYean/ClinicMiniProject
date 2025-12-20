@@ -12,6 +12,7 @@ namespace ClinicMiniProject.ViewModels
     public sealed class OnlineMedicalInquiryViewModel : INotifyPropertyChanged
     {
         private readonly IInquiryService _inquiryService;
+        private readonly IAuthService _authService;
 
         private string _searchQuery = string.Empty;
         private string _selectedStatus = "All";
@@ -22,9 +23,10 @@ namespace ClinicMiniProject.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public OnlineMedicalInquiryViewModel(IInquiryService inquiryService)
+        public OnlineMedicalInquiryViewModel(IInquiryService inquiryService, IAuthService authService)
         {
             _inquiryService = inquiryService;
+            _authService = authService;
 
             FilterCommand = new Command(async () => await LoadAsync());
             ClearDateCommand = new Command(() => 
@@ -105,7 +107,14 @@ namespace ClinicMiniProject.ViewModels
         {
             InquiryList.Clear();
 
-            var items = await _inquiryService.GetInquiriesAsync(SearchQuery);
+            // Get current doctor
+            var currentUser = _authService?.GetCurrentUser();
+            if (currentUser == null || !currentUser.isDoctor)
+            {
+                return; // Only load for doctors
+            }
+
+            var items = await _inquiryService.GetInquiriesByDoctorAsync(currentUser.staff_ID, SearchQuery);
             
             // Apply filters
             var filteredItems = items.Where(i =>
@@ -140,7 +149,7 @@ namespace ClinicMiniProject.ViewModels
             if (string.IsNullOrWhiteSpace(inquiryId))
                 return;
 
-            Shell.Current.GoToAsync($"///InquiryDetails?inquiryId={Uri.EscapeDataString(inquiryId)}");
+            Shell.Current.GoToAsync($"///InquiryDetailsPage?inquiryId={Uri.EscapeDataString(inquiryId)}");
         }
 
         private static string BuildSnippet(string text)
