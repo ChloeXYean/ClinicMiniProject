@@ -42,6 +42,8 @@ namespace ClinicMiniProject.Services
             string? staffId, DateTime startDate, DateTime endDate)
         {
             var query = _context.Appointments
+                    .Include(a => a.Patient)
+                    .Include(a => a.Staff)
                     .Where(a => a.appointedAt >= startDate && a.appointedAt <= endDate);
 
             if (!string.IsNullOrEmpty(staffId))
