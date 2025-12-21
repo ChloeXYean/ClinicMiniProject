@@ -148,10 +148,15 @@ namespace ClinicMiniProject.Services
             if (string.IsNullOrEmpty(newId))
                 newId = "I" + new Random().Next(100000, 999999).ToString();
 
-            // Assign a default doctor if your DTO doesn't select one (SQL requires it)
-            // Here we pick the first doctor found in DB as a fallback
-            var defaultDoc = await _context.Staffs.FirstOrDefaultAsync(s => s.isDoctor);
-            string assignedDocId = defaultDoc?.staff_ID ?? "S001";
+            // Use the DoctorId from DTO if provided, otherwise use fallback
+            string assignedDocId = dto.DoctorId;
+            
+            // Only use default doctor if no doctor was specified
+            if (string.IsNullOrEmpty(assignedDocId))
+            {
+                var defaultDoc = await _context.Staffs.FirstOrDefaultAsync(s => s.isDoctor);
+                assignedDocId = defaultDoc?.staff_ID ?? "S001";
+            }
 
             var newInquiry = new Inquiry
             {
@@ -173,6 +178,7 @@ namespace ClinicMiniProject.Services
             // FIX: Now queries the Database instead of the static list
             var list = await _context.Inquiries
                 .Include(i => i.Patient)
+                .Include(i => i.Doctor) // Include doctor to get doctor name
                 .Where(i => i.PatientIc == patientIc)
                 .OrderByDescending(i => i.AskDatetime)
                 .ToListAsync();
@@ -194,6 +200,7 @@ namespace ClinicMiniProject.Services
                 FullSymptomDescription = i.SymptomDescription,
                 Status = i.Status,
                 DoctorResponse = i.DoctorReply ?? string.Empty,
+                DoctorName = i.Doctor?.staff_name ?? "Unknown", // Add doctor name
                 Image1 = null,
                 Image2 = null,
                 Image3 = null

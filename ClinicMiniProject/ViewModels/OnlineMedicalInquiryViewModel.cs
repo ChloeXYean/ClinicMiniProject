@@ -3,8 +3,10 @@ using ClinicMiniProject.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Maui.Controls;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq; // Required for LINQ extensions
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -16,6 +18,7 @@ namespace ClinicMiniProject.ViewModels
         private readonly IInquiryService _inquiryService;
         private readonly IAuthService? _authService;
         private readonly IAppointmentService? _appointmentService;
+        private readonly AppDbContext _context;
 
         private string _searchQuery = string.Empty;
         private string _selectedStatus = "All";
@@ -26,14 +29,19 @@ namespace ClinicMiniProject.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        // Combined Constructor: Includes all necessary services (IAppointmentService & AppDbContext)
         public OnlineMedicalInquiryViewModel(
                     IInquiryService inquiryService,
                     IAuthService authService,
+                    IAppointmentService appointmentService,
                     AppDbContext context)
         {
             _inquiryService = inquiryService;
             _authService = authService;
+            _appointmentService = appointmentService;
+            _context = context;
 
+            // Commands
             FilterCommand = new Command(async () => await LoadAsync());
             ViewInquiryDetailsCommand = new Command<string>(OnViewDetails);
 
@@ -43,12 +51,17 @@ namespace ClinicMiniProject.ViewModels
 
             UploadPhotoCommand = new Command(async () => await UploadPhotoAsync());
             ViewPhotosCommand = new Command(async () => await Shell.Current.GoToAsync("InquiryPhotos"));
+
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
             SubmitInquiryCommand = new Command(async () => await SubmitInquiryAsync());
 
-            _ = InitializePatientDataAsync();
-            _ = LoadAsync();
+            // Note: InitializePatientDataAsync and LoadAsync should be called from OnAppearing 
+            // in the respective pages to avoid concurrent DbContext access issues during construction.
+            // _ = InitializePatientDataAsync();
+            // _ = LoadAsync();
         }
+
+        #region Properties
 
         public string SearchQuery
         {
@@ -59,7 +72,7 @@ namespace ClinicMiniProject.ViewModels
         public string SelectedStatus
         {
             get => _selectedStatus;
-            set 
+            set
             {
                 if (SetProperty(ref _selectedStatus, value))
                 {
@@ -71,7 +84,7 @@ namespace ClinicMiniProject.ViewModels
         public DateTime FilterDate
         {
             get => _filterDate;
-            set 
+            set
             {
                 if (SetProperty(ref _filterDate, value))
                 {
@@ -110,17 +123,18 @@ namespace ClinicMiniProject.ViewModels
             set => SetProperty(ref _selectedDoctor, value);
         }
 
+        // Collections
         public ObservableCollection<StaffListItem> Doctors { get; } = new();
-
         public ObservableCollection<InquiryListItemVm> PatientInquiryHistory { get; } = new();
-
         public ObservableCollection<string> StatusOptions { get; } = new() { "All", "Pending", "Replied" };
-
         public ObservableCollection<InquiryListItemVm> InquiryList { get; } = new();
 
+        #endregion
+
+        #region Commands
         public ICommand BackCommand { get; }
         public ICommand FilterCommand { get; }
-        public ICommand ClearDateCommand { get; }
+        public ICommand ClearDateCommand { get; } // Declared but usually not initialized in snippet, can add if needed
         public ICommand ViewInquiryDetailsCommand { get; }
         public ICommand NavigateToHomeCommand { get; }
         public ICommand NavigateToInquiryCommand { get; }
@@ -128,6 +142,9 @@ namespace ClinicMiniProject.ViewModels
         public ICommand UploadPhotoCommand { get; }
         public ICommand ViewPhotosCommand { get; }
         public ICommand SubmitInquiryCommand { get; }
+        #endregion
+
+        #region Methods
 
         public async Task LoadAsync()
         {
@@ -136,46 +153,61 @@ namespace ClinicMiniProject.ViewModels
                 InquiryList.Clear();
 
                 var currentUser = _authService?.GetCurrentUser();
-                if (currentUser == null) return;
 
-                IEnumerable<InquiryDto> items;
-
-                // LOGIC CHANGE: 
-                // If Doctor -> View assigned inquiries
-                // If Nurse (Not Doctor) -> View ALL inquiries (Admin/Triage view)
-                if (currentUser.isDoctor)
+                // 1. Staff Logic (Doctor or Nurse)
+                if (currentUser != null)
                 {
-                    items = await _inquiryService.GetInquiriesByDoctorAsync(currentUser.staff_ID, SearchQuery);
-                }
-                else
-                {
-                    // Nurse View: Fetch All Inquiries using the generic search method
-                    items = await _inquiryService.GetInquiriesAsync(SearchQuery);
-                }
+                    IEnumerable<InquiryDto> items;
 
-                // Apply Client-Side Filters (Status/Date)
-                var filteredItems = items.Where(i =>
-                {
-                    if (SelectedStatus != "All" && !string.Equals(i.Status, SelectedStatus, StringComparison.OrdinalIgnoreCase))
-                        return false;
-
-                    if (_isDateFilterActive && i.CreatedAt.Date != FilterDate.Date)
-                        return false;
-
-                    return true;
-                });
-
-                foreach (var i in filteredItems)
-                {
-                    InquiryList.Add(new InquiryListItemVm
+                    // MERGED LOGIC:
+                    // If Doctor -> View assigned inquiries
+                    // If Nurse (Not Doctor) -> View ALL inquiries (Admin/Triage view)
+                    if (currentUser.isDoctor)
                     {
-                        InquiryId = i.InquiryId,
-                        PatientIc = i.PatientIc,
-                        PatientName = i.PatientName,
-                        SymptomSnippet = BuildSnippet(i.FullSymptomDescription),
-                        Status = i.Status,
-                        CreatedDate = i.CreatedAt
+                        items = await _inquiryService.GetInquiriesByDoctorAsync(currentUser.staff_ID, SearchQuery);
+                    }
+                    else
+                    {
+                        // Nurse View: Fetch All Inquiries
+                        items = await _inquiryService.GetInquiriesAsync(SearchQuery);
+                    }
+
+                    // Apply Client-Side Filters (Status/Date)
+                    var filteredItems = items.Where(i =>
+                    {
+                        if (SelectedStatus != "All" && !string.Equals(i.Status, SelectedStatus, StringComparison.OrdinalIgnoreCase))
+                            return false;
+
+                        if (_isDateFilterActive && i.CreatedAt.Date != FilterDate.Date)
+                            return false;
+
+                        return true;
                     });
+
+                    foreach (var i in filteredItems)
+                    {
+                        InquiryList.Add(new InquiryListItemVm
+                        {
+                            InquiryId = i.InquiryId,
+                            PatientIc = i.PatientIc,
+                            PatientName = i.PatientName,
+                            SymptomSnippet = BuildSnippet(i.FullSymptomDescription),
+                            Status = i.Status,
+                            CreatedDate = i.CreatedAt
+                        });
+                    }
+                }
+
+                // 2. Patient Logic (Load specific history)
+                var patient = _authService?.GetCurrentPatient();
+                if (patient != null)
+                {
+                    await LoadPatientHistoryAsync(patient.patient_IC);
+                }
+                else if (currentUser != null && !currentUser.isDoctor)
+                {
+                    // Fallback for nurse or other staff testing as patient (Hybrid view)
+                    await LoadPatientHistoryAsync(currentUser.staff_ID);
                 }
             }
             catch (Exception ex)
@@ -183,6 +215,7 @@ namespace ClinicMiniProject.ViewModels
                 System.Diagnostics.Debug.WriteLine($"Error loading inquiries: {ex.Message}");
             }
         }
+
         private async Task LoadPatientHistoryAsync(string patientIc)
         {
             PatientInquiryHistory.Clear();
@@ -194,13 +227,15 @@ namespace ClinicMiniProject.ViewModels
                     InquiryId = i.InquiryId,
                     PatientIc = i.PatientIc,
                     PatientName = i.PatientName,
+                    DoctorName = i.DoctorName ?? "Unknown",
                     SymptomSnippet = BuildSnippet(i.FullSymptomDescription),
                     Status = i.Status,
                     CreatedDate = i.CreatedAt
                 });
             }
         }
-        private async Task InitializePatientDataAsync()
+
+        public async Task InitializePatientDataAsync()
         {
             var patient = _authService?.GetCurrentPatient();
             string? patientIc = patient?.patient_IC;
@@ -214,6 +249,7 @@ namespace ClinicMiniProject.ViewModels
 
             if (string.IsNullOrEmpty(patientIc)) return;
 
+            // Using _appointmentService (Now properly injected)
             if (_appointmentService != null)
             {
                 // 1. Get History
@@ -221,9 +257,10 @@ namespace ClinicMiniProject.ViewModels
 
                 // 2. Filter: Must be "Completed" AND "isDoctor"
                 var consultedDoctors = appointments
+                    .Where(a => string.Equals((a.status ?? "").Trim(), "Completed", StringComparison.OrdinalIgnoreCase))
                     .Select(a => a.Staff)
-                    .Where(s => s != null && s.isDoctor) // <--- THIS FILTERS OUT NURSES (FLORA)
-                    .GroupBy(s => s.staff_ID) // Remove duplicates (if patient saw Doc A twice)
+                    .Where(s => s != null && s.isDoctor)
+                    .GroupBy(s => s.staff_ID) // Remove duplicates
                     .Select(g => g.First())
                     .ToList();
 
@@ -234,8 +271,6 @@ namespace ClinicMiniProject.ViewModels
                     {
                         Doctors.Add(new StaffListItem { Id = doc.staff_ID, Name = doc.staff_name });
                     }
-
-                    // Optional: If list is empty, it means they haven't completed any consultations yet.
                 });
             }
         }
@@ -274,21 +309,44 @@ namespace ClinicMiniProject.ViewModels
                 return;
             }
 
-            // 3. Create DTO with DOCTOR ID
+            // 3. Create DTO with DOCTOR ID & Auto-Generated ID
             var newInquiry = new InquiryDto
             {
-                InquiryId = $"INQ{DateTime.Now:yyyyMMddHHmmss}",
+                InquiryId = "I" + new Random().Next(100000, 999999).ToString(), // 7 chars
                 PatientIc = ic,
                 PatientName = name,
                 FullSymptomDescription = SymptomDescription,
                 Status = "Pending",
                 CreatedAt = DateTime.Now,
-
-                // --- ADD THIS LINE ---
                 DoctorId = SelectedDoctor.Id
             };
 
-            var success = await _inquiryService.CreateInquiryAsync(newInquiry);
+            try
+            {
+                var success = await _inquiryService.CreateInquiryAsync(newInquiry);
+
+                if (success)
+                {
+                    await Shell.Current.DisplayAlert("Success", "Your inquiry has been submitted successfully!", "OK");
+
+                    // Reset form
+                    SymptomDescription = string.Empty;
+                    SelectedDoctor = null;
+                    UploadedPhotoPath = string.Empty;
+                    PhotoNotes = string.Empty;
+
+                    // Navigate back
+                    await Shell.Current.GoToAsync("..");
+                }
+                else
+                {
+                    await Shell.Current.DisplayAlert("Error", "Failed to submit inquiry. Please try again.", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
+            }
         }
 
         private void OnViewDetails(string inquiryId)
@@ -296,6 +354,7 @@ namespace ClinicMiniProject.ViewModels
             if (!string.IsNullOrWhiteSpace(inquiryId))
                 Shell.Current.GoToAsync($"///InquiryDetailsPage?inquiryId={Uri.EscapeDataString(inquiryId)}");
         }
+
         private static string BuildSnippet(string text)
         {
             if (string.IsNullOrWhiteSpace(text)) return string.Empty;
@@ -329,8 +388,6 @@ namespace ClinicMiniProject.ViewModels
                 {
                     UploadedPhotoPath = result.FullPath;
                     await Shell.Current.DisplayAlert("Success", "Photo uploaded successfully", "OK");
-                    
-                    // Navigate to photos page
                     await Shell.Current.GoToAsync("InquiryPhotos");
                 }
             }
@@ -339,6 +396,8 @@ namespace ClinicMiniProject.ViewModels
                 await Shell.Current.DisplayAlert("Error", $"Failed to upload photo: {ex.Message}", "OK");
             }
         }
+
+        #endregion
     }
 
     public sealed class InquiryListItemVm
@@ -349,13 +408,14 @@ namespace ClinicMiniProject.ViewModels
         public string SymptomSnippet { get; init; } = string.Empty;
         public string Status { get; init; } = string.Empty;
         public DateTime CreatedDate { get; init; }
-        
-        public string DoctorName { get; set; } = string.Empty; // For patient history view
+
+        public string DoctorName { get; set; } = string.Empty;
         public string SymptomHistory => SymptomSnippet;
 
-        public ICommand ViewDetailsCommand { get; } = new Command<InquiryListItemVm>(async (vm) => 
+        // Uses the instance property InquiryId, robust against binding mismatches
+        public ICommand ViewDetailsCommand => new Command(async () =>
         {
-             await Shell.Current.GoToAsync($"InquiryDetailsView?inquiryId={vm.InquiryId}");
+            await Shell.Current.GoToAsync($"InquiryDetailsView?inquiryId={InquiryId}");
         });
     }
 

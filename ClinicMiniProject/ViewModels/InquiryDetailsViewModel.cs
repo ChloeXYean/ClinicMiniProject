@@ -87,8 +87,15 @@ namespace ClinicMiniProject.ViewModels
             if (string.IsNullOrWhiteSpace(InquiryId))
                 return;
 
-            Details = await _inquiryService.GetInquiryByIdAsync(InquiryId);
-            DoctorResponseText = Details?.DoctorResponse ?? string.Empty;
+            try
+            {
+                Details = await _inquiryService.GetInquiryByIdAsync(InquiryId);
+                DoctorResponseText = Details?.DoctorResponse ?? string.Empty;
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Error", $"Failed to load inquiry details: {ex.Message}", "OK");
+            }
         }
 
         private async Task SendAsync()
