@@ -13,10 +13,6 @@
 
     <Grid RowDefinitions="Auto, *">
 
-        <controls:BackNavBar Title="Patient Details" 
-                             BackCommand="{Binding BackCommand}" 
-                             Grid.Row="0"/>
-
         <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="20">
 
             <Label Text="Date: 12 November 2025" 

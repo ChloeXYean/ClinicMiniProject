@@ -5,7 +5,6 @@
              x:Class="ClinicMiniProject.UI.Doctor.AppointmentSchedulePage"
              Shell.NavBarIsVisible="True" 
              Title="Appointment Schedule">
-
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
 
         <Border Grid.Row="0" Padding="20,12" StrokeThickness="0" BackgroundColor="#FFFFFF">
@@ -87,7 +86,7 @@
                                             </Label>
                                         </Border>
 
-                                        <Border Grid.Column="2" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
+                                        <Border Grid.Column="2" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="{Binding CellsByServiceType[FollowUpTreatment].IsBooked, Converter={StaticResource BoolToColorConverter}}">
                                             <Label Text="{Binding CellsByServiceType[FollowUpTreatment].PatientName}">
                                                 <Label.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
@@ -96,7 +95,7 @@
                                             </Label>
                                         </Border>
 
-                                        <Border Grid.Column="3" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
+                                        <Border Grid.Column="3" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="{Binding CellsByServiceType[TestResultDiscussion].IsBooked, Converter={StaticResource BoolToColorConverter}}">
                                             <Label Text="{Binding CellsByServiceType[TestResultDiscussion].PatientName}">
                                                 <Label.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
@@ -105,7 +104,7 @@
                                             </Label>
                                         </Border>
 
-                                        <Border Grid.Column="4" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
+                                        <Border Grid.Column="4" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="{Binding CellsByServiceType[VaccinationInjection].IsBooked, Converter={StaticResource BoolToColorConverter}}">
                                             <Label Text="{Binding CellsByServiceType[VaccinationInjection].PatientName}">
                                                 <Label.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
@@ -114,7 +113,7 @@
                                             </Label>
                                         </Border>
 
-                                        <Border Grid.Column="5" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
+                                        <Border Grid.Column="5" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="{Binding CellsByServiceType[MedicalScreening].IsBooked, Converter={StaticResource BoolToColorConverter}}">
                                             <Label Text="{Binding CellsByServiceType[MedicalScreening].PatientName}">
                                                 <Label.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"

@@ -20,28 +20,23 @@ namespace ClinicMiniProject.Services
             var day = date.Date;
             var endOfDay = day.AddDays(1);
 
-            System.Diagnostics.Debug.WriteLine($"[Schedule] Loading for Doc: {doctorId} on {day:dd/MM/yyyy}...");
-
-            // 1. Fetch appointments (Fast SQL Query - 1 Call Only)
+            // 1. Fetch appointments ONE TIME (Fast)
             var appts = (await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(doctorId, day, endOfDay))
                 ?.Where(a => a.appointedAt.HasValue)
                 .ToList() ?? new();
 
-            System.Diagnostics.Debug.WriteLine($"[Schedule] Found {appts.Count} appointments in Database.");
-
-            // 2. Setup Grid Structure (Memory only, very fast)
+            // 2. Setup Grid
             var serviceTypes = new List<string>
             {
                 "GeneralConsultation", "FollowUpTreatment", "TestResultDiscussion", "VaccinationInjection", "MedicalScreening"
             };
 
-            var startHour = 9;
-            var endHour = 21;
-            var start = day.AddHours(startHour);
+            var start = day.AddHours(9);
+            var end = day.AddHours(21);
             var rows = new List<TimeSlotRowDto>();
 
-            // Generate 24 slots (30 mins each)
-            for (var t = start; t < day.AddHours(endHour); t = t.AddMinutes(30))
+            // Create 24 slots (30 mins each)
+            for (var t = start; t < end; t = t.AddMinutes(30))
             {
                 var row = new TimeSlotRowDto { SlotStart = t };
                 foreach (var st in serviceTypes)
@@ -49,17 +44,14 @@ namespace ClinicMiniProject.Services
                 rows.Add(row);
             }
 
-            // 3. Fill Data using Math (No Database calls in loop)
+            // 3. Fill Data (Memory Only - Instant)
             foreach (var appt in appts)
             {
                 var slot = appt.appointedAt!.Value;
 
-                // Calculate which row index this appointment belongs to
-                // e.g. 10:00 AM - 9:00 AM = 60 mins -> Index 2
+                // Calculate Row Index using Math (No looping needed)
                 var totalMinutes = (slot - start).TotalMinutes;
-
                 if (totalMinutes < 0) continue;
-
                 int index = (int)(totalMinutes / 30);
 
                 if (index >= 0 && index < rows.Count)
@@ -70,22 +62,19 @@ namespace ClinicMiniProject.Services
 
                     if (row.CellsByServiceType.ContainsKey(col))
                     {
-                        // Use the data already loaded in 'appt.Patient'
+                        // FIX: Use appt.Patient directly (Avoids DB call)
                         var patient = appt.Patient;
                         var isOnline = patient?.isAppUser ?? false;
                         var name = patient?.patient_name ?? appt.patient_IC;
-
-                        var label = isOnline ? $"{name} (App)" : $"{name} (Walk-in)";
+                        var label = isOnline ? $"{name} (Online)" : $"{name} (Walk-in)";
 
                         row.CellsByServiceType[col] = new SlotCellDto
                         {
-                            IsBooked = true,
+                            IsBooked = true, // This triggers your Converter color
                             AppointmentId = appt.appointment_ID ?? string.Empty,
                             PatientIc = appt.patient_IC,
                             PatientName = label
                         };
-
-                        System.Diagnostics.Debug.WriteLine($"[Schedule] Mapped {name} to {slot:HH:mm} - {col}");
                     }
                 }
             }

@@ -62,7 +62,7 @@ namespace ClinicMiniProject.ViewModels
             RegisterPatientCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(RegisterPatientPage)));
             EndConsultationCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(EndConsultationPage)));
             ViewAppointmentCommand = new Command(async () => await Shell.Current.GoToAsync($"{nameof(AppointmentSchedulePage)}?UserType=Nurse"));
-            AppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("AppointmentHistory?UserType=Nurse"));
+            AppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync($"{nameof(AppointmentHistoryPage)}?UserType=Nurse"));
             ReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync($"NurseReporting?UserType=Nurse"));
             WalkInQueueCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(WalkInPatientQueuePage)));
 

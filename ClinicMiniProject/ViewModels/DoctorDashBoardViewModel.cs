@@ -104,9 +104,9 @@ namespace ClinicMiniProject.ViewModels
             _inquiryService = inquiryService;
 
             // --- Navigation Logic ---
-            NavigateToAppointmentScheduleCommand = new Command(async () => await Shell.Current.GoToAsync("///AppointmentSchedulePage"));
+            NavigateToAppointmentScheduleCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(AppointmentSchedulePage)));
             NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync("///ConsultationDetailsPage"));
-            NavigateToAppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("///AppointmentHistoryPage"));
+            NavigateToAppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(AppointmentHistoryPage)));
             NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("///ReportingManagementPage"));
 
             // Bottom Bar Commands

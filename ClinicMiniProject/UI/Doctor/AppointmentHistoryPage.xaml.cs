@@ -9,13 +9,9 @@ public partial class AppointmentHistoryPage : ContentPage, IQueryAttributable
 {
     private string _userType = "Doctor";
 
-    public ICommand BackCommand { get; private set; }
-
     public AppointmentHistoryPage()
     {
         InitializeComponent();
-
-        BackCommand = new Command(async () => await OnBack());
 
         var sp = Application.Current?.Handler?.MauiContext?.Services;
         var viewModel = sp?.GetService<PatientAppointmentHistoryViewModel>();
@@ -63,18 +59,6 @@ public partial class AppointmentHistoryPage : ContentPage, IQueryAttributable
             }
 
             BottomBar.ChatCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
-        }
-    }
-
-    private async Task OnBack()
-    {
-        if (_userType == "Nurse")
-        {
-            await Shell.Current.GoToAsync("///NurseHomePage");
-        }
-        else
-        {
-            await Shell.Current.GoToAsync($"///{nameof(DoctorDashboardPage)}");
         }
     }
 }

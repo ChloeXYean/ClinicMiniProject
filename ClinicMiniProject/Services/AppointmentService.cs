@@ -70,10 +70,10 @@ namespace ClinicMiniProject.Services
         }
 
         public async Task<IEnumerable<Appointment>> GetAppointmentsByStaffAndDateRangeAsync(
-    string? staffId, DateTime startDate, DateTime endDate)
+            string? staffId, DateTime startDate, DateTime endDate)
         {
             var query = _context.Appointments
-                    .Include(a => a.Patient)
+                    .Include(a => a.Patient) 
                     .Include(a => a.Staff)
                     .Where(a => a.appointedAt >= startDate && a.appointedAt <= endDate);
 
@@ -142,8 +142,8 @@ namespace ClinicMiniProject.Services
         public Task<Appointment?> GetAppointmentByIdAsync(string appointmentId)
         {
             return _context.Appointments
-         .Include(a => a.Patient) 
-         .FirstOrDefaultAsync(a => a.appointment_ID == appointmentId);
+                .Include(a => a.Patient) 
+                .FirstOrDefaultAsync(a => a.appointment_ID == appointmentId);
         }
 
         public Task UpdateAppointmentAsync(Appointment appointment)

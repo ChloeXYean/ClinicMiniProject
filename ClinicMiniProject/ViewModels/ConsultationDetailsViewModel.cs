@@ -127,10 +127,11 @@ namespace ClinicMiniProject.ViewModels
                     }
                     else
                     {
-                        DoctorRemarks = "No consultation details available";
-                        NurseNotes = "No consultation details available";
-                        Prescription = "No prescription recorded";
+                        DoctorRemarks = " - ";
+                        NurseNotes = " - ";
+                        Prescription = " - ";
                     }
+                
                 }
             }
             catch (Exception ex)

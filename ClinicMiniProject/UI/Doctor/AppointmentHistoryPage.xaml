@@ -2,18 +2,15 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
+             Shell.NavBarIsVisible="True"
              x:Class="ClinicMiniProject.UI.Doctor.AppointmentHistoryPage"
              x:Name="ThisPage"
              BackgroundColor="#F5F7FA"
-             Shell.NavBarIsVisible="True" 
-             Title="Appointment Schedule">
+             Title="Appointment History">
 
-    <Grid RowDefinitions="Auto, *, Auto" RowSpacing="0">
+    <Grid RowDefinitions="*, Auto" RowSpacing="0">
 
-        <control:BackNavBar Grid.Row="0" 
-                            BackCommand="{Binding BackCommand, Source={x:Reference ThisPage}}" />
-
-        <RefreshView Grid.Row="1" Command="{Binding LoadAppointmentsCommand}">
+        <RefreshView Grid.Row="0" Command="{Binding LoadAppointmentsCommand}">
             <CollectionView ItemsSource="{Binding Appointments}" Margin="15">
                 <CollectionView.ItemsLayout>
                     <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
@@ -76,6 +73,6 @@
             </CollectionView>
         </RefreshView>
 
-        <control:BottomNavBar x:Name="BottomBar" Grid.Row="2" />
+        <control:BottomNavBar x:Name="BottomBar" Grid.Row="1" />
     </Grid>
 </ContentPage>
