@@ -60,8 +60,8 @@
                             <Label Text="Medical Screening" FontAttributes="Bold" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
                         </Border>
 
-                        <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="6" BindableLayout.ItemsSource="{Binding Rows}">
-                            <BindableLayout.ItemTemplate>
+                        <CollectionView Grid.Row="1" Grid.ColumnSpan="6" ItemsSource="{Binding Rows}" SelectionMode="None">
+                            <CollectionView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid ColumnSpacing="0" RowSpacing="0">
                                         <Grid.ColumnDefinitions>
@@ -77,55 +77,54 @@
                                             <Label Text="{Binding SlotStart, StringFormat='{0:HH:mm}'}" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
                                         </Border>
 
-                                        <Border Grid.Column="1" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="{Binding CellsByServiceType[GeneralConsultation].IsBooked, Converter={StaticResource BoolToColorConverter}}">
-                                            <Label Text="{Binding CellsByServiceType[GeneralConsultation].PatientName}" TextColor="#1A1A1A">
+                                        <Border Grid.Column="1" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="{Binding GeneralConsultation.IsBooked, Converter={StaticResource BoolToColorConverter}}">
+                                            <Label Text="{Binding GeneralConsultation.PatientName}" TextColor="#1A1A1A">
                                                 <Label.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                                          CommandParameter="{Binding CellsByServiceType[GeneralConsultation].PatientIc}" />
+                                                  CommandParameter="{Binding GeneralConsultation.PatientIc}" />
                                                 </Label.GestureRecognizers>
                                             </Label>
                                         </Border>
 
-                                        <Border Grid.Column="2" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="{Binding CellsByServiceType[FollowUpTreatment].IsBooked, Converter={StaticResource BoolToColorConverter}}">
-                                            <Label Text="{Binding CellsByServiceType[FollowUpTreatment].PatientName}">
+                                        <Border Grid.Column="2" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="{Binding FollowUpTreatment.IsBooked, Converter={StaticResource BoolToColorConverter}}">
+                                            <Label Text="{Binding FollowUpTreatment.PatientName}">
                                                 <Label.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                                          CommandParameter="{Binding CellsByServiceType[FollowUpTreatment].PatientIc}" />
+                                                  CommandParameter="{Binding FollowUpTreatment.PatientIc}" />
                                                 </Label.GestureRecognizers>
                                             </Label>
                                         </Border>
 
-                                        <Border Grid.Column="3" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="{Binding CellsByServiceType[TestResultDiscussion].IsBooked, Converter={StaticResource BoolToColorConverter}}">
-                                            <Label Text="{Binding CellsByServiceType[TestResultDiscussion].PatientName}">
+                                        <Border Grid.Column="3" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="{Binding TestResultDiscussion.IsBooked, Converter={StaticResource BoolToColorConverter}}">
+                                            <Label Text="{Binding TestResultDiscussion.PatientName}">
                                                 <Label.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                                          CommandParameter="{Binding CellsByServiceType[TestResultDiscussion].PatientIc}" />
+                                                  CommandParameter="{Binding TestResultDiscussion.PatientIc}" />
                                                 </Label.GestureRecognizers>
                                             </Label>
                                         </Border>
 
-                                        <Border Grid.Column="4" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="{Binding CellsByServiceType[VaccinationInjection].IsBooked, Converter={StaticResource BoolToColorConverter}}">
-                                            <Label Text="{Binding CellsByServiceType[VaccinationInjection].PatientName}">
+                                        <Border Grid.Column="4" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="{Binding VaccinationInjection.IsBooked, Converter={StaticResource BoolToColorConverter}}">
+                                            <Label Text="{Binding VaccinationInjection.PatientName}">
                                                 <Label.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                                          CommandParameter="{Binding CellsByServiceType[VaccinationInjection].PatientIc}" />
+                                                  CommandParameter="{Binding VaccinationInjection.PatientIc}" />
                                                 </Label.GestureRecognizers>
                                             </Label>
                                         </Border>
 
-                                        <Border Grid.Column="5" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="{Binding CellsByServiceType[MedicalScreening].IsBooked, Converter={StaticResource BoolToColorConverter}}">
-                                            <Label Text="{Binding CellsByServiceType[MedicalScreening].PatientName}">
+                                        <Border Grid.Column="5" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="{Binding MedicalScreening.IsBooked, Converter={StaticResource BoolToColorConverter}}">
+                                            <Label Text="{Binding MedicalScreening.PatientName}">
                                                 <Label.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                                          CommandParameter="{Binding CellsByServiceType[MedicalScreening].PatientIc}" />
+                                                  CommandParameter="{Binding MedicalScreening.PatientIc}" />
                                                 </Label.GestureRecognizers>
                                             </Label>
                                         </Border>
                                     </Grid>
                                 </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </VerticalStackLayout>
-
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
                     </Grid>
                 </ScrollView>
             </Grid>

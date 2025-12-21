@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ClinicMiniProject.Dtps
-{
+namespace ClinicMiniProject.Dtos { 
     public class AppointmentScheduleGridDto
     {
         public DateTime Date { get; set; }
@@ -13,13 +12,18 @@ namespace ClinicMiniProject.Dtps
     public class TimeSlotRowDto
     {
         public DateTime SlotStart { get; set; }
-        // The UI needs this to be a Property (get; set;) to read it!
         public Dictionary<string, SlotCellDto> CellsByServiceType { get; set; } = new();
+
+        // --- ADD THESE PROPERTIES BELOW ---
+        public SlotCellDto GeneralConsultation => CellsByServiceType.ContainsKey("GeneralConsultation") ? CellsByServiceType["GeneralConsultation"] : new SlotCellDto();
+        public SlotCellDto FollowUpTreatment => CellsByServiceType.ContainsKey("FollowUpTreatment") ? CellsByServiceType["FollowUpTreatment"] : new SlotCellDto();
+        public SlotCellDto TestResultDiscussion => CellsByServiceType.ContainsKey("TestResultDiscussion") ? CellsByServiceType["TestResultDiscussion"] : new SlotCellDto();
+        public SlotCellDto VaccinationInjection => CellsByServiceType.ContainsKey("VaccinationInjection") ? CellsByServiceType["VaccinationInjection"] : new SlotCellDto();
+        public SlotCellDto MedicalScreening => CellsByServiceType.ContainsKey("MedicalScreening") ? CellsByServiceType["MedicalScreening"] : new SlotCellDto();
     }
 
     public class SlotCellDto
     {
-        // These MUST be 'public' and have '{ get; set; }'
         public bool IsBooked { get; set; }
         public string AppointmentId { get; set; } = string.Empty;
         public string PatientIc { get; set; } = string.Empty;
