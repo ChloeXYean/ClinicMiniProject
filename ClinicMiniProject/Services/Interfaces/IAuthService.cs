@@ -2,7 +2,8 @@ using ClinicMiniProject.Models;
 using System.Threading.Tasks;
 
 namespace ClinicMiniProject.Services.Interfaces
-date    public interface IAuthService
+{
+    public interface IAuthService
     {
         Task<object> LoginAsync(string patient_IC, string password);
         object Login(string patient_IC, string password, out string message);
