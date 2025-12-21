@@ -10,6 +10,7 @@ using System.Linq; // Required for LINQ extensions
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using ClinicMiniProject.Models;
 
 namespace ClinicMiniProject.ViewModels
 {
@@ -29,7 +30,6 @@ namespace ClinicMiniProject.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        // Combined Constructor: Includes all necessary services (IAppointmentService & AppDbContext)
         public OnlineMedicalInquiryViewModel(
                     IInquiryService inquiryService,
                     IAuthService authService,
@@ -45,7 +45,7 @@ namespace ClinicMiniProject.ViewModels
             FilterCommand = new Command(async () => await LoadAsync());
             ViewInquiryDetailsCommand = new Command<string>(OnViewDetails);
 
-            NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
+            NavigateToHomeCommand = new Command(async () => await NavigateHomeAsync());
             NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorInquiryHistory"));
             NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
 
@@ -55,10 +55,20 @@ namespace ClinicMiniProject.ViewModels
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
             SubmitInquiryCommand = new Command(async () => await SubmitInquiryAsync());
 
-            // Note: InitializePatientDataAsync and LoadAsync should be called from OnAppearing 
-            // in the respective pages to avoid concurrent DbContext access issues during construction.
-            // _ = InitializePatientDataAsync();
-            // _ = LoadAsync();
+        }
+        private async Task NavigateHomeAsync()
+        {
+            var user = _authService?.GetCurrentUser();
+            if (user != null && !user.isDoctor)
+            {
+                // Is Nurse
+                await Shell.Current.GoToAsync("///NurseHomePage");
+            }
+            else
+            {
+                // Default to Doctor (or Patient doesn't use this command usually)
+                await Shell.Current.GoToAsync("///DoctorDashboardPage");
+            }
         }
 
         #region Properties
@@ -148,73 +158,100 @@ namespace ClinicMiniProject.ViewModels
 
         public async Task LoadAsync()
         {
-            try
+            InquiryList.Clear();
+
+            var currentUser = _authService?.GetCurrentUser();
+            var currentPatient = _authService?.GetCurrentPatient();
+
+            // 1. Staff Logic (Doctor or Nurse)
+            if (currentUser != null)
             {
-                InquiryList.Clear();
+                IEnumerable<InquiryDto> items;
 
-                var currentUser = _authService?.GetCurrentUser();
-
-                // 1. Staff Logic (Doctor or Nurse)
-                if (currentUser != null)
+                if (currentUser != null && currentUser.isDoctor)
                 {
-                    IEnumerable<InquiryDto> items;
-
-                    // MERGED LOGIC:
-                    // If Doctor -> View assigned inquiries
-                    // If Nurse (Not Doctor) -> View ALL inquiries (Admin/Triage view)
-                    if (currentUser.isDoctor)
-                    {
-                        items = await _inquiryService.GetInquiriesByDoctorAsync(currentUser.staff_ID, SearchQuery);
-                    }
-                    else
-                    {
-                        // Nurse View: Fetch All Inquiries
-                        items = await _inquiryService.GetInquiriesAsync(SearchQuery);
-                    }
-
-                    // Apply Client-Side Filters (Status/Date)
-                    var filteredItems = items.Where(i =>
-                    {
-                        if (SelectedStatus != "All" && !string.Equals(i.Status, SelectedStatus, StringComparison.OrdinalIgnoreCase))
-                            return false;
-
-                        if (_isDateFilterActive && i.CreatedAt.Date != FilterDate.Date)
-                            return false;
-
-                        return true;
-                    });
-
-                    foreach (var i in filteredItems)
-                    {
-                        InquiryList.Add(new InquiryListItemVm
-                        {
-                            InquiryId = i.InquiryId,
-                            PatientIc = i.PatientIc,
-                            PatientName = i.PatientName,
-                            SymptomSnippet = BuildSnippet(i.FullSymptomDescription),
-                            Status = i.Status,
-                            CreatedDate = i.CreatedAt
-                        });
-                    }
-                }
-
-                // 2. Patient Logic (Load specific history)
-                var patient = _authService?.GetCurrentPatient();
-                if (patient != null)
-                {
-                    await LoadPatientHistoryAsync(patient.patient_IC);
+                    items = await _inquiryService.GetInquiriesByDoctorAsync(currentUser.staff_ID, SearchQuery);
+                    FilterAndAddItems(items);
                 }
                 else if (currentUser != null && !currentUser.isDoctor)
                 {
-                    // Fallback for nurse or other staff testing as patient (Hybrid view)
-                    await LoadPatientHistoryAsync(currentUser.staff_ID);
+                    try
+                    {
+                        var allInquiriesQuery = _context.Inquiries
+                            .Include(i => i.Patient)
+                            .AsQueryable();
+
+                        if (!string.IsNullOrWhiteSpace(SearchQuery))
+                        {
+                            string q = SearchQuery.ToLower();
+                            allInquiriesQuery = allInquiriesQuery.Where(i =>
+                                (i.Patient != null && i.Patient.patient_name.ToLower().Contains(q)));
+                        }
+
+                        var allInquiries = await allInquiriesQuery
+                                                   .OrderByDescending(i => i.AskDatetime)
+                                                   .ToListAsync();
+
+                        var dtos = new List<InquiryDto>();
+                        foreach (var i in allInquiries)
+                        {
+                            dtos.Add(new InquiryDto
+                            {
+                                InquiryId = i.InquiryId, // Uses capitalized property from Model
+                                PatientIc = i.PatientIc,
+                                PatientName = i.Patient?.patient_name ?? "Unknown",
+                                FullSymptomDescription = i.SymptomDescription, // Uses capitalized property
+                                Status = i.Status,
+                                CreatedAt = i.AskDatetime // FIXED: Map AskDatetime to CreatedAt
+                            });
+                        }
+
+                        FilterAndAddItems(dtos);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error loading nurse inquiries: {ex.Message}");
+                    }
+                }
+                // 3. PATIENT LOGIC
+                else if (currentPatient != null)
+                {
+                    await LoadPatientHistoryAsync(currentPatient.patient_IC);
                 }
             }
-            catch (Exception ex)
+        }
+
+
+
+        private void FilterAndAddItems(IEnumerable<InquiryDto> items)
+        {
+            var filteredItems = items.Where(i =>
             {
-                System.Diagnostics.Debug.WriteLine($"Error loading inquiries: {ex.Message}");
+                // Status filter
+                if (SelectedStatus != "All" && !string.Equals(i.Status, SelectedStatus, StringComparison.OrdinalIgnoreCase))
+                    return false;
+
+                // Date filter (only if active)
+                if (_isDateFilterActive && i.CreatedAt.Date != FilterDate.Date)
+                    return false;
+
+                return true;
+            });
+
+            foreach (var i in filteredItems)
+            {
+                InquiryList.Add(new InquiryListItemVm
+                {
+                    InquiryId = i.InquiryId,
+                    PatientIc = i.PatientIc,
+                    PatientName = i.PatientName,
+                    SymptomSnippet = BuildSnippet(i.FullSymptomDescription),
+                    Status = i.Status,
+                    CreatedDate = i.CreatedAt
+                });
             }
         }
+
 
         private async Task LoadPatientHistoryAsync(string patientIc)
         {

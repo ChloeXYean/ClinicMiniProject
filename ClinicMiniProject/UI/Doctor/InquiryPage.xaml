@@ -4,8 +4,8 @@
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              xmlns:conv="clr-namespace:ClinicMiniProject.Converters"
              x:Class="ClinicMiniProject.UI.Doctor.InquiryPage"
-             Title=""
-             Shell.NavBarIsVisible="False">
+             Title="Online Medical Inquiry"
+             Shell.NavBarIsVisible="True">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -14,8 +14,6 @@
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
-
-        <control:TopNavBar x:Name="TopBar" Grid.Row="0" />
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="12">
