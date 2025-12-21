@@ -15,6 +15,8 @@ namespace ClinicMiniProject.ViewModels
         private readonly IAppointmentService _appointmentService;
         private readonly IAuthService _authService;
         private readonly PatientService _patientService;
+        private readonly AppointmentService appointmentService;
+
 
         public ICommand HomeCommand { get; }
         public ICommand InquiryHistoryCommand { get; }
@@ -92,10 +94,24 @@ namespace ClinicMiniProject.ViewModels
                 await Shell.Current.DisplayAlert("Notification", "You have no new notifications.", "OK"));
 
             _ = LoadUpcomingAppointment();
+
+            StartAutoRefresh();
+        }
+
+        private void StartAutoRefresh()
+        {
+            Application.Current.Dispatcher.StartTimer(TimeSpan.FromSeconds(30), () =>
+            {
+                _ = LoadUpcomingAppointment();
+
+                return true;
+            });
         }
 
         private async Task LoadUpcomingAppointment()
         {
+            await appointmentService.CheckAndMarkLateAppointmentsAsync();
+
             var patient = _authService.GetCurrentPatient();
             if (patient == null)
             {

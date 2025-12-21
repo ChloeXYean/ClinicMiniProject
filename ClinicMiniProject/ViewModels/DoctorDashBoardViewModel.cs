@@ -133,6 +133,26 @@ namespace ClinicMiniProject.ViewModels
             
             // Load inquiry data asynchronously without blocking constructor
             _ = Task.Run(async () => await LoadInquiryData());
+
+            StartAutoRefresh();
+        }
+
+        private void StartAutoRefresh()
+        {
+            Application.Current.Dispatcher.StartTimer(TimeSpan.FromSeconds(10), () =>
+            {
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    LoadDashboardData();
+
+                    if (string.IsNullOrEmpty(SearchText))
+                    {
+                        await LoadInquiryData();
+                    }
+                });
+
+                return true; 
+            });
         }
 
         private async void LoadDashboardData()

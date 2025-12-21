@@ -316,5 +316,42 @@ namespace ClinicMiniProject.Services
             return unavailableSlots;
 
         }
+
+        public async Task CheckAndMarkLateAppointmentsAsync()
+        {
+            try
+            {
+                var now = DateTime.Now;
+                // "Late" means 15 minutes have passed since the appointment time
+                var lateThreshold = now.AddMinutes(-15);
+
+                // Find all PENDING appointments that are older than the threshold
+                var lateAppointments = await _context.Appointments
+                    .Where(a => a.status == "Pending"
+                                && a.appointedAt.HasValue
+                                && a.appointedAt.Value < lateThreshold)
+                    .ToListAsync();
+
+                if (lateAppointments.Any())
+                {
+                    foreach (var appt in lateAppointments)
+                    {
+                        // Mark as "Missed" or "Cancelled" automatically
+                        appt.status = "Missed";
+                        // Optional: Add a remark
+                        appt.nurse_remark = "Auto-cancelled: Patient arrived >15 mins late.";
+                    }
+
+                    _context.Appointments.UpdateRange(lateAppointments);
+                    await _context.SaveChangesAsync();
+
+                    System.Diagnostics.Debug.WriteLine($"[System] Auto-cancelled {lateAppointments.Count} late appointments.");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Error] Failed to auto-cancel late appointments: {ex.Message}");
+            }
+        }
     }
 }

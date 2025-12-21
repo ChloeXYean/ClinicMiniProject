@@ -69,9 +69,24 @@ namespace ClinicMiniProject.ViewModels
 
                 // 4. Load the schedule
                 LoadSchedule();
+
+                StartAutoRefresh();
             }
+
         }
-            
+
+        private void StartAutoRefresh()
+        {
+            Application.Current.Dispatcher.StartTimer(TimeSpan.FromSeconds(10), () =>
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    LoadSchedule();
+                });
+                return true;
+            });
+        }
+
         public ICommand HomeCommand { get; set; }
         public ICommand ChatCommand { get; }
         public ICommand ProfileCommand { get; }

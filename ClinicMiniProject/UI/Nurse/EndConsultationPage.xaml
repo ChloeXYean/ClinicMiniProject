@@ -1,87 +1,83 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:controls="clr-namespace:ClinicMiniProject.UI.Control"
-             xmlns:viewmodels="clr-namespace:ClinicMiniProject.ViewModels"
-             
+             xmlns:vm="clr-namespace:ClinicMiniProject.ViewModels"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             Shell.NavBarIsVisible="False"
              x:Class="ClinicMiniProject.UI.Nurse.EndConsultationPage"
-             BackgroundColor="White"
-             NavigationPage.HasNavigationBar="False">
+             Title="End Consultation">
+    <ScrollView>
+        <Grid RowDefinitions="Auto, Auto, Auto" Padding="20">
 
-    <Grid RowDefinitions="Auto, *">
+            <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="20">
 
-        <controls:BackNavBar BackCommand="{Binding BackCommand}" Title="End Doctor Consultation" />
+                <Label Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat='Date: {0:dd MMMM yyyy}'}" 
+                       TextColor="Black" 
+                       FontSize="14" 
+                       Margin="5,0,0,0"/>
 
-        <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="20">
+                <CollectionView x:Name="ConsultationsList" ItemsSource="{Binding ActiveConsultations}">
 
-            <Label Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat='Date: {0:dd MMMM yyyy}'}" 
-                   TextColor="Black" 
-                   FontSize="14" 
-                   Margin="5,0,0,0"/>
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="15" />
+                    </CollectionView.ItemsLayout>
 
-            <CollectionView x:Name="ConsultationsList" ItemsSource="{Binding ActiveConsultations}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BackgroundColor="#EEEEEE"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 15"
+                                    Padding="15">
 
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="15" />
-                </CollectionView.ItemsLayout>
+                                <Border.Shadow>
+                                    <Shadow Brush="Black" Opacity="0.5" Radius="5" Offset="2,2"/>
+                                </Border.Shadow>
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border BackgroundColor="#EEEEEE"
-                                StrokeThickness="0"
-                                StrokeShape="RoundRectangle 15"
-                                Padding="15">
+                                <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="Auto, *">
 
-                            <Border.Shadow>
-                                <Shadow Brush="Black" Opacity="0.5" Radius="5" Offset="2,2"/>
-                            </Border.Shadow>
+                                    <Image Grid.Row="0" Grid.Column="0" Source="person.png" HeightRequest="20" VerticalOptions="Center"/>
+                                    <Label Grid.Row="0" Grid.Column="1" 
+                                           Text="{Binding PatientName, StringFormat='Patient Name: {0}'}" 
+                                           TextColor="Black" FontAttributes="Bold" FontSize="14" VerticalOptions="Center" Margin="10,0,0,0"/>
 
-                            <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="Auto, *">
+                                    <Label Grid.Row="1" Grid.Column="1" 
+                                           TextColor="#555555" FontSize="12" Margin="10,2,0,0">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding PatientIC}" />
+                                                <Span Text=" | " />
+                                                <Span Text="{Binding ServiceType}" TextColor="#2D5AF0" FontAttributes="Italic"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
 
-                                <Image Grid.Row="0" Grid.Column="0" Source="person.png" HeightRequest="20" VerticalOptions="Center"/>
-                                <Label Grid.Row="0" Grid.Column="1" 
-                                       Text="{Binding PatientName, StringFormat='Patient Name: {0}'}" 
-                                       TextColor="Black" FontAttributes="Bold" FontSize="14" VerticalOptions="Center" Margin="10,0,0,0"/>
+                                    <Image Grid.Row="2" Grid.Column="0" Source="clock.png" HeightRequest="15" VerticalOptions="Center" Margin="2,10,0,0"/>
+                                    <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Spacing="5" Margin="10,10,0,0" VerticalOptions="Center">
+                                        <Label Text="{Binding Date}" TextColor="Black" FontSize="13"/>
+                                        <Label Text="-" TextColor="Black" FontSize="13"/>
+                                        <Label Text="{Binding AppointedTime}" TextColor="Black" FontAttributes="Bold" FontSize="13"/>
+                                    </HorizontalStackLayout>
 
-                                <Label Grid.Row="1" Grid.Column="1" 
-                                       TextColor="#555555" FontSize="12" Margin="10,2,0,0">
-                                    <Label.FormattedText>
-                                        <FormattedString>
-                                            <Span Text="{Binding PatientIC}" />
-                                            <Span Text=" | " />
-                                            <Span Text="{Binding ServiceType}" TextColor="#2D5AF0" FontAttributes="Italic"/>
-                                        </FormattedString>
-                                    </Label.FormattedText>
-                                </Label>
+                                    <Label Grid.Row="3" Grid.Column="1" 
+                                           Text="View Details" 
+                                           TextColor="#2D5AF0" 
+                                           FontSize="12" 
+                                           FontAttributes="Bold" 
+                                           TextDecorations="Underline" 
+                                           HorizontalOptions="End" 
+                                           Margin="0,15,0,0">
 
-                                <Image Grid.Row="2" Grid.Column="0" Source="clock.png" HeightRequest="15" VerticalOptions="Center" Margin="2,10,0,0"/>
-                                <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Spacing="5" Margin="10,10,0,0" VerticalOptions="Center">
-                                    <Label Text="{Binding Date}" TextColor="Black" FontSize="13"/>
-                                    <Label Text="-" TextColor="Black" FontSize="13"/>
-                                    <Label Text="{Binding AppointedTime}" TextColor="Black" FontAttributes="Bold" FontSize="13"/>
-                                </HorizontalStackLayout>
-                                <Label Grid.Row="3" Grid.Column="1" 
-                                       Text="View Details" 
-                                       TextColor="#2D5AF0" 
-                                       FontSize="12" 
-                                       FontAttributes="Bold" 
-                                       TextDecorations="Underline" 
-                                       HorizontalOptions="End" 
-                                       Margin="0,15,0,0">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EndConsultationViewModel}}, Path=ViewDetailsCommand}"
+                                                                  CommandParameter="{Binding .}"/>
+                                        </Label.GestureRecognizers>
+                                    </Label>
 
-                                    <Label.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:EndConsultationViewModel}}, Path=ViewDetailsCommand}"
-                              CommandParameter="{Binding .}"/>
-                                    </Label.GestureRecognizers>
-                                </Label>
-
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
-    </Grid>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
 </ContentPage>

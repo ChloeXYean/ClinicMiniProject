@@ -67,8 +67,17 @@ namespace ClinicMiniProject.ViewModels
             WalkInQueueCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(WalkInPatientQueuePage)));
 
             LoadDashboardData();
-        }
 
+            StartAutoRefresh();
+        }
+        private void StartAutoRefresh()
+        {
+            Application.Current.Dispatcher.StartTimer(TimeSpan.FromSeconds(10), () =>
+            {
+                LoadDashboardData();
+                return true;
+            });
+        }
         public async void LoadDashboardData()
         {
             AppDate = $"Date: {DateTime.Now:dd MMMM yyyy}";
