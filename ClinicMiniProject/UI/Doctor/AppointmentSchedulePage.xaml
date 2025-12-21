@@ -3,146 +3,140 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Doctor.AppointmentSchedulePage"
-			 Shell.NavBarIsVisible="False"
+             Shell.NavBarIsVisible="True" 
              Title="Appointment Schedule">
-	<Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
 
-		<control:TopNavBar x:Name="TopBar" Grid.Row="0" />
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
 
-		<Border Grid.Row="0" Padding="20,12" StrokeThickness="0" BackgroundColor="#FFFFFF">
-			<Grid RowDefinitions="Auto,Auto" RowSpacing="10">
-				<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
-					<Label Grid.Column="0" Text="Date: " VerticalOptions="Center" FontAttributes="Bold"/>
-					<DatePicker Grid.Column="1" Date="{Binding SelectedDate}" />
-				</Grid>
-				
-				<Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center" IsVisible="{Binding IsNurseMode}">
-					<Label Grid.Column="0" Text="Doctor: " VerticalOptions="Center" FontAttributes="Bold"/>
-					<Picker Grid.Column="1" ItemsSource="{Binding Doctors}" 
-					        SelectedItem="{Binding SelectedDoctor}"
-					        Title="Select Doctor"
-					        ItemDisplayBinding="{Binding Name}"/>
-				</Grid>
-			</Grid>
-		</Border>
+        <Border Grid.Row="0" Padding="20,12" StrokeThickness="0" BackgroundColor="#FFFFFF">
+            <Grid RowDefinitions="Auto,Auto" RowSpacing="10">
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+                    <Label Grid.Column="0" Text="Date: " VerticalOptions="Center" FontAttributes="Bold"/>
+                    <DatePicker Grid.Column="1" Date="{Binding SelectedDate}" />
+                </Grid>
 
-		<ScrollView Grid.Row="1">
-			<Grid Padding="12">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="*" />
-				</Grid.RowDefinitions>
+                <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center" IsVisible="{Binding IsNurseMode}">
+                    <Label Grid.Column="0" Text="Doctor: " VerticalOptions="Center" FontAttributes="Bold"/>
+                    <Picker Grid.Column="1" ItemsSource="{Binding Doctors}" 
+                            SelectedItem="{Binding SelectedDoctor}"
+                            Title="Select Doctor"
+                            ItemDisplayBinding="{Binding Name}"/>
+                </Grid>
+            </Grid>
+        </Border>
 
-				<ScrollView Grid.Row="0" Orientation="Horizontal">
-					<Grid ColumnSpacing="0" RowSpacing="0">
-						<Grid.RowDefinitions>
-							<RowDefinition Height="Auto" />
-							<RowDefinition Height="*" />
-						</Grid.RowDefinitions>
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="90" />
-							<ColumnDefinition Width="170" />
-							<ColumnDefinition Width="170" />
-							<ColumnDefinition Width="170" />
-							<ColumnDefinition Width="170" />
-							<ColumnDefinition Width="190" />
-						</Grid.ColumnDefinitions>
+        <ScrollView Grid.Row="1" Orientation="Vertical">
+            <Grid Padding="12">
 
-						<!-- Header Row -->
-						<Border Grid.Row="0" Grid.Column="0" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
-							<Label Text="Time" FontAttributes="Bold" />
-						</Border>
-						<Border Grid.Row="0" Grid.Column="1" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
-							<Label Text="General\nConsultation" FontAttributes="Bold" />
-						</Border>
-						<Border Grid.Row="0" Grid.Column="2" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
-							<Label Text="Follow Up\nTreatment" FontAttributes="Bold" />
-						</Border>
-						<Border Grid.Row="0" Grid.Column="3" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
-							<Label Text="Test Result\nDiscussion" FontAttributes="Bold" />
-						</Border>
-						<Border Grid.Row="0" Grid.Column="4" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
-							<Label Text="Vaccination/\nInjection" FontAttributes="Bold" />
-						</Border>
-						<Border Grid.Row="0" Grid.Column="5" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
-							<Label Text="Medical\nScreening" FontAttributes="Bold" />
-						</Border>
+                <ScrollView Orientation="Horizontal">
+                    <Grid ColumnSpacing="0" RowSpacing="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition Width="190" />
+                        </Grid.ColumnDefinitions>
 
-						<!-- Data Rows -->
-						<CollectionView Grid.Row="1" Grid.ColumnSpan="6" ItemsSource="{Binding Rows}" SelectionMode="None">
-							<CollectionView.ItemTemplate>
-								<DataTemplate>
-									<Grid ColumnSpacing="0" RowSpacing="0">
-										<Grid.ColumnDefinitions>
-											<ColumnDefinition Width="90" />
-											<ColumnDefinition Width="170" />
-											<ColumnDefinition Width="170" />
-											<ColumnDefinition Width="170" />
-											<ColumnDefinition Width="170" />
-											<ColumnDefinition Width="190" />
-										</Grid.ColumnDefinitions>
+                        <Border Grid.Row="0" Grid.Column="0" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
+                            <Label Text="Time" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="1" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
+                            <Label Text="General Consultation" FontAttributes="Bold" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="2" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
+                            <Label Text="Follow Up Treatment" FontAttributes="Bold" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="3" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
+                            <Label Text="Test Result Discussion" FontAttributes="Bold" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="4" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
+                            <Label Text="Vaccination / Injection" FontAttributes="Bold" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="5" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#F5F7FF">
+                            <Label Text="Medical Screening" FontAttributes="Bold" HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
+                        </Border>
 
-										<Border Grid.Column="0" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#FFFFFF">
-											<Label Text="{Binding SlotStart, StringFormat='{0:HH:mm}'}" FontAttributes="Bold" />
-										</Border>
+                        <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="6" BindableLayout.ItemsSource="{Binding Rows}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnSpacing="0" RowSpacing="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="90" />
+                                            <ColumnDefinition Width="170" />
+                                            <ColumnDefinition Width="170" />
+                                            <ColumnDefinition Width="170" />
+                                            <ColumnDefinition Width="170" />
+                                            <ColumnDefinition Width="190" />
+                                        </Grid.ColumnDefinitions>
 
-										<Border Grid.Column="1" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
-											<Label Text="{Binding CellsByServiceType[GeneralConsultation].PatientName}" TextColor="#1A1A1A">
-												<Label.GestureRecognizers>
-													<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                        <Border Grid.Column="0" Stroke="#D0D0D0" StrokeThickness="1" Padding="8" BackgroundColor="#FFFFFF">
+                                            <Label Text="{Binding SlotStart, StringFormat='{0:HH:mm}'}" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                                        </Border>
+
+                                        <Border Grid.Column="1" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
+                                            <Label Text="{Binding CellsByServiceType[GeneralConsultation].PatientName}" TextColor="#1A1A1A">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                                           CommandParameter="{Binding CellsByServiceType[GeneralConsultation].PatientIc}" />
-												</Label.GestureRecognizers>
-											</Label>
-										</Border>
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </Border>
 
-										<Border Grid.Column="2" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
-											<Label Text="{Binding CellsByServiceType[FollowUpTreatment].PatientName}">
-												<Label.GestureRecognizers>
-													<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                        <Border Grid.Column="2" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
+                                            <Label Text="{Binding CellsByServiceType[FollowUpTreatment].PatientName}">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                                           CommandParameter="{Binding CellsByServiceType[FollowUpTreatment].PatientIc}" />
-												</Label.GestureRecognizers>
-											</Label>
-										</Border>
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </Border>
 
-										<Border Grid.Column="3" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
-											<Label Text="{Binding CellsByServiceType[TestResultDiscussion].PatientName}">
-												<Label.GestureRecognizers>
-													<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                        <Border Grid.Column="3" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
+                                            <Label Text="{Binding CellsByServiceType[TestResultDiscussion].PatientName}">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                                           CommandParameter="{Binding CellsByServiceType[TestResultDiscussion].PatientIc}" />
-												</Label.GestureRecognizers>
-											</Label>
-										</Border>
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </Border>
 
-										<Border Grid.Column="4" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
-											<Label Text="{Binding CellsByServiceType[VaccinationInjection].PatientName}">
-												<Label.GestureRecognizers>
-													<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                        <Border Grid.Column="4" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
+                                            <Label Text="{Binding CellsByServiceType[VaccinationInjection].PatientName}">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                                           CommandParameter="{Binding CellsByServiceType[VaccinationInjection].PatientIc}" />
-												</Label.GestureRecognizers>
-											</Label>
-										</Border>
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </Border>
 
-										<Border Grid.Column="5" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
-											<Label Text="{Binding CellsByServiceType[MedicalScreening].PatientName}">
-												<Label.GestureRecognizers>
-													<TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                        <Border Grid.Column="5" Stroke="#D0D0D0" StrokeThickness="1" Padding="8">
+                                            <Label Text="{Binding CellsByServiceType[MedicalScreening].PatientName}">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding BindingContext.ViewPatientDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                                           CommandParameter="{Binding CellsByServiceType[MedicalScreening].PatientIc}" />
-												</Label.GestureRecognizers>
-											</Label>
-										</Border>
-									</Grid>
-								</DataTemplate>
-							</CollectionView.ItemTemplate>
-						</CollectionView>
-					</Grid>
-				</ScrollView>
-			</Grid>
-		</ScrollView>
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
 
-		<control:BottomNavBar Grid.Row="2"
+                    </Grid>
+                </ScrollView>
+            </Grid>
+        </ScrollView>
+
+        <control:BottomNavBar Grid.Row="2"
                               SelectedTab="Home"
                               HomeCommand="{Binding HomeCommand}"
                               ChatCommand="{Binding ChatCommand}"
                               ProfileCommand="{Binding ProfileCommand}" />
-	</Grid>
+    </Grid>
 </ContentPage>

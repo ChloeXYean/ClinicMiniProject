@@ -2,11 +2,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
-             Shell.NavBarIsVisible="True"
              x:Class="ClinicMiniProject.UI.Doctor.AppointmentHistoryPage"
              x:Name="ThisPage"
              BackgroundColor="#F5F7FA"
-             Title="Appointment History">
+             Shell.NavBarIsVisible="True" 
+             Title="Appointment Schedule">
 
     <Grid RowDefinitions="Auto, *, Auto" RowSpacing="0">
 

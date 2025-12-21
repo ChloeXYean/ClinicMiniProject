@@ -9,17 +9,14 @@ public partial class AppointmentHistoryPage : ContentPage, IQueryAttributable
 {
     private string _userType = "Doctor";
 
-    // Command bound to the BackNavBar in XAML
     public ICommand BackCommand { get; private set; }
 
     public AppointmentHistoryPage()
     {
         InitializeComponent();
 
-        // Initialize the Back Command
         BackCommand = new Command(async () => await OnBack());
 
-        // Manual ViewModel Resolution
         var sp = Application.Current?.Handler?.MauiContext?.Services;
         var viewModel = sp?.GetService<PatientAppointmentHistoryViewModel>();
 
@@ -52,7 +49,6 @@ public partial class AppointmentHistoryPage : ContentPage, IQueryAttributable
 
     private void SetupCommands()
     {
-        // Now BottomBar exists in XAML, so this will work
         if (BottomBar != null)
         {
             if (_userType == "Nurse")
