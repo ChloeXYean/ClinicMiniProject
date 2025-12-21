@@ -2,7 +2,7 @@ namespace ClinicMiniProject.UI.Patient;
 
 public partial class InquiryHistory : ContentPage
 {
-    private readonly ClinicMiniProject.ViewModels.OnlineMedicalInquiryViewModel? _viewModel;
+    private readonly ViewModels.OnlineMedicalInquiryViewModel? _viewModel;
 
     public InquiryHistory()
     {
@@ -16,7 +16,7 @@ public partial class InquiryHistory : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        
+
         // Reload inquiry history when page appears
         if (_viewModel != null)
         {

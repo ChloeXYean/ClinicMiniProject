@@ -257,6 +257,15 @@ namespace ClinicMiniProject.ViewModels
         {
             PatientInquiryHistory.Clear();
             var items = await _inquiryService.GetInquiriesByPatientIcAsync(patientIc);
+            if (!string.IsNullOrWhiteSpace(SearchQuery))
+            {
+                string q = SearchQuery.ToLower().Trim();
+                items = items.Where(i =>
+                    (i.DoctorName != null && i.DoctorName.ToLower().Contains(q)) ||
+                    (i.FullSymptomDescription != null && i.FullSymptomDescription.ToLower().Contains(q)) ||
+                    (i.Status != null && i.Status.ToLower().Contains(q))
+                ).ToList();
+            }
             foreach (var i in items)
             {
                 PatientInquiryHistory.Add(new InquiryListItemVm

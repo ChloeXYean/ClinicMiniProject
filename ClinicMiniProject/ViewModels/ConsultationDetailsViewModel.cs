@@ -110,20 +110,20 @@ namespace ClinicMiniProject.ViewModels
                 var appointment = await _appointmentService.GetAppointmentByIdAsync(AppointmentId);
                 if (appointment != null)
                 {
-                    AppointmentDate = appointment.appointedAt?.ToString("dd MMM yyyy") ?? "Unknown";
-                    AppointmentTime = appointment.appointedAt?.ToString("hh:mm tt") ?? "Unknown";
-                    PatientName = appointment.Patient?.patient_name ?? "Unknown";
-                    PatientIC = appointment.patient_IC;
+                    AppointmentDate = appointment.appointedAt?.ToString("dd MMM yyyy") ?? " - ";
+                    AppointmentTime = appointment.appointedAt?.ToString("hh:mm tt") ?? " - ";
+                    PatientName = appointment.Patient?.patient_name ?? " - ";
+                    PatientIC = appointment.patient_IC ?? " - ";
                     ServiceType = appointment.service_type?.ToString() ?? "General Consultation";
-                    Status = appointment.status ?? "Unknown";
+                    Status = appointment.status ?? " - ";
 
                     // Load consultation details if available
                     var consultation = await _consultationService.GetConsultationDetailsByAppointmentIdAsync(AppointmentId);
                     if (consultation != null)
                     {
-                        DoctorRemarks = consultation.DoctorRemark ?? "No remarks recorded";
-                        NurseNotes = consultation.NurseRemark ?? "No notes recorded";
-                        Prescription = "No prescription recorded";
+                        DoctorRemarks = !string.IsNullOrWhiteSpace(consultation.DoctorRemark) ? consultation.DoctorRemark : "No doctor remarks available ";
+                        NurseNotes = !string.IsNullOrWhiteSpace(consultation.NurseRemark) ? consultation.NurseRemark : "No Nurse remarks available";
+                        Prescription = " - "; // Or fetch prescription if you have that logic later
                     }
                     else
                     {

@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Doctor.ConsultationDetailsPage"
-             Shell.NavBarIsVisible="False"
-             BackgroundColor="#F5F7FA">
-
+             Title="Consultation Details"
+             Shell.NavBarIsVisible="True">
+    
     <Grid RowDefinitions="Auto,*" RowSpacing="0">
         <control:BackNavBar Grid.Row="0" Title="Consultation Details" BackCommand="{Binding BackCommand}" />
 
