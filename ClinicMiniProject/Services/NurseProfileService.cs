@@ -16,6 +16,7 @@ namespace ClinicMiniProject.Services
         public async Task<NurseProfileDto?> GetNurseProfileAsync(string nurseId)
         {
             var nurse = await _context.Staffs.FirstOrDefaultAsync(s => s.staff_ID == nurseId && !s.isDoctor);
+
             if (nurse == null) return null;
 
             return new NurseProfileDto
@@ -23,31 +24,35 @@ namespace ClinicMiniProject.Services
                 NurseId = nurse.staff_ID,
                 Name = nurse.staff_name,
                 PhoneNo = nurse.staff_contact ?? string.Empty,
-                WorkingHoursText = "9:00 AM - 9:00 PM",
+
+
                 Department = "General Nursing",
-                ProfileImageUri = string.Empty
+
+                ProfileImageUri = "profilepicture.png",
+
+
+                ICNumber = string.Empty
             };
         }
 
         public async Task<bool> UpdateNurseProfileAsync(string nurseId, NurseProfileUpdateDto update)
         {
-            var nurse = await _context.Staffs.FirstOrDefaultAsync(s => s.staff_ID == nurseId && !s.isDoctor);
-            if (nurse == null) return false;
-
-            // Update basic profile information
-            if (!string.IsNullOrWhiteSpace(update.Name))
-                nurse.staff_name = update.Name;
-            
-            if (!string.IsNullOrWhiteSpace(update.PhoneNo))
-                nurse.staff_contact = update.PhoneNo;
-
             try
             {
+                var staff = await _context.Staffs.FirstOrDefaultAsync(s => s.staff_ID == nurseId);
+
+                if (staff == null) return false;
+
+                staff.staff_name = update.Name;
+                staff.staff_contact = update.PhoneNo;
+
+
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Error updating profile: {ex.Message}");
                 return false;
             }
         }

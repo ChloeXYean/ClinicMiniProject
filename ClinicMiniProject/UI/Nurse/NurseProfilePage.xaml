@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Nurse.NurseProfilePage"
+             Shell.NavBarIsVisible="False"
              Title="Nurse Profile">
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
 
