@@ -73,7 +73,7 @@ namespace ClinicMiniProject.ViewModels
         }
         private async Task GoBack()
         {
-          if (UserType == "Nurse")
+            if (UserType == "Nurse")
             {
                 await Shell.Current.GoToAsync("///NurseHomePage");
             }
@@ -197,7 +197,7 @@ namespace ClinicMiniProject.ViewModels
                     (a.Details != null && a.Details.ToLower().Contains(search)));
             }
 
-            // 2. SORTING: Newest Date First
+            // 2. SORTING: Status Priority, then Nearest Date First
             var sorted = filtered
                 .OrderBy(a => a.Status?.ToLower() switch
                 {
@@ -206,7 +206,7 @@ namespace ClinicMiniProject.ViewModels
                     "cancelled" => 2,
                     _ => 3
                 })
-                .ThenByDescending(a => a.RawDate) // Latest history first
+                .ThenBy(a => a.RawDate) // Nearest date first within each status
                 .ToList();
 
             Appointments.Clear();

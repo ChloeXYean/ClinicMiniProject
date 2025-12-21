@@ -85,7 +85,7 @@ namespace ClinicMiniProject.Services
             return await query.OrderBy(a => a.appointedAt).ToListAsync();
         }
 
-        public DateTime? AssignWalkInTimeSlot(string doctorId,DateTime preferredDate,int workStartHour = 9,int workEndHour = 17,TimeSpan slotDuration = default)
+        public DateTime? AssignWalkInTimeSlot(string doctorId,DateTime preferredDate,int workStartHour = 9,int workEndHour = 21,TimeSpan slotDuration = default)
         {
             if (slotDuration == default)
                 slotDuration = TimeSpan.FromHours(1);
@@ -281,7 +281,7 @@ namespace ClinicMiniProject.Services
             var unavailableSlots = new List<TimeSpan>();
 
             // Check each hour from 9 AM to 5 PM
-            for (int hour = 9; hour < 17; hour++)
+            for (int hour = 9; hour < 21; hour++)
             {
                 var timeSlot = new TimeSpan(hour, 0, 0);
                 bool anyDoctorAvailable = false;
