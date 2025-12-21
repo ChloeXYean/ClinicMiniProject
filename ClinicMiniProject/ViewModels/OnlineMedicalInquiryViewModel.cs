@@ -213,11 +213,11 @@ namespace ClinicMiniProject.ViewModels
                         System.Diagnostics.Debug.WriteLine($"Error loading nurse inquiries: {ex.Message}");
                     }
                 }
-                // 3. PATIENT LOGIC
-                else if (currentPatient != null)
-                {
-                    await LoadPatientHistoryAsync(currentPatient.patient_IC);
-                }
+            }
+            // 2. PATIENT LOGIC - Fixed: Moved outside staff check
+            else if (currentPatient != null)
+            {
+                await LoadPatientHistoryAsync(currentPatient.patient_IC);
             }
         }
 
