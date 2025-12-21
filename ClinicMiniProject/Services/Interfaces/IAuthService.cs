@@ -2,8 +2,7 @@ using ClinicMiniProject.Models;
 using System.Threading.Tasks;
 
 namespace ClinicMiniProject.Services.Interfaces
-{
-    public interface IAuthService
+date    public interface IAuthService
     {
         Task<object> LoginAsync(string patient_IC, string password);
         object Login(string patient_IC, string password, out string message);
@@ -13,6 +12,9 @@ namespace ClinicMiniProject.Services.Interfaces
         Patient GetCurrentPatient();
         string GetDoctorName(string doctorId);
         void Logout();
-        // ... other existing methods
+        bool ValidateICNumber(string ic, out string message);
+        bool ValidatePhoneNumber(string phone, out string message);
+        bool ValidateEmail(string email, out string message);
+        bool ValidatePassword(string password, out string message);
     }
 }

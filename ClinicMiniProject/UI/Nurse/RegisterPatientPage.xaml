@@ -1,78 +1,103 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:controls ="clr-namespace:ClinicMiniProject.UI.Control"
+             xmlns:controls="clr-namespace:ClinicMiniProject.UI.Control"
+             xmlns:converters="clr-namespace:ClinicMiniProject.Converters"
              x:Class="ClinicMiniProject.UI.Nurse.RegisterPatientPage"
              BackgroundColor="White"
-			 Shell.NavBarIsVisible="False">
+             Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="InputBorderStyle" TargetType="Border">
+                <Setter Property="StrokeThickness" Value="1"/>
+                <Setter Property="StrokeShape" Value="RoundRectangle 10"/>
+                <Setter Property="HeightRequest" Value="55"/>
+                <Setter Property="Padding" Value="10,0"/>
+                <Style.Triggers>
+                    <Trigger TargetType="Border" Property="IsFocused" Value="True">
+                        <Setter Property="Stroke" Value="#6EA8FE"/>
+                        <Setter Property="BackgroundColor" Value="#F8FBFF"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="ErrorLabelStyle" TargetType="Label">
+                <Setter Property="TextColor" Value="#DC3545"/>
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="Margin" Value="5,2,0,0"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto, *">
         <controls:BackNavBar BackCommand="{Binding BackCommand}" Title="Register Walk-in Patient" />
 
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="25" Spacing="25">
+            <VerticalStackLayout Padding="25" Spacing="20">
 
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Patient Full Name" FontAttributes="Bold" FontSize="16" TextColor="Black" />
-                    <Border BackgroundColor="#F0F0F0" StrokeThickness="0" StrokeShape="RoundRectangle 10" HeightRequest="70">
-                        <Entry x:Name="NameEntry" Placeholder="Enter full name" Margin="15,0" VerticalOptions="Center" TextColor="Black" />
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Patient Full Name" FontAttributes="Bold" TextColor="#333" />
+                    <Border Style="{StaticResource InputBorderStyle}"
+                            Stroke="{Binding IsNameInvalid, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#DC3545|#E0E0E0'}"
+                            BackgroundColor="{Binding IsNameInvalid, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#FFF8F8|#F5F5F5'}">
+                        <Entry Text="{Binding Name}" Placeholder="Enter full name" VerticalOptions="Center" TextColor="Black" />
                     </Border>
+                    <Label Text="{Binding NameErrorText}" IsVisible="{Binding IsNameInvalid}" Style="{StaticResource ErrorLabelStyle}"/>
                 </VerticalStackLayout>
 
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="IC Number" FontAttributes="Bold" FontSize="16" TextColor="Black" />
-                    <Border BackgroundColor="#F0F0F0" StrokeThickness="0" StrokeShape="RoundRectangle 10" HeightRequest="70">
-                        <Entry x:Name="IcEntry" Placeholder="e.g., 901212-14-5566" Margin="15,0" VerticalOptions="Center" Keyboard="Numeric" TextColor="Black"/>
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="IC Number" FontAttributes="Bold" TextColor="#333" />
+                    <Border Style="{StaticResource InputBorderStyle}"
+                            Stroke="{Binding IsIcInvalid, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#DC3545|#E0E0E0'}"
+                            BackgroundColor="{Binding IsIcInvalid, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#FFF8F8|#F5F5F5'}">
+                        <Entry Text="{Binding IcNumber}" Placeholder="e.g., 901212145566" VerticalOptions="Center" Keyboard="Numeric" TextColor="Black"/>
                     </Border>
+                    <Label Text="{Binding IcErrorText}" IsVisible="{Binding IsIcInvalid}" Style="{StaticResource ErrorLabelStyle}"/>
                 </VerticalStackLayout>
 
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Phone Number" FontAttributes="Bold" FontSize="16" TextColor="Black" />
-                    <Border BackgroundColor="#F0F0F0" StrokeThickness="0" StrokeShape="RoundRectangle 10" HeightRequest="70">
-                        <Entry x:Name="PhoneEntry" Placeholder="e.g., +60 12-345 6789" Margin="15,0" VerticalOptions="Center" Keyboard="Telephone" TextColor="Black"/>
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Phone Number" FontAttributes="Bold" TextColor="#333" />
+                    <Border Style="{StaticResource InputBorderStyle}"
+                            Stroke="{Binding IsPhoneInvalid, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#DC3545|#E0E0E0'}"
+                            BackgroundColor="{Binding IsPhoneInvalid, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#FFF8F8|#F5F5F5'}">
+                        <Entry Text="{Binding PhoneNumber}" Placeholder="e.g., 0123456789" VerticalOptions="Center" Keyboard="Telephone" TextColor="Black"/>
                     </Border>
+                    <Label Text="{Binding PhoneErrorText}" IsVisible="{Binding IsPhoneInvalid}" Style="{StaticResource ErrorLabelStyle}"/>
                 </VerticalStackLayout>
 
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Select Service Type" FontAttributes="Bold" FontSize="16" TextColor="Black" />
-
-                    <Border BackgroundColor="#6EA8FE" StrokeThickness="0" StrokeShape="RoundRectangle 10" HeightRequest="70">
-                        <Picker x:Name="ServiceTypePicker"
-                                ItemsSource="{Binding ServiceTypes}"
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Service Type" FontAttributes="Bold" TextColor="#333" />
+                    <Border Style="{StaticResource InputBorderStyle}" BackgroundColor="#6EA8FE" StrokeThickness="0">
+                        <Picker ItemsSource="{Binding ServiceTypes}"
                                 SelectedItem="{Binding SelectedServiceType}"
                                 Title="Select a service"
-                                TextColor="White"
                                 TitleColor="#E0E0E0"
-                                Margin="15,0"
-                                VerticalOptions="Center"
-                                HorizontalOptions="Fill"/>
+                                TextColor="White"
+                                VerticalOptions="Center"/>
                     </Border>
                 </VerticalStackLayout>
 
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Emergency Status" FontAttributes="Bold" FontSize="16" TextColor="Red" />
-                    
-                    <Border BackgroundColor="#F0F0F0" StrokeThickness="0" StrokeShape="RoundRectangle 10" Padding="15">
-                        <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
-                            <CheckBox x:Name="EmergencyCheckBox" 
-                                      IsChecked="{Binding IsEmergency}"
-                                      VerticalOptions="Center"/>
-                            <Label Text="Mark as Emergency (Priority Queue)" 
-                                   VerticalOptions="Center" 
-                                   TextColor="Black"/>
-                        </HorizontalStackLayout>
-                    </Border>
-                </VerticalStackLayout>
+                <Border Stroke="#E0E0E0" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="15" BackgroundColor="#FFF5F5">
+                    <HorizontalStackLayout Spacing="15" VerticalOptions="Center">
+                        <CheckBox IsChecked="{Binding IsEmergency}" Color="#DC3545" VerticalOptions="Center"/>
+                        <VerticalStackLayout VerticalOptions="Center">
+                            <Label Text="Emergency Case" FontAttributes="Bold" TextColor="#DC3545"/>
+                            <Label Text="Patient will be moved to priority queue" FontSize="12" TextColor="Gray"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </Border>
 
-                <Button Text="Register"
+                <Button Text="Register Patient"
+                        Command="{Binding RegisterCommand}"
                         BackgroundColor="#6EA8FE"
                         TextColor="White"
                         FontAttributes="Bold"
-                        FontSize="18"
-                        CornerRadius="10"
-                        HeightRequest="55"
-                        Margin="0,20,0,0"
-                        Clicked="OnRegisterClicked" />
+                        FontSize="16"
+                        CornerRadius="25"
+                        HeightRequest="50"
+                        Margin="0,10,0,20"
+                        Shadow="{Shadow Brush=Black, Offset='0,5', Opacity=0.2, Radius=5}"/>
 
             </VerticalStackLayout>
         </ScrollView>
