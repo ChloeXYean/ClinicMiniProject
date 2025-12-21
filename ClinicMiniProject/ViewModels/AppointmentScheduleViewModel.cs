@@ -135,71 +135,44 @@ namespace ClinicMiniProject.ViewModels
         public IReadOnlyList<TimeSlotRowDto> Rows => Grid.Rows;
         private async void LoadSchedule()
         {
-            System.Diagnostics.Debug.WriteLine("=== LoadSchedule CALLED ===");
-            System.Diagnostics.Debug.WriteLine($"IsNurseMode: {IsNurseMode}");
-            System.Diagnostics.Debug.WriteLine($"SelectedDate: {SelectedDate:yyyy-MM-dd}");
-            
-            if (IsNurseMode)
-            {
-                if (SelectedDoctor == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("No doctor selected in Nurse mode");
-                    Grid = new AppointmentScheduleGridDto { Date = SelectedDate.Date };
-                    return;
-                }
-                System.Diagnostics.Debug.WriteLine($"Loading schedule for doctor: {SelectedDoctor.staff_ID}");
-                try
-                {
-                    Grid = await _scheduleService.GetScheduleGridAsync(SelectedDoctor.staff_ID, SelectedDate.Date);
-                    System.Diagnostics.Debug.WriteLine($"Loaded {Grid.Rows.Count} time slots");
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Error loading schedule: {ex.Message}");
-                    Grid = new AppointmentScheduleGridDto { Date = SelectedDate.Date };
-                }
-            }
-            else
-            {
-                var current = _authService.GetCurrentUser();
-                System.Diagnostics.Debug.WriteLine($"Current user: {current?.staff_ID} ({current?.staff_name})");
-                
-                if (current == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("ERROR: No current user found!");
-                    return;
-                }
+            System.Diagnostics.Debug.WriteLine($"=== LoadSchedule CALLED (Mode: {(IsNurseMode ? "Nurse" : "Doctor")}) ===");
 
-                try
+            try
+            {
+                if (IsNurseMode)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Loading schedule for doctor: '{current.staff_ID}' (Type: {current.staff_ID?.GetType().Name})");
-                    Grid = await _scheduleService.GetScheduleGridAsync(current.staff_ID, SelectedDate.Date);
-                    System.Diagnostics.Debug.WriteLine($"Loaded {Grid.Rows.Count} time slots");
-                    
-                    // Debug: Count booked slots
-                    int bookedCount = 0;
-                    foreach (var row in Grid.Rows)
+                    if (SelectedDoctor == null)
                     {
-                        foreach (var kvp in row.CellsByServiceType)
-                        {
-                            if (kvp.Value.IsBooked && !string.IsNullOrEmpty(kvp.Value.PatientName))
-                            {
-                                bookedCount++;
-                                System.Diagnostics.Debug.WriteLine($"  [{row.SlotStart:HH:mm}] {kvp.Key}: {kvp.Value.PatientName} (IC: {kvp.Value.PatientIc})");
-                            }
-                        }
+                        Grid = new AppointmentScheduleGridDto { Date = SelectedDate.Date };
+                        return;
                     }
-                    System.Diagnostics.Debug.WriteLine($"Total booked slots displayed: {bookedCount}");
+
+                    if (SelectedDoctor.staff_ID == "ALL")
+                    {
+                        System.Diagnostics.Debug.WriteLine("Loading schedule for ALL doctors");
+
+                        Grid = await _scheduleService.GetScheduleGridAsync(null, SelectedDate.Date);
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Loading schedule for doctor: {SelectedDoctor.staff_name}");
+                        Grid = await _scheduleService.GetScheduleGridAsync(SelectedDoctor.staff_ID, SelectedDate.Date);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    System.Diagnostics.Debug.WriteLine($"ERROR loading schedule: {ex.Message}");
-                    System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-                    Grid = new AppointmentScheduleGridDto { Date = SelectedDate.Date };
+                    var current = _authService.GetCurrentUser();
+                    if (current != null)
+                    {
+                        Grid = await _scheduleService.GetScheduleGridAsync(current.staff_ID, SelectedDate.Date);
+                    }
                 }
             }
-            
-            System.Diagnostics.Debug.WriteLine("=== LoadSchedule COMPLETED ===");
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading schedule: {ex.Message}");
+                Grid = new AppointmentScheduleGridDto { Date = SelectedDate.Date };
+            }
         }
 
         private void LoadDoctors()
@@ -208,6 +181,7 @@ namespace ClinicMiniProject.ViewModels
             {
                 var doctorList = _staffService.GetAllDocs();
                 Doctors.Clear();
+
                 foreach (var doc in doctorList)
                 {
                     Doctors.Add(doc);
