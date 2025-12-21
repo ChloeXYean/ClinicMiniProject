@@ -128,11 +128,40 @@ namespace ClinicMiniProject.Services
 
             if (i == null) return null;
 
+            int age = 0;
+            string gender = "Unknown";
+            string ic = i.PatientIc?.Replace("-", "").Trim() ?? "";
+
+            if (ic.Length >= 12 && long.TryParse(ic.Substring(0, 12), out _))
+            {
+                try
+                {
+                    int lastDigit = int.Parse(ic.Substring(11, 1));
+                    gender = (lastDigit % 2 != 0) ? "Male" : "Female";
+
+                    int year = int.Parse(ic.Substring(0, 2));
+                    int month = int.Parse(ic.Substring(2, 2));
+                    int day = int.Parse(ic.Substring(4, 2));
+
+                    int currentYearTwoDigit = DateTime.Now.Year % 100;
+                    int fullYear = (year > currentYearTwoDigit) ? 1900 + year : 2000 + year;
+
+                    DateTime dob = new DateTime(fullYear, month, day);
+                    age = DateTime.Now.Year - dob.Year;
+                    if (DateTime.Now < dob.AddYears(age)) age--; 
+                }
+                catch { /* Ignore parse errors */ }
+            }
             return new InquiryDto
             {
                 InquiryId = i.InquiryId,
                 PatientIc = i.PatientIc,
                 PatientName = i.Patient?.patient_name ?? "Unknown",
+
+                // Map the calculated values here
+                PatientAge = age,
+                PatientGender = gender,
+
                 FullSymptomDescription = i.SymptomDescription,
                 Status = i.Status,
                 DoctorResponse = i.DoctorReply ?? string.Empty

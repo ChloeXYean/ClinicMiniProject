@@ -3,11 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Doctor.InquiryDetailsPage"
-             Title=""
-             Shell.NavBarIsVisible="False">
+             Title="Inquiry Details"
+             Shell.NavBarIsVisible="True">
 
     <Grid RowDefinitions="Auto,*" RowSpacing="0">
-        <control:BackNavBar Grid.Row="0" />
         
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="14">
