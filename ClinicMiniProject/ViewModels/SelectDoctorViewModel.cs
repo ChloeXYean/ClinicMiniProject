@@ -161,14 +161,13 @@ namespace ClinicMiniProject.ViewModels
 
                     if (success)
                     {
+                        // ---------------------------------------------------------
+                        // ADD THIS: Send message to refresh the home page
+                        // ---------------------------------------------------------
+                        MessagingCenter.Send<object>(this, "RefreshAppointments");
+
                         await Shell.Current.DisplayAlert("Success", "Appointment Request Sent!", "OK");
                         await Shell.Current.GoToAsync("///PatientHomePage");
-                    }
-                    else
-                    {
-                        await Shell.Current.DisplayAlert("Booking Conflict", 
-                            "This time slot is no longer available. Either you or the doctor already has an appointment at this time. Please select a different time slot.", 
-                            "OK");
                     }
                 }
                 catch (Exception ex)

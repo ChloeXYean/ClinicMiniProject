@@ -70,7 +70,7 @@ namespace ClinicMiniProject.ViewModels
             _authService = authService;
             _patientService = patientService;
 
-            HomeCommand = new Command((async () => await Shell.Current.GoToAsync("")));
+            HomeCommand = new Command(async () => await Shell.Current.GoToAsync("///PatientHomePage"));
 
             // Patient -> Inquiry History
             InquiryHistoryCommand = new Command(async () =>
@@ -93,8 +93,12 @@ namespace ClinicMiniProject.ViewModels
             NotificationCommand = new Command(async () =>
                 await Shell.Current.DisplayAlert("Notification", "You have no new notifications.", "OK"));
 
-            _ = LoadUpcomingAppointment();
+            MessagingCenter.Subscribe<object>(this, "RefreshAppointments", async (sender) =>
+            {
+                await LoadUpcomingAppointment();
+            });
 
+            _ = LoadUpcomingAppointment();
             StartAutoRefresh();
         }
 

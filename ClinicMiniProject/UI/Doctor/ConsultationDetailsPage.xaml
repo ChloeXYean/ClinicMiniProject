@@ -4,7 +4,7 @@
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
              x:Class="ClinicMiniProject.UI.Doctor.ConsultationDetailsPage"
              Title="Consultation Details"
-             Shell.NavBarIsVisible="True">
+             Shell.NavBarIsVisible="False">
     
     <Grid RowDefinitions="Auto,*" RowSpacing="0">
         <control:BackNavBar Grid.Row="0" Title="Consultation Details" BackCommand="{Binding BackCommand}" />

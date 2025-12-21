@@ -9,6 +9,7 @@ using ClinicMiniProject.Dtos;
 using ClinicMiniProject.Services.Interfaces;
 using ClinicMiniProject.UI.Doctor;
 
+
 namespace ClinicMiniProject.ViewModels
 {
     public class DoctorDashboardViewModel : INotifyPropertyChanged
@@ -16,6 +17,7 @@ namespace ClinicMiniProject.ViewModels
         private readonly IAuthService _authService;
         private readonly IDoctorDashboardService _dashboardService;
         private readonly IInquiryService _inquiryService;
+        private readonly IAppointmentService _appointmentService;
         private string _greeting = "Welcome";
         private TodayStatsDto _todayStats = new();
         private UpcomingScheduleDto _upcomingSchedule = new();
@@ -24,6 +26,7 @@ namespace ClinicMiniProject.ViewModels
         private string _searchText = string.Empty;
         private ObservableCollection<InquiryDto> _allInquiries = new();
         private ObservableCollection<InquiryDto> _filteredInquiries = new();
+
 
         public string Greeting
         {
@@ -109,6 +112,7 @@ namespace ClinicMiniProject.ViewModels
             NavigateToAppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(AppointmentHistoryPage)));
             NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("///ReportingManagementPage"));
 
+
             // Bottom Bar Commands
             NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
             NavigateToInquiryHistoryCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
@@ -122,7 +126,6 @@ namespace ClinicMiniProject.ViewModels
             });
             
             // Initialize missing commands to avoid warnings
-            NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync("ActiveConsultation"));
             ToggleMenuCommand = new Command(() => { /* TODO: Implement Toggle Menu */ });
             NotificationCommand = new Command(async () => await Shell.Current.DisplayAlert("Notification", "No new notifications", "OK"));
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
@@ -205,6 +208,7 @@ namespace ClinicMiniProject.ViewModels
                 var currentUser = _authService.GetCurrentUser();
                 if (currentUser == null)
                 {
+
                     System.Diagnostics.Debug.WriteLine("No current user found");
                     return;
                 }
