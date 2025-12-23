@@ -31,8 +31,10 @@ namespace ClinicMiniProject
             Routing.RegisterRoute("EditDoctorProfile", typeof(EditDoctorProfilePage)); // Edit Doctor Profile
             Routing.RegisterRoute("PatientDetails", typeof(PatientDetailsPage)); // Shared Patient Details
             Routing.RegisterRoute("InquiryDetails", typeof(InquiryDetailsPage));
-            Routing.RegisterRoute("EndConsultationDetails", typeof(ClinicMiniProject.UI.Nurse.EndConsultationDetailsPage));
+            Routing.RegisterRoute("EndConsultationDetails", typeof(EndConsultationDetailsPage));
 
+
+            Routing.RegisterRoute("NurseAppointmentHistory", typeof(AppointmentHistoryPage));//Nurse that acccess appointmentHistoryPage
             // --- Nurse Specific Routes ---
             Routing.RegisterRoute(nameof(EndConsultationPage), typeof(EndConsultationPage));
             Routing.RegisterRoute(nameof(RegisterPatientPage), typeof(RegisterPatientPage));
