@@ -33,8 +33,17 @@ namespace ClinicMiniProject.ViewModels
         public bool IsHistoryMode
         {
             get => _isHistoryMode;
-            set => _isHistoryMode = value;
+            set
+            {
+                if (_isHistoryMode != value)
+                {
+                    _isHistoryMode = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsDashboardMode));
+                }
+            }
         }
+        public bool IsDashboardMode => !IsHistoryMode;
 
         // ... existing fields ...
 
@@ -77,9 +86,12 @@ namespace ClinicMiniProject.ViewModels
             get => _appointmentId;
             set
             {
-                _appointmentId = value;
-                OnPropertyChanged();
-                _ = LoadConsultationDetails();
+                if (_appointmentId != value)
+                {
+                    _appointmentId = value;
+                    OnPropertyChanged();
+                    _ = LoadConsultationDetails();
+                }
             }
         }
 
@@ -153,7 +165,10 @@ namespace ClinicMiniProject.ViewModels
                 // Update single appointment properties for backward compatibility
                 if (value != null)
                 {
-                    AppointmentId = value.AppointmentId;
+                    if (AppointmentId != value.AppointmentId)
+                    {
+                        AppointmentId = value.AppointmentId;
+                    }
                     PatientName = value.PatientName;
                     PatientIC = value.PatientIC;
                     ServiceType = value.ServiceType;
@@ -425,12 +440,27 @@ namespace ClinicMiniProject.ViewModels
                 var appointment = await _appointmentService.GetAppointmentByIdAsync(AppointmentId);
                 if (appointment != null)
                 {
-                    AppointmentDate = appointment.appointedAt?.ToString("dd MMM yyyy") ?? " - ";
-                    AppointmentTime = appointment.appointedAt?.ToString("hh:mm tt") ?? " - ";
-                    PatientName = appointment.Patient?.patient_name ?? " - ";
-                    PatientIC = appointment.patient_IC ?? " - ";
-                    ServiceType = appointment.service_type?.ToString() ?? "General Consultation";
-                    Status = appointment.status ?? " - ";
+                    // Create DTO and set SelectedAppointment to make UI visible
+                    var dto = new ConsultationAppointmentDto
+                    {
+                        AppointmentId = appointment.appointment_ID,
+                        PatientName = appointment.Patient?.patient_name ?? " - ",
+                        PatientIC = appointment.patient_IC ?? " - ",
+                        ServiceType = appointment.service_type?.ToString() ?? "General Consultation",
+                        AppointmentTime = appointment.appointedAt ?? DateTime.Now,
+                        Status = appointment.status ?? " - ",
+                        CanStartConsultation = false, // History view - generally cannot start
+                        
+                        TimeFromNow = (appointment.appointedAt ?? DateTime.Now) - DateTime.Now,
+                        StatusColor = GetStatusColor(appointment.status ?? ""),
+                        TimeIndicatorColor = "#6C757D"
+                    };
+
+                    SelectedAppointment = dto;
+
+                    // Manual overrides for displayed properties if needed (SelectedAppointment setter handles most)
+                    DoctorRemarks = "Loading..."; 
+                    NurseNotes = "Loading...";
 
                     // Check if consultation is completed
                     _isConsultationCompleted = appointment.status == "Completed";
@@ -444,11 +474,18 @@ namespace ClinicMiniProject.ViewModels
                         CompletedConsultationRemarks = consultation.DoctorRemark ?? "No remarks available";
                         Prescription = " - ";
                     }
+                    else
+                    {
+                         DoctorRemarks = "No doctor remarks available ";
+                         NurseNotes = "No Nurse remarks available";
+                         CompletedConsultationRemarks = "No remarks available";
+                    }
 
                     // Notify UI about status changes
                     OnPropertyChanged(nameof(IsConsultationCompleted));
                     OnPropertyChanged(nameof(IsConsultationInProgress));
                     OnPropertyChanged(nameof(CanStartSelectedConsultation));
+                    OnPropertyChanged(nameof(HasSelectedAppointment)); // Ensure UI updates
                 }
             }
             catch (Exception ex)
