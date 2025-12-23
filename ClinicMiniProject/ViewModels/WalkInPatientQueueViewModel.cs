@@ -9,7 +9,7 @@ namespace ClinicMiniProject.ViewModels
     {
         private readonly AppDbContext _context;
         public ObservableCollection<PatientQueueDto> QueueList { get; set; } = new();
-
+        public string CurrentDate { get; } = DateTime.Now.ToString("dd MMMM yyyy");
         public ICommand BackCommand { get; }
         public ICommand ViewDetailsCommand { get; }
 
@@ -33,8 +33,7 @@ namespace ClinicMiniProject.ViewModels
 
                     var appointments = await _context.Appointments
                         .Include(a => a.Patient)
-                        .Where(a => a.appointedAt.Value.Date == today
-                                    && a.status == "Pending")
+                        .Where(a => a.appointedAt.Value.Date == today)
                         .OrderBy(a => a.appointedAt)
                         .ToListAsync();
                     foreach (var appt in appointments)
@@ -44,10 +43,10 @@ namespace ClinicMiniProject.ViewModels
                             PatientName = appt.Patient?.patient_name ?? "Unknown",
                             QueueId = appt.appointment_ID,
                             ICNumber = appt.patient_IC,
-
-                            RegisteredTime = appt.appointedAt?.ToString("hh:mm tt") ?? "--:--",
-
-                            PhoneNumber = appt.Patient?.patient_contact ?? "N/A"
+                            RegisteredTime = $"{appt.bookedAt:hh:mm tt} (Slot: {appt.appointedAt:hh:mm tt})",
+                            PhoneNumber = appt.Patient?.patient_contact ?? "N/A",
+                            ServiceType = appt.service_type,
+                            Status = appt.status
                         });
                     }
 

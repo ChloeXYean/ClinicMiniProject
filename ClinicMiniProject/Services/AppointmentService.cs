@@ -15,6 +15,33 @@ namespace ClinicMiniProject.Services
             _context = context;
             _repo = repo;
         }
+        public async Task<bool> RescheduleAppointmentAsync(string appointmentId, DateTime newDate)
+        {
+            try
+            {
+                var appt = await _context.Appointments.FindAsync(appointmentId);
+                if (appt == null) return false;
+
+                appt.appointedAt = newDate;
+
+                if (appt.status == "Cancelled" || appt.status == "Missed")
+                {
+                    appt.status = "Pending";
+                }
+
+                appt.nurse_remark = $"Rescheduled to {newDate:g}";
+
+                _context.Appointments.Update(appt);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error rescheduling: {ex.Message}");
+                return false;
+            }
+        }
+
         public async Task<bool> AddAppointmentAsync(Appointment appt)
         {
             if (appt == null || !appt.appointedAt.HasValue)
@@ -399,26 +426,13 @@ namespace ClinicMiniProject.Services
 
         public async Task<bool> CancelAppointmentAsync(string appointmentId)
         {
-            try
-            {
-                var appointment = await _context.Appointments
-                    .FirstOrDefaultAsync(a => a.appointment_ID == appointmentId);
+            var appt = await _context.Appointments.FindAsync(appointmentId);
+            if (appt == null) return false;
 
-                if (appointment == null || appointment.status != "Pending")
-                    return false;
+            appt.status = "Cancelled"; 
 
-                appointment.status = "Cancelled";
-                appointment.nurse_remark = "Cancelled by patient.";
-
-                _context.Appointments.Update(appointment);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[Error] Failed to cancel appointment: {ex.Message}");
-                return false;
-            }
+            await _context.SaveChangesAsync(); 
+            return true;
         }
     }
 }

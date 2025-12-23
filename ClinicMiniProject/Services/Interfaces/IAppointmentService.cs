@@ -7,8 +7,8 @@ namespace ClinicMiniProject.Services.Interfaces
 {
     public interface IAppointmentService
     {
-        
 
+        Task<bool> RescheduleAppointmentAsync(string appointmentId, DateTime newDate);
         public Task<bool> AddAppointmentAsync(Appointment appt);
 
         public Task<bool> HasConflictingAppointmentAsync(string patientIc, string doctorId, DateTime appointmentTime);

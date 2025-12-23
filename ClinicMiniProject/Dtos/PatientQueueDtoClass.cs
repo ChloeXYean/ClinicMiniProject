@@ -12,5 +12,8 @@
         public string Email { get; set; }
         public string ServiceType { get; set; }
         public bool IsEmergency { get; set; }
+
+        public string Status { get; set; }
+
     }
 }

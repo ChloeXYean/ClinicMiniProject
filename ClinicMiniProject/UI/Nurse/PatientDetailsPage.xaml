@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:ClinicMiniProject.UI.Control"
+             xmlns:viewmodels="clr-namespace:ClinicMiniProject.ViewModels" 
              x:Class="ClinicMiniProject.UI.Nurse.PatientDetailsPage"
              BackgroundColor="White"
              Title="Patient Profile">
@@ -35,7 +36,6 @@
                         StrokeShape="RoundRectangle 15" 
                         Padding="20">
                     <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="Auto, *" RowSpacing="15">
-
                         <Label Grid.Row="0" Grid.Column="0" Text="IC / Passport:" TextColor="Gray" FontSize="13" WidthRequest="100"/>
                         <Label Grid.Row="0" Grid.Column="1" Text="{Binding IcNumber}" TextColor="Black" FontSize="14" FontAttributes="Bold"/>
 
@@ -55,7 +55,6 @@
                         Padding="20"
                         IsVisible="{Binding IsNurseView}">
                     <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="Auto, *" RowSpacing="15">
-
                         <Label Grid.Row="0" Grid.Column="0" Text="Reg. Time:" TextColor="Gray" FontSize="13" WidthRequest="100"/>
                         <Label Grid.Row="0" Grid.Column="1" Text="{Binding RegTime}" TextColor="Black" FontSize="14" FontAttributes="Bold"/>
 
@@ -64,17 +63,79 @@
                     </Grid>
                 </Border>
 
+                <Label Text="Upcoming Appointments" 
+                       FontSize="16" 
+                       FontAttributes="Bold" 
+                       TextColor="Black" 
+                       Margin="0,15,0,5"
+                       IsVisible="{Binding IsNurseView}"/>
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Appointments}"
+                                     Spacing="10"
+                                     IsVisible="{Binding IsNurseView}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Border BackgroundColor="White"
+                                    Stroke="#E0E0E0"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 10"
+                                    Padding="15">
+                                <Grid ColumnDefinitions="*, Auto">
+
+                                    <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding service_type}" 
+                                               FontAttributes="Bold" 
+                                               FontSize="15"
+                                               TextColor="#2D5AF0"/>
+                                        <Label Text="{Binding appointedAt, StringFormat='{0:MMM dd, yyyy @ hh:mm tt}'}" 
+                                               TextColor="Black"
+                                               FontSize="13"/>
+                                        <Label Text="{Binding status}" 
+                                               TextColor="Gray" 
+                                               FontSize="12"
+                                               FontAttributes="Italic"/>
+                                    </VerticalStackLayout>
+
+                                    <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                                        <Button Text="Cancel" 
+                                                FontSize="11"
+                                                HeightRequest="36"
+                                                Padding="10,0"
+                                                CornerRadius="8"
+                                                BackgroundColor="#FF5252"
+                                                TextColor="White"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PatientDetailsViewModel}}, Path=CancelAppointmentCommand}"
+                                                CommandParameter="{Binding .}">
+                                            <Button.Triggers>
+                                                <DataTrigger TargetType="Button" Binding="{Binding status}" Value="Completed">
+                                                    <Setter Property="IsVisible" Value="False"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Button" Binding="{Binding status}" Value="Cancelled">
+                                                    <Setter Property="IsVisible" Value="False"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Button" Binding="{Binding status}" Value="Missed">
+                                                    <Setter Property="IsVisible" Value="False"/>
+                                                </DataTrigger>
+                                            </Button.Triggers>
+                                        </Button>
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <BoxView HeightRequest="20" Color="Transparent"/>
+
             </VerticalStackLayout>
         </ScrollView>
+
 
         <Border Grid.Row="1" 
                 Padding="20" 
                 StrokeThickness="0" 
                 BackgroundColor="White"
                 IsVisible="{Binding IsNurseView}">
-            <Border.Shadow>
-                <Shadow Brush="Black" Opacity="0.1" Radius="10" Offset="0,-5"/>
-            </Border.Shadow>
 
             <Button Text="Update Patient Info" 
                     BackgroundColor="#6EA8FE" 
@@ -85,17 +146,11 @@
                     Command="{Binding UpdateCommand}"/>
         </Border>
 
-        <!-- Patient Actions -->
         <VerticalStackLayout Grid.Row="1" 
                              Padding="20" 
                              Spacing="10" 
                              BackgroundColor="White"
                              IsVisible="{Binding IsPatientView}">
-            <Border>
-            <Border.Shadow>
-                <Shadow Brush="Black" Opacity="0.1" Radius="10" Offset="0,-5"/>
-            </Border.Shadow>
-            </Border>
 
             <Button Text="Edit Profile" 
                     BackgroundColor="#2D5AF0" 
@@ -115,8 +170,8 @@
                     HeightRequest="50"
                     Command="{Binding LogoutCommand}"/>
         </VerticalStackLayout>
-        
-        <!-- Doctor View - No buttons, just empty space -->
+
         <Grid Grid.Row="2" IsVisible="{Binding IsDoctorView}" />
+
     </Grid>
 </ContentPage>

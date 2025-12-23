@@ -51,7 +51,6 @@ namespace ClinicMiniProject
             Routing.RegisterRoute("AppointmentCancellation", typeof(AppointmentCancellationPage));
             Routing.RegisterRoute("EditPatientProfile", typeof(EditPatientProfilePage));
 
-
             //Prevent lose 
             Routing.RegisterRoute("NurseReporting", typeof(ReportingManagementPage));
         }

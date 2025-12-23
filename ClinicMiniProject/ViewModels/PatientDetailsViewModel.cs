@@ -1,20 +1,22 @@
-﻿using System.Windows.Input;
-using ClinicMiniProject.Dtos;
+﻿using ClinicMiniProject.Dtos;
+using ClinicMiniProject.Models;
 using ClinicMiniProject.Services;
 using ClinicMiniProject.Services.Interfaces;
-using ClinicMiniProject.Models;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace ClinicMiniProject.ViewModels
 {
-    // Keeping your QueryProperty for the DTO
     [QueryProperty(nameof(Patient), "SelectedPatient")]
-    // Added these two for better navigation control
     [QueryProperty(nameof(UserType), "UserType")]
     [QueryProperty(nameof(PatientId), "patientIc")]
     public class PatientDetailsViewModel : BindableObject
     {
         private readonly IAuthService _authService;
         private readonly PatientService _patientService;
+        private readonly IAppointmentService _appointmentService;
+
+        public ObservableCollection<Appointment> Appointments { get; } = new();
 
         // --- DTO PROPERTY (From Queue) ---
         private PatientQueueDto patient = new();
@@ -136,17 +138,21 @@ namespace ClinicMiniProject.ViewModels
         public ICommand UpdateCommand { get; }
         public ICommand EditProfileCommand { get; }
         public ICommand LogoutCommand { get; }
+        public ICommand CancelAppointmentCommand { get; }
 
         // --- CONSTRUCTOR ---
-        public PatientDetailsViewModel(IAuthService authService, PatientService patientService)
+        public PatientDetailsViewModel(IAuthService authService, PatientService patientService, IAppointmentService appointmentService)
         {
             _authService = authService;
             _patientService = patientService;
+            _appointmentService = appointmentService;
 
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
             UpdateCommand = new Command(OnUpdate);
             EditProfileCommand = new Command(async () => await OnEditProfile());
             LogoutCommand = new Command(async () => await OnLogout());
+
+            CancelAppointmentCommand = new Command<Appointment>(async (a) => await OnCancelAppointment(a));
 
             // Auto-detect source if no parameters were passed yet
             CheckInitialSource();
@@ -178,30 +184,23 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
-        // Logic 1: Loading from the Nurse Queue DTO
         private void LoadFromQueueDto(PatientQueueDto dto)
         {
-            // 1. Set Queue Specifics
             QueueNo = dto.QueueId ?? "--";
             RegTime = dto.RegisteredTime ?? "--";
 
-            // 2. Set the Service Type (This comes from Appointment, via DTO)
             Reason = !string.IsNullOrEmpty(dto.ServiceType) ? dto.ServiceType : "General Consultation";
 
-            // 3. Set Basic Info
             PatientName = dto.PatientName ?? "Unknown";
             IcNumber = dto.ICNumber ?? "--";
             Contact = dto.PhoneNumber ?? "--";
 
-            // 4. Fetch the rest (Email, Gender) from Database using IC
             if (!string.IsNullOrEmpty(dto.ICNumber))
             {
-                // We pass 'false' to avoid overwriting the Queue/Reason info we just set
                 LoadPatientData(dto.ICNumber, overwriteVisitDetails: false);
             }
         }
 
-        // Logic 2: Loading from Database (Patient Profile)
         private void LoadCurrentPatientProfile()
         {
             var patient = _authService.GetCurrentPatient();
@@ -209,15 +208,13 @@ namespace ClinicMiniProject.ViewModels
             {
                 LoadPatientData(patient.patient_IC, overwriteVisitDetails: true);
 
-                // Hide/Clear Queue specific info for profile view
                 QueueNo = "";
                 RegTime = "";
                 Reason = "";
             }
         }
 
-        // Shared Data Loader
-        private void LoadPatientData(string ic, bool overwriteVisitDetails = true)
+        private async void LoadPatientData(string ic, bool overwriteVisitDetails = true)
         {
             var p = _patientService.GetPatientByIC(ic);
             if (p != null)
@@ -227,20 +224,11 @@ namespace ClinicMiniProject.ViewModels
                 Contact = p.patient_contact;
                 Email = p.patient_email ?? "N/A";
 
-                // Gender placeholder
                 Gender = "Unknown";
 
-                // Load default profile picture (stored in session only)
                 ProfilePictureSource = ImageSource.FromFile("profilepicture.png");
-
-                // Only overwrite these if we are loading raw patient data, 
-                // not when enhancing queue data
-                if (overwriteVisitDetails)
-                {
-                    // Reset visit details if just viewing profile
-                    // QueueNo and RegTime might be cleared by caller
-                }
             }
+            await LoadAppointments(ic);
         }
 
         public void ReloadData()
@@ -278,5 +266,28 @@ namespace ClinicMiniProject.ViewModels
                 await Shell.Current.GoToAsync("///LoginPage");
             }
         }
+
+        // -- Nurse --
+        private async Task LoadAppointments(string ic)
+        {
+            try
+            {
+                var appts = await _appointmentService.GetAppointmentsByPatientIcAsync(ic);
+                Appointments.Clear();
+                foreach (var appt in appts) Appointments.Add(appt);
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}"); }
+        }
+
+        private async Task OnCancelAppointment(Appointment appt)
+        {
+            if (appt == null) return;
+            bool confirm = await Shell.Current.DisplayAlert("Confirm", "Cancel this appointment?", "Yes", "No");
+            if (!confirm) return;
+
+            bool success = await _appointmentService.CancelAppointmentAsync(appt.appointment_ID);
+            if (success) { await LoadAppointments(appt.patient_IC); }
+        }
+
     }
 }
