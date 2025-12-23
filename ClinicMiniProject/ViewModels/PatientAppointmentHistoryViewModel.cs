@@ -164,7 +164,8 @@ namespace ClinicMiniProject.ViewModels
 
                         // Cancellation support: Restored 24h lead time constraint
                         IsCancellable = !isStaffView && status == "Pending" && (appt.appointedAt.Value - DateTime.Now).TotalHours >= 24,
-                        CancelCommand = new Command(async () => await OnCancelAppointment(appt.appointment_ID, status, appt.appointedAt))
+                        CancelCommand = new Command(async () => await OnCancelAppointment(appt.appointment_ID, status, appt.appointedAt)),
+                        ViewDetailsCommand = new Command(async () => await OnViewDetails(appt.appointment_ID))
                     });
                 }
 
@@ -232,6 +233,14 @@ namespace ClinicMiniProject.ViewModels
         }
 
 
+        private async Task OnViewDetails(string appointmentId)
+        {
+            if (!string.IsNullOrEmpty(appointmentId))
+            {
+                await Shell.Current.GoToAsync($"///PatientConsultationDetailsPage?appointmentId={appointmentId}");
+            }
+        }
+
         private async Task OnCancelAppointment(string appointmentId, string status, DateTime? appointedAt)
         {
             if (string.IsNullOrEmpty(appointmentId) || status != "Pending" || !appointedAt.HasValue)
@@ -270,5 +279,6 @@ namespace ClinicMiniProject.ViewModels
         public string AppointmentId { get; set; }
         public bool IsCancellable { get; set; } // New
         public ICommand CancelCommand { get; set; } // New
+        public ICommand ViewDetailsCommand { get; set; } // New
     }
 }

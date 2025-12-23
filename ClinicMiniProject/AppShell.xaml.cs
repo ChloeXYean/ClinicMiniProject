@@ -20,7 +20,7 @@ namespace ClinicMiniProject
 
             // --- Shared / Doctor Routes (Using simple string keys to match ViewModel) ---
             Routing.RegisterRoute(nameof(AppointmentSchedulePage), typeof(AppointmentSchedulePage));
-            Routing.RegisterRoute("ConsultationDetails", typeof(ConsultationDetailsPage));
+            Routing.RegisterRoute("ConsultationDetailsPage", typeof(ConsultationDetailsPage));
             Routing.RegisterRoute("ActiveConsultation", typeof(ActiveConsultationPage));
             Routing.RegisterRoute(nameof(AppointmentHistoryPage), typeof(AppointmentHistoryPage));
             Routing.RegisterRoute("ReportingManagement", typeof(ReportingManagementPage));

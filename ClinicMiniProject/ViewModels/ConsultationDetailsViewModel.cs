@@ -298,6 +298,7 @@ namespace ClinicMiniProject.ViewModels
                 if (currentUser == null) 
                 {
                     System.Diagnostics.Debug.WriteLine("No current user found");
+                    await Shell.Current.DisplayAlert("Error", "Unable to identify current doctor", "OK");
                     return;
                 }
 
@@ -503,19 +504,21 @@ namespace ClinicMiniProject.ViewModels
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"=== STARTING CONSULTATION FOR: {appointmentId} ===");
+                
                 var appointment = await _appointmentService.GetAppointmentByIdAsync(appointmentId);
                 if (appointment == null)
                 {
+                    System.Diagnostics.Debug.WriteLine($"ERROR: Appointment {appointmentId} not found");
                     await Shell.Current.DisplayAlert("Error", "Appointment not found", "OK");
                     return;
                 }
 
-                // Update appointment time to current time (early start)
-                var originalTime = appointment.appointedAt;
-                appointment.appointedAt = DateTime.Now;
-                appointment.status = "In Progress";
-                
-                await _appointmentService.UpdateAppointmentAsync(appointment);
+                System.Diagnostics.Debug.WriteLine($"Found appointment: {appointment.appointment_ID} - {appointment.Patient?.patient_name} - Status: {appointment.status}");
+
+                // Use the consultation service to start consultation
+                await _consultationService.StartConsultationAsync(appointmentId);
+                System.Diagnostics.Debug.WriteLine("Consultation service StartConsultationAsync completed");
 
                 // Set current consultation
                 CurrentConsultation = new CurrentConsultationDto
@@ -525,8 +528,10 @@ namespace ClinicMiniProject.ViewModels
                     PatientIC = appointment.patient_IC ?? "Unknown IC",
                     ServiceType = appointment.service_type?.ToString() ?? "General Consultation",
                     StartTime = DateTime.Now,
-                    OriginalAppointmentTime = originalTime ?? DateTime.Now
+                    OriginalAppointmentTime = appointment.appointedAt ?? DateTime.Now
                 };
+
+                System.Diagnostics.Debug.WriteLine($"Current consultation set for: {CurrentConsultation.PatientName}");
 
                 // Clear remarks for new consultation
                 ConsultationRemarks = string.Empty;
@@ -535,11 +540,13 @@ namespace ClinicMiniProject.ViewModels
                 await LoadTodayAppointments();
 
                 await Shell.Current.DisplayAlert("Success", "Consultation started successfully", "OK");
+                System.Diagnostics.Debug.WriteLine("=== CONSULTATION STARTED SUCCESSFULLY ===");
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error starting consultation: {ex.Message}");
-                await Shell.Current.DisplayAlert("Error", "Failed to start consultation", "OK");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                await Shell.Current.DisplayAlert("Error", $"Failed to start consultation: {ex.Message}", "OK");
             }
         }
 
@@ -564,19 +571,12 @@ namespace ClinicMiniProject.ViewModels
                     return;
                 }
 
-                // Update appointment status to completed
-                var appointment = await _appointmentService.GetAppointmentByIdAsync(CurrentConsultation.AppointmentId);
-                if (appointment != null)
-                {
-                    appointment.status = "Completed";
-                    await _appointmentService.UpdateAppointmentAsync(appointment);
-
-                    // Save consultation remarks if available
-                    if (!string.IsNullOrWhiteSpace(ConsultationRemarks))
-                    {
-                        await SaveConsultationDetails(CurrentConsultation.AppointmentId, ConsultationRemarks);
-                    }
-                }
+                // Use the consultation service to end consultation
+                await _consultationService.EndConsultationAsync(
+                    CurrentConsultation.AppointmentId, 
+                    ConsultationRemarks, 
+                    string.Empty // Nurse remarks - can be added later if needed
+                );
 
                 // Clear current consultation
                 CurrentConsultation = null;
@@ -590,7 +590,7 @@ namespace ClinicMiniProject.ViewModels
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error ending consultation: {ex.Message}");
-                await Shell.Current.DisplayAlert("Error", "Failed to end consultation", "OK");
+                await Shell.Current.DisplayAlert("Error", $"Failed to end consultation: {ex.Message}", "OK");
             }
         }
 

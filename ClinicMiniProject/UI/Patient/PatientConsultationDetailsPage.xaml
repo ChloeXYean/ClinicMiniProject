@@ -3,23 +3,131 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
+    xmlns:converters="clr-namespace:ClinicMiniProject.Converters"
     x:Class="ClinicMiniProject.UI.Patient.PatientConsultationDetailsPage"
     Shell.NavBarIsVisible="False"
-    Title="Consultation Details">
+    Title="Consultation Details"
+    BackgroundColor="#F5F7FA">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto, *">
         <control:BackNavBar Grid.Row="0" Title="Consultation Details" BackCommand="{Binding BackCommand}" />
+        
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="20" Spacing="10">
+            <VerticalStackLayout Padding="20" Spacing="15">
 
-                <Label Text="Date: 12 November 2025"/>
-                <Label Text="Appointment Time: 10:00 AM"/>
-                <Label Text="Patient Name: Alex"/>
-                <Label Text="IC: 000000-00-0000"/>
-                <Label Text="Phone: 012-3456789"/>
-                <Label Text="Service: General Consultation"/>
+                <!-- Loading Indicator -->
+                <ActivityIndicator IsRunning="{Binding IsLoading}" 
+                                   IsVisible="{Binding IsLoading}"
+                                   Color="#2D5AF0"
+                                   HeightRequest="50"/>
 
-                <Label Text="Doctor's Remark"/>
+                <!-- Appointment Information Card -->
+                <Frame BackgroundColor="White" 
+                       CornerRadius="15" 
+                       HasShadow="True" 
+                       Padding="20"
+                       BorderColor="Transparent"
+                       IsVisible="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Appointment Information" 
+                               FontSize="18" 
+                               FontAttributes="Bold" 
+                               TextColor="#333"/>
+                        
+                        <BoxView HeightRequest="1" Color="#E0E0E0"/>
+                        
+                        <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="10">
+                            <Label Grid.Row="0" Grid.Column="0" Text="Date:" FontSize="14" TextColor="#666"/>
+                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding AppointmentDate}" FontSize="14" FontAttributes="Bold" TextColor="#333"/>
+                            
+                            <Label Grid.Row="1" Grid.Column="0" Text="Time:" FontSize="14" TextColor="#666"/>
+                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding AppointmentTime}" FontSize="14" FontAttributes="Bold" TextColor="#333"/>
+                            
+                            <Label Grid.Row="2" Grid.Column="0" Text="Patient Name:" FontSize="14" TextColor="#666"/>
+                            <Label Grid.Row="2" Grid.Column="1" Text="{Binding PatientName}" FontSize="14" FontAttributes="Bold" TextColor="#333"/>
+                            
+                            <Label Grid.Row="3" Grid.Column="0" Text="IC Number:" FontSize="14" TextColor="#666"/>
+                            <Label Grid.Row="3" Grid.Column="1" Text="{Binding PatientIC}" FontSize="14" FontAttributes="Bold" TextColor="#333"/>
+                            
+                            <Label Grid.Row="4" Grid.Column="0" Text="Phone:" FontSize="14" TextColor="#666"/>
+                            <Label Grid.Row="4" Grid.Column="1" Text="{Binding PatientPhone}" FontSize="14" FontAttributes="Bold" TextColor="#333"/>
+                            
+                            <Label Grid.Row="5" Grid.Column="0" Text="Service:" FontSize="14" TextColor="#666"/>
+                            <Label Grid.Row="5" Grid.Column="1" Text="{Binding ServiceType}" FontSize="14" FontAttributes="Bold" TextColor="#333"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Doctor's Remarks Card -->
+                <Frame BackgroundColor="White" 
+                       CornerRadius="15" 
+                       HasShadow="True" 
+                       Padding="20"
+                       BorderColor="Transparent"
+                       IsVisible="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="👨‍⚕️" FontSize="20"/>
+                            <Label Text="Doctor's Remarks" 
+                                   FontSize="18" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#333"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        
+                        <BoxView HeightRequest="1" Color="#E0E0E0"/>
+                        
+                        <Frame BackgroundColor="#F8F9FA" 
+                               CornerRadius="10" 
+                               Padding="15"
+                               HasShadow="False"
+                               BorderColor="Transparent">
+                            <Label Text="{Binding DoctorRemarks}" 
+                                   FontSize="14" 
+                                   TextColor="#333"
+                                   LineBreakMode="WordWrap"/>
+                        </Frame>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Nurse's Remarks Card -->
+                <Frame BackgroundColor="White" 
+                       CornerRadius="15" 
+                       HasShadow="True" 
+                       Padding="20"
+                       BorderColor="Transparent"
+                       IsVisible="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="👩‍⚕️" FontSize="20"/>
+                            <Label Text="Nurse's Remarks" 
+                                   FontSize="18" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#333"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        
+                        <BoxView HeightRequest="1" Color="#E0E0E0"/>
+                        
+                        <Frame BackgroundColor="#F8F9FA" 
+                               CornerRadius="10" 
+                               Padding="15"
+                               HasShadow="False"
+                               BorderColor="Transparent">
+                            <Label Text="{Binding NurseRemarks}" 
+                                   FontSize="14" 
+                                   TextColor="#333"
+                                   LineBreakMode="WordWrap"/>
+                        </Frame>
+                    </VerticalStackLayout>
+                </Frame>
+
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

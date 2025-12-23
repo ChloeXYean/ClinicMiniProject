@@ -75,8 +75,9 @@ namespace ClinicMiniProject.Services
         private UpcomingScheduleDto CalculateUpcomingSchedule(IEnumerable<Appointment> appointments, DateTime now)
         {
             var upcomingAppointments = appointments?
-                .Where(a => a.appointedAt > now && 
-                           (a.status == "Pending"))
+                .Where(a => a.appointedAt.HasValue && 
+                           (a.appointedAt.Value > now.AddMinutes(-30)) && // Include appointments from 30 min ago
+                           (a.status == "Pending" || a.status == "Walk-in" || a.status == "Registered"))
                 .OrderBy(a => a.appointedAt)
                 .ToList() ?? new List<Appointment>();
 
