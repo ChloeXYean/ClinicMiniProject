@@ -103,13 +103,13 @@ namespace ClinicMiniProject.ViewModels
         // Commands for menu items
         public ICommand LogoutCommand { get; }
         public ICommand NavigateToAppointmentScheduleCommand { get; }
-        public ICommand NavigateToConsultationDetailsCommand { get; }
         public ICommand NavigateToAppointmentHistoryCommand { get; }
         public ICommand NavigateToReportingManagementCommand { get; }
         public ICommand NavigateToHomeCommand { get; }
         public ICommand NavigateToInquiryCommand { get; }
         public ICommand NavigateToProfileCommand { get; }
         public ICommand NavigateToInquiryHistoryCommand { get; }
+        public ICommand NavigateToConsultationDetailsCommand { get; }
 
         public ICommand ToggleMenuCommand { get; }
         public ICommand NotificationCommand { get; }
@@ -130,9 +130,9 @@ namespace ClinicMiniProject.ViewModels
 
             // --- Navigation Logic ---
             NavigateToAppointmentScheduleCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(AppointmentSchedulePage)));
-            NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync("///ConsultationDetailsPage"));
             NavigateToAppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(AppointmentHistoryPage)));
             NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("///ReportingManagementPage"));
+            NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(ConsultationDetailsPage)));
 
             // Bottom Bar Commands
             NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
@@ -187,7 +187,7 @@ namespace ClinicMiniProject.ViewModels
                     }
                 });
 
-                return true; 
+                return true;
             });
         }
 
@@ -253,33 +253,32 @@ namespace ClinicMiniProject.ViewModels
         private async Task LoadInquiryData()
         {
             System.Diagnostics.Debug.WriteLine("=== Loading inquiry data from database ===");
-            
+
             try
             {
                 AllInquiries.Clear();
                 FilteredInquiries.Clear();
-                
+
                 // Get current doctor
                 var currentUser = _authService.GetCurrentUser();
                 if (currentUser == null)
                 {
-
                     System.Diagnostics.Debug.WriteLine("No current user found");
                     return;
                 }
-                
+
                 System.Diagnostics.Debug.WriteLine($"Current user: {currentUser.staff_name}, ID: {currentUser.staff_ID}, IsDoctor: {currentUser.isDoctor}");
-                
+
                 // Fetch inquiries for current doctor only
                 var inquiries = await _inquiryService.GetInquiriesByDoctorAsync(currentUser.staff_ID);
-                
+
                 foreach (var inquiry in inquiries)
                 {
                     AllInquiries.Add(inquiry);
                     FilteredInquiries.Add(inquiry);
                     System.Diagnostics.Debug.WriteLine($"Added inquiry: {inquiry.InquiryId} - {inquiry.PatientName}");
                 }
-                
+
                 System.Diagnostics.Debug.WriteLine($"=== Loaded {AllInquiries.Count} inquiries for Dr. {currentUser.staff_name} ===");
             }
             catch (Exception ex)
@@ -302,10 +301,10 @@ namespace ClinicMiniProject.ViewModels
             System.Diagnostics.Debug.WriteLine($"=== FilterInquiries Called ===");
             System.Diagnostics.Debug.WriteLine($"Search text: '{searchText}'");
             System.Diagnostics.Debug.WriteLine($"AllInquiries count: {AllInquiries.Count}");
-            
+
             // Clear current filtered inquiries
             FilteredInquiries.Clear();
-            
+
             if (string.IsNullOrWhiteSpace(searchText))
             {
                 // Add all inquiries back
@@ -318,7 +317,7 @@ namespace ClinicMiniProject.ViewModels
             else
             {
                 // Add only matching inquiries
-                var filtered = AllInquiries.Where(inquiry => 
+                var filtered = AllInquiries.Where(inquiry =>
                     inquiry.PatientName.ToLower().Contains(searchText.ToLower()) ||
                     inquiry.FullSymptomDescription.ToLower().Contains(searchText.ToLower()) ||
                     inquiry.CreatedAt.ToString("MMM dd, yyyy").ToLower().Contains(searchText.ToLower()));
@@ -329,7 +328,7 @@ namespace ClinicMiniProject.ViewModels
                 }
                 System.Diagnostics.Debug.WriteLine($"Filtered results count: {FilteredInquiries.Count}");
             }
-            
+
             System.Diagnostics.Debug.WriteLine($"=== FilterInquiries Completed ===");
         }
 
@@ -344,33 +343,8 @@ namespace ClinicMiniProject.ViewModels
                     return;
                 }
 
-                // Update appointment time to current time (early start)
-                var appointment = await _appointmentService.GetAppointmentByIdAsync(nextAppointment.AppointmentId);
-                if (appointment != null)
-                {
-                    var originalTime = appointment.appointedAt;
-                    appointment.appointedAt = DateTime.Now;
-                    appointment.status = "In Progress";
-                    
-                    await _appointmentService.UpdateAppointmentAsync(appointment);
-
-                    // Set current consultation
-                    CurrentConsultation = new CurrentConsultationDto
-                    {
-                        AppointmentId = nextAppointment.AppointmentId,
-                        PatientName = nextAppointment.PatientName,
-                        PatientIC = nextAppointment.PatientIC,
-                        ServiceType = nextAppointment.ServiceType,
-                        StartTime = DateTime.Now,
-                        OriginalAppointmentTime = originalTime ?? DateTime.Now
-                    };
-
-                    // Clear remarks for new consultation
-                    ConsultationRemarks = string.Empty;
-
-                    // Refresh dashboard data
-                    LoadDashboardData();
-                }
+                // Navigate to consultation details page with appointment ID
+                await Shell.Current.GoToAsync($"///ConsultationDetailsPage?appointmentId={nextAppointment.AppointmentId}");
             }
             catch (Exception ex)
             {
@@ -450,7 +424,7 @@ namespace ClinicMiniProject.ViewModels
             // This would save to the consultation table
             // For now, we'll just log it - you'll need to implement the actual consultation service method
             System.Diagnostics.Debug.WriteLine($"Saving consultation remarks for appointment {appointmentId}: {remarks}");
-            
+
             // TODO: Implement actual consultation details saving
             // await _consultationService.SaveConsultationDetailsAsync(appointmentId, remarks);
         }
