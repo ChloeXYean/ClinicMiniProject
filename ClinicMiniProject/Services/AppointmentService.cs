@@ -17,20 +17,31 @@ namespace ClinicMiniProject.Services
         }
         public async Task<bool> AddAppointmentAsync(Appointment appt)
         {
-            if (appt == null || !appt.appointedAt.HasValue) 
+            if (appt == null || !appt.appointedAt.HasValue)
                 return false;
 
             // Check for conflicts before adding
             bool hasConflict = await HasConflictingAppointmentAsync(
-                appt.patient_IC, 
-                appt.staff_ID, 
+                appt.patient_IC,
+                appt.staff_ID,
                 appt.appointedAt.Value);
 
             if (hasConflict)
                 return false;
 
             if (string.IsNullOrEmpty(appt.appointment_ID))
-                appt.appointment_ID = "A" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
+            {
+                // Ensure a unique ID by checking if it already exists
+                string newId;
+                bool exists;
+                do
+                {
+                    newId = "A" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
+                    exists = await _context.Appointments.AnyAsync(a => a.appointment_ID == newId);
+                } while (exists);
+
+                appt.appointment_ID = newId;
+            }
 
             _context.Appointments.Add(appt);
             await _context.SaveChangesAsync();
@@ -41,8 +52,8 @@ namespace ClinicMiniProject.Services
         {
             // Check if patient already has an appointment at this time (any doctor)
             bool patientConflict = await _context.Appointments
-                .AnyAsync(a => a.patient_IC == patientIc 
-                            && a.appointedAt == appointmentTime 
+                .AnyAsync(a => a.patient_IC == patientIc
+                            && a.appointedAt == appointmentTime
                             && a.status != "Cancelled");
 
             if (patientConflict)
@@ -50,8 +61,8 @@ namespace ClinicMiniProject.Services
 
             // Check if doctor already has an appointment at this time (any patient)
             bool doctorConflict = await _context.Appointments
-                .AnyAsync(a => a.staff_ID == doctorId 
-                            && a.appointedAt == appointmentTime 
+                .AnyAsync(a => a.staff_ID == doctorId
+                            && a.appointedAt == appointmentTime
                             && a.status != "Cancelled");
 
             return doctorConflict;
@@ -73,7 +84,7 @@ namespace ClinicMiniProject.Services
             string? staffId, DateTime startDate, DateTime endDate)
         {
             var query = _context.Appointments
-                    .Include(a => a.Patient) 
+                    .Include(a => a.Patient)
                     .Include(a => a.Staff)
                     .Where(a => a.appointedAt >= startDate && a.appointedAt <= endDate);
 
@@ -85,7 +96,7 @@ namespace ClinicMiniProject.Services
             return await query.OrderBy(a => a.appointedAt).ToListAsync();
         }
 
-        public DateTime? AssignWalkInTimeSlot(string doctorId,DateTime preferredDate,int workStartHour = 9,int workEndHour = 21,TimeSpan slotDuration = default)
+        public DateTime? AssignWalkInTimeSlot(string doctorId, DateTime preferredDate, int workStartHour = 9, int workEndHour = 21, TimeSpan slotDuration = default)
         {
             if (slotDuration == default)
                 slotDuration = TimeSpan.FromHours(1);
@@ -95,7 +106,7 @@ namespace ClinicMiniProject.Services
             if (availability == null || !availability.IsAvailable(preferredDate.DayOfWeek))
                 return null;
 
-            var bookedSlots = _context.Appointments.Where(a => a.staff_ID == doctorId &&a.appointedAt.HasValue &&a.appointedAt.Value.Date == preferredDate.Date)
+            var bookedSlots = _context.Appointments.Where(a => a.staff_ID == doctorId && a.appointedAt.HasValue && a.appointedAt.Value.Date == preferredDate.Date)
                 .Select(a => a.appointedAt!.Value)
                 .ToList();
 
@@ -141,9 +152,8 @@ namespace ClinicMiniProject.Services
 
         public Task<Appointment?> GetAppointmentByIdAsync(string appointmentId)
         {
-            return _context.Appointments
-                .Include(a => a.Patient) 
-                .FirstOrDefaultAsync(a => a.appointment_ID == appointmentId);
+            //1223
+            return _context.Appointments.FirstOrDefaultAsync(a => a.appointment_ID == appointmentId);
         }
 
         public Task UpdateAppointmentAsync(Appointment appointment)
@@ -188,8 +198,8 @@ namespace ClinicMiniProject.Services
         public async Task<List<TimeSpan>> GetBookedTimeSlotsAsync(string doctorId, DateTime date)
         {
             var appointments = await _context.Appointments
-                .Where(a => a.staff_ID == doctorId 
-                            && a.appointedAt.HasValue 
+                .Where(a => a.staff_ID == doctorId
+                            && a.appointedAt.HasValue
                             && a.appointedAt.Value.Date == date.Date
                             && a.status != "Cancelled")
                 .Select(a => a.appointedAt!.Value.TimeOfDay)
@@ -201,16 +211,16 @@ namespace ClinicMiniProject.Services
         public async Task<bool> PatientHasAppointmentAtTimeAsync(string patientIc, DateTime appointmentTime)
         {
             return await _context.Appointments
-                .AnyAsync(a => a.patient_IC == patientIc 
-                            && a.appointedAt == appointmentTime 
+                .AnyAsync(a => a.patient_IC == patientIc
+                            && a.appointedAt == appointmentTime
                             && a.status != "Cancelled");
         }
 
         public async Task<List<TimeSpan>> GetPatientBookedTimeSlotsForDateAsync(string patientIc, DateTime date)
         {
             var appointments = await _context.Appointments
-                .Where(a => a.patient_IC == patientIc 
-                            && a.appointedAt.HasValue 
+                .Where(a => a.patient_IC == patientIc
+                            && a.appointedAt.HasValue
                             && a.appointedAt.Value.Date == date.Date
                             && a.status != "Cancelled")
                 .Select(a => a.appointedAt!.Value.TimeOfDay)
@@ -267,7 +277,7 @@ namespace ClinicMiniProject.Services
 
             // Get all appointments for this date
             var allAppointments = await _context.Appointments
-                .Where(a => a.appointedAt.HasValue 
+                .Where(a => a.appointedAt.HasValue
                             && a.appointedAt.Value.Date == date.Date
                             && a.status != "Cancelled")
                 .Select(a => new { a.staff_ID, TimeSlot = a.appointedAt!.Value.TimeOfDay })
@@ -295,7 +305,7 @@ namespace ClinicMiniProject.Services
                     if (!doctor.Availability.IsAvailable(dayOfWeek)) continue;
 
                     // Check if this doctor has an appointment at this time
-                    bool hasDoctorAppointment = doctorAppointments.ContainsKey(doctor.staff_ID) 
+                    bool hasDoctorAppointment = doctorAppointments.ContainsKey(doctor.staff_ID)
                                                 && doctorAppointments[doctor.staff_ID].Contains(timeSlot);
 
                     // If this doctor is free, the slot is available
@@ -351,6 +361,63 @@ namespace ClinicMiniProject.Services
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[Error] Failed to auto-cancel late appointments: {ex.Message}");
+            }
+        }
+
+        public async Task AutoCancelExpiredAppointmentsAsync()
+        {
+            try
+            {
+                var today = DateTime.Today;
+
+                // Find all PENDING appointments where the appointment date is before today
+                var expiredAppointments = await _context.Appointments
+                    .Where(a => a.status == "Pending"
+                                && a.appointedAt.HasValue
+                                && a.appointedAt.Value.Date < today)
+                    .ToListAsync();
+
+                if (expiredAppointments.Any())
+                {
+                    foreach (var appt in expiredAppointments)
+                    {
+                        appt.status = "Cancelled";
+                        appt.nurse_remark = "Auto-cancelled: Appointment date has passed.";
+                    }
+
+                    _context.Appointments.UpdateRange(expiredAppointments);
+                    await _context.SaveChangesAsync();
+
+                    System.Diagnostics.Debug.WriteLine($"[System] Auto-cancelled {expiredAppointments.Count} expired appointments.");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Error] Failed to auto-cancel expired appointments: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> CancelAppointmentAsync(string appointmentId)
+        {
+            try
+            {
+                var appointment = await _context.Appointments
+                    .FirstOrDefaultAsync(a => a.appointment_ID == appointmentId);
+
+                if (appointment == null || appointment.status != "Pending")
+                    return false;
+
+                appointment.status = "Cancelled";
+                appointment.nurse_remark = "Cancelled by patient.";
+
+                _context.Appointments.Update(appointment);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Error] Failed to cancel appointment: {ex.Message}");
+                return false;
             }
         }
     }

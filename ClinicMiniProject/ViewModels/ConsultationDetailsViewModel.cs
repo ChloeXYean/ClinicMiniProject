@@ -304,45 +304,45 @@ namespace ClinicMiniProject.ViewModels
                     }
                 }
 
-                // Get walk-in patients - get ALL appointments for today and filter for walk-ins
+                // Get walk-in patients - get ALL appointments for today and filter for unassigned/walk-in patients
                 var walkInPatients = new List<ConsultationAppointmentDto>();
-                try
+                
+                // Get all appointments for today (not just this doctor's)
+                var allTodayAppointments = await _appointmentService.GetAppointmentsByDateAsync(today);
+                System.Diagnostics.Debug.WriteLine($"Total appointments for today: {allTodayAppointments?.Count() ?? 0}");
+                
+                if (allTodayAppointments != null)
                 {
-                    // Get all appointments for today (not just this doctor's)
-                    var allTodayAppointments = await _appointmentService.GetAppointmentsByDateAsync(today);
-                    System.Diagnostics.Debug.WriteLine($"Total appointments for today: {allTodayAppointments?.Count() ?? 0}");
+                    // Filter for walk-in patients (no assigned doctor OR assigned to this doctor with walk-in status)
+                    var walkIns = allTodayAppointments
+                        .Where(a => a.staff_ID == null || a.staff_ID == currentUser.staff_ID)
+                        .Where(a => a.status == "Pending" || a.status == "Walk-in" || a.status == "Registered")
+                        .Where(a => a.appointedAt.HasValue && a.appointedAt.Value.Date == today)
+                        .ToList();
                     
-                    if (allTodayAppointments != null)
+                    System.Diagnostics.Debug.WriteLine($"Found {walkIns.Count} potential walk-in patients");
+                    
+                    foreach (var walkIn in walkIns)
                     {
-                        // Filter for walk-in patients (no assigned doctor or walk-in status)
-                        var walkIns = allTodayAppointments
-                            .Where(a => (a.staff_ID == null || a.staff_ID == currentUser.staff_ID) && 
-                                       (a.status == "Pending" || a.status == "Walk-in"))
-                            .ToList();
-                        
-                        System.Diagnostics.Debug.WriteLine($"Found {walkIns.Count} potential walk-in patients");
-                        
-                        walkInPatients = walkIns.Select(w => new ConsultationAppointmentDto
-                        {
-                            AppointmentId = w.appointment_ID,
-                            PatientName = w.Patient?.patient_name ?? "Unknown Patient",
-                            PatientIC = w.patient_IC ?? "Unknown IC",
-                            ServiceType = w.service_type?.ToString() ?? "General Consultation",
-                            AppointmentTime = w.appointedAt ?? DateTime.Now,
-                            Status = "Walk-in",
-                            CanStartConsultation = true,
-                            CanStartEarly = true,
-                            TimeFromNow = TimeSpan.Zero,
-                            TimeIndicatorColor = "#28A745", // Green for walk-ins
-                            StatusColor = GetStatusColor("Walk-in")
-                        }).ToList();
-                        
-                        System.Diagnostics.Debug.WriteLine($"Converted {walkInPatients.Count} walk-in patients");
+                        System.Diagnostics.Debug.WriteLine($"Walk-in: {walkIn.appointment_ID} - {walkIn.Patient?.patient_name} - staff_ID: {walkIn.staff_ID} - status: {walkIn.status}");
                     }
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Error loading walk-in patients: {ex.Message}");
+                    
+                    walkInPatients = walkIns.Select(w => new ConsultationAppointmentDto
+                    {
+                        AppointmentId = w.appointment_ID,
+                        PatientName = w.Patient?.patient_name ?? "Unknown Patient",
+                        PatientIC = w.patient_IC ?? "Unknown IC",
+                        ServiceType = w.service_type?.ToString() ?? "General Consultation",
+                        AppointmentTime = w.appointedAt ?? DateTime.Now,
+                        Status = w.staff_ID == null ? "Walk-in" : (w.status ?? "Pending"),
+                        CanStartConsultation = true,
+                        CanStartEarly = true,
+                        TimeFromNow = TimeSpan.Zero,
+                        TimeIndicatorColor = "#28A745", // Green for walk-ins
+                        StatusColor = GetStatusColor(w.staff_ID == null ? "Walk-in" : (w.status ?? "Pending"))
+                    }).ToList();
+                    
+                    System.Diagnostics.Debug.WriteLine($"Converted {walkInPatients.Count} walk-in patients");
                 }
 
                 // Combine both scheduled and walk-in appointments
@@ -436,7 +436,7 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {

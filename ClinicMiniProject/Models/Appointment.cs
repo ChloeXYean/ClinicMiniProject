@@ -8,6 +8,7 @@ namespace ClinicMiniProject.Models
     {
         [Key]
         [Column("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Column("appointment_ID")]

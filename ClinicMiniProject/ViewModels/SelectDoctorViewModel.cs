@@ -168,8 +168,13 @@ namespace ClinicMiniProject.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"General error: {ex.Message}");
-                    await Shell.Current.DisplayAlert("Error", $"Failed to create appointment: {ex.Message}", "OK");
+                    var fullMessage = ex.Message;
+                    if (ex.InnerException != null)
+                    {
+                        fullMessage += $"\nInner Error: {ex.InnerException.Message}";
+                    }
+                    System.Diagnostics.Debug.WriteLine($"General error: {fullMessage}");
+                    await Shell.Current.DisplayAlert("Error", $"Failed to create appointment: {fullMessage}", "OK");
                 }
             }
         }

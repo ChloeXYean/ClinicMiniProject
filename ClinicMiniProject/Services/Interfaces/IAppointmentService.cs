@@ -7,9 +7,7 @@ namespace ClinicMiniProject.Services.Interfaces
 {
     public interface IAppointmentService
     {
-        // TODO: Existing methods... maybe got another functions
-
-        // Add these new methods
+        
 
         public Task<bool> AddAppointmentAsync(Appointment appt);
 
@@ -50,5 +48,7 @@ namespace ClinicMiniProject.Services.Interfaces
         Task<bool> IsAnyDoctorAvailableAtTimeAsync(DateTime appointmentDateTime);
 
         Task<List<TimeSpan>> GetUnavailableTimeSlotsForDateAsync(DateTime date);
+        Task AutoCancelExpiredAppointmentsAsync();
+        Task<bool> CancelAppointmentAsync(string appointmentId);
     }
 }

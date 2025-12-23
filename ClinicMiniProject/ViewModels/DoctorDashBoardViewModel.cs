@@ -172,11 +172,18 @@ namespace ClinicMiniProject.ViewModels
             {
                 MainThread.BeginInvokeOnMainThread(async () =>
                 {
-                    LoadDashboardData();
-
-                    if (string.IsNullOrEmpty(SearchText))
+                    try
                     {
-                        await LoadInquiryData();
+                        await LoadDashboardDataAsync();
+
+                        if (string.IsNullOrEmpty(SearchText))
+                        {
+                            await LoadInquiryData();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error in auto refresh: {ex.Message}");
                     }
                 });
 
@@ -185,6 +192,28 @@ namespace ClinicMiniProject.ViewModels
         }
 
         private async void LoadDashboardData()
+        {
+            var currentUser = _authService.GetCurrentUser();
+            if (currentUser == null) return;
+
+            DoctorName = currentUser.staff_name;
+            Greeting = $"Hi, Dr. {currentUser.staff_name}";
+
+            try
+            {
+                var dashboardData = await _dashboardService.GetDashboardDataAsync(currentUser.staff_ID);
+                TodayStats = dashboardData.TodayStats;
+                UpcomingSchedule = dashboardData.UpcomingSchedule;
+                NextAppointmentTime = dashboardData.UpcomingSchedule.NextAppointmentTime?.ToString("h:mm tt") ?? "No upcoming appointments";
+            }
+            catch (Exception ex)
+            {
+                // Handle error (e.g., show error message)
+                Console.WriteLine($"Error loading dashboard data: {ex.Message}");
+            }
+        }
+
+        private async Task LoadDashboardDataAsync()
         {
             var currentUser = _authService.GetCurrentUser();
             if (currentUser == null) return;
