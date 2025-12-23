@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using ClinicMiniProject.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection; // Required for IServiceScopeFactory
 
 namespace ClinicMiniProject.ViewModels
 {
@@ -11,10 +12,9 @@ namespace ClinicMiniProject.ViewModels
     [QueryProperty(nameof(SelectedService), "SelectedService")]
     public class SelectDoctorViewModel : BindableObject
     {
-        private readonly AppDbContext _context;
+        // Replace direct DbContext with ScopeFactory to create fresh contexts per thread
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly IAuthService _authService;
-
-        // 1. ADD: Appointment Service to handle saving correctly
         private readonly IAppointmentService _appointmentService;
 
         private DateTime _selectedDate;
@@ -25,6 +25,7 @@ namespace ClinicMiniProject.ViewModels
             {
                 _selectedDate = value;
                 OnPropertyChanged();
+                // This fire-and-forget call is now safe because it will create its own Context
                 _ = LoadDoctorsAsync();
             }
         }
@@ -65,12 +66,12 @@ namespace ClinicMiniProject.ViewModels
         public ICommand SelectDoctorCommand { get; }
         public ICommand GoBackCommand { get; }
 
-        // 2. INJECT: Add IAppointmentService to the constructor
-        public SelectDoctorViewModel(AppDbContext context, IAuthService authService, IAppointmentService appointmentService)
+        // Inject IServiceScopeFactory instead of AppDbContext
+        public SelectDoctorViewModel(IServiceScopeFactory scopeFactory, IAuthService authService, IAppointmentService appointmentService)
         {
-            _context = context;
+            _scopeFactory = scopeFactory;
             _authService = authService;
-            _appointmentService = appointmentService; // Store it
+            _appointmentService = appointmentService;
 
             AvailableDoctors = new ObservableCollection<Staff>();
             SelectDoctorCommand = new Command<Staff>(async (doctor) => await SelectDoctor(doctor));
@@ -86,38 +87,44 @@ namespace ClinicMiniProject.ViewModels
                 var dayOfWeek = SelectedDate.DayOfWeek;
                 var appointmentDateTime = SelectedDate.Date + SelectedTime;
 
-                // Do DB work on background thread
-                var doctors = await _context.Staffs
-                    .Include(s => s.Availability)
-                    .Where(s => s.isDoctor)
-                    .ToListAsync();
-
-                var available = new List<Staff>();
-                foreach (var doc in doctors)
+                // Create a new scope for this specific execution to avoid Threading conflicts
+                using (var scope = _scopeFactory.CreateScope())
                 {
-                    if (doc.Availability == null) continue;
-                    if (!doc.Availability.IsAvailable(dayOfWeek)) continue;
+                    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                    bool conflict = await _context.Appointments
-                        .AnyAsync(a => a.staff_ID == doc.staff_ID
-                                       && a.appointedAt == appointmentDateTime
-                                       && a.status != "Cancelled");
+                    // Do DB work on background thread using the fresh context
+                    var doctors = await context.Staffs
+                        .Include(s => s.Availability)
+                        .Where(s => s.isDoctor)
+                        .ToListAsync();
 
-                    if (!conflict)
+                    var available = new List<Staff>();
+                    foreach (var doc in doctors)
                     {
-                        available.Add(doc);
+                        if (doc.Availability == null) continue;
+                        if (!doc.Availability.IsAvailable(dayOfWeek)) continue;
+
+                        bool conflict = await context.Appointments
+                            .AnyAsync(a => a.staff_ID == doc.staff_ID
+                                           && a.appointedAt == appointmentDateTime
+                                           && a.status != "Cancelled");
+
+                        if (!conflict)
+                        {
+                            available.Add(doc);
+                        }
                     }
+
+                    // Update UI on Main thread
+                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    {
+                        AvailableDoctors.Clear();
+                        foreach (var doc in available)
+                        {
+                            AvailableDoctors.Add(doc);
+                        }
+                    });
                 }
-
-                // Update UI on Main thread
-                await MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    AvailableDoctors.Clear();
-                    foreach (var doc in available)
-                    {
-                        AvailableDoctors.Add(doc);
-                    }
-                });
             }
             catch (Exception ex)
             {
@@ -153,18 +160,12 @@ namespace ClinicMiniProject.ViewModels
                         bookedAt = DateTime.Now,
                         status = "Pending",
                         service_type = SelectedService ?? "General Consultation"
-                        // NOTE: appointment_ID is missing here, but the Service below will generate it!
                     };
 
-                    // 3. FIX: Use Service to Save (Generates ID automatically)
                     bool success = await _appointmentService.AddAppointmentAsync(newAppointment);
 
                     if (success)
                     {
-                        // ---------------------------------------------------------
-                        // ADD THIS: Send message to refresh the home page
-                        // ---------------------------------------------------------
-                        MessagingCenter.Send<object>(this, "RefreshAppointments");
 
                         await Shell.Current.DisplayAlert("Success", "Appointment Request Sent!", "OK");
                         await Shell.Current.GoToAsync("///PatientHomePage");

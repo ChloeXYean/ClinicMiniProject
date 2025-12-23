@@ -1,12 +1,14 @@
 using ClinicMiniProject.Services.Interfaces;
 using ClinicMiniProject.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection; // Required for IServiceScopeFactory
 
 namespace ClinicMiniProject.Services
 {
     public class NurseProfileService : INurseProfileService
     {
-        private readonly AppDbContext _context;
+        // 1. CHANGE: Inject ScopeFactory instead of AppDbContext directly
+        private readonly IServiceScopeFactory _scopeFactory;
 
         private static readonly Dictionary<string, NurseProfileExtras> _extrasByNurseId = new();
         private sealed class NurseProfileExtras
@@ -14,14 +16,20 @@ namespace ClinicMiniProject.Services
             public string Department { get; set; } = "General Nursing";
             public string ProfileImageUri { get; set; } = "profilepicture.png";
         }
-        public NurseProfileService(AppDbContext context)
+
+        // 2. UPDATE Constructor
+        public NurseProfileService(IServiceScopeFactory scopeFactory)
         {
-            _context = context;
+            _scopeFactory = scopeFactory;
         }
 
         public async Task<NurseProfileDto?> GetNurseProfileAsync(string nurseId)
         {
-            var nurse = await _context.Staffs.FirstOrDefaultAsync(s => s.staff_ID == nurseId && !s.isDoctor);
+            // 3. CHANGE: Create a fresh scope and context for this specific operation
+            using var scope = _scopeFactory.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            var nurse = await context.Staffs.FirstOrDefaultAsync(s => s.staff_ID == nurseId && !s.isDoctor);
 
             if (nurse == null) return null;
 
@@ -37,19 +45,25 @@ namespace ClinicMiniProject.Services
                 ProfileImageUri = extras.ProfileImageUri
             };
         }
+
         public async Task<bool> UpdateNurseProfileAsync(string nurseId, NurseProfileUpdateDto update)
         {
             try
             {
-                var staff = await _context.Staffs.FirstOrDefaultAsync(s => s.staff_ID == nurseId);
+                // 4. CHANGE: Create a fresh scope and context for the update
+                using var scope = _scopeFactory.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                var staff = await context.Staffs.FirstOrDefaultAsync(s => s.staff_ID == nurseId);
                 if (staff == null) return false;
 
                 bool dbChanged = false;
                 if (staff.staff_name != update.Name) { staff.staff_name = update.Name; dbChanged = true; }
                 if (staff.staff_contact != update.PhoneNo) { staff.staff_contact = update.PhoneNo; dbChanged = true; }
 
-                if (dbChanged) await _context.SaveChangesAsync();
+                if (dbChanged) await context.SaveChangesAsync();
 
+                // Extras are in-memory, so no DB context needed here
                 var extras = GetOrCreateExtras(nurseId);
                 extras.Department = update.Department;
                 if (!string.IsNullOrEmpty(update.ProfileImageUri)) extras.ProfileImageUri = update.ProfileImageUri;
@@ -62,6 +76,7 @@ namespace ClinicMiniProject.Services
                 return false;
             }
         }
+
         private NurseProfileExtras GetOrCreateExtras(string nurseId)
         {
             if (!_extrasByNurseId.ContainsKey(nurseId))

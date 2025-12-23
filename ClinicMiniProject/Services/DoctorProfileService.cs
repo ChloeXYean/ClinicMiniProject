@@ -16,8 +16,7 @@ namespace ClinicMiniProject.Services
 
         private sealed class ProfileExtras
         {
-            public string WorkingHoursText { get; set; } = "9.00AM - 9.00PM";
-            public List<string> ServicesProvided { get; set; } = new();
+            public string WorkingHoursText { get; set; } = "9:00 AM - 9:00 PM";
             public string ProfileImageUri { get; set; } = string.Empty;
         }
 
@@ -29,12 +28,12 @@ namespace ClinicMiniProject.Services
 
         public async Task<DoctorProfileDto?> GetDoctorProfileAsync(string doctorId)
         {
-            // 1. Get Basic Staff Info (Your existing logic)
             var current = _authService.GetCurrentUser();
             Staff? staff = current != null && current.staff_ID == doctorId ? current : await _context.Staffs.FindAsync(doctorId);
 
             if (staff == null) return null;
 
+            // Fetch availability from database
             var availability = await _context.DocAvailables.FindAsync(doctorId);
 
             bool mon = true, tue = true, wed = true, thu = true, fri = true, sat = true, sun = false;
@@ -58,7 +57,6 @@ namespace ClinicMiniProject.Services
                 Name = staff.staff_name,
                 PhoneNo = staff.staff_contact,
                 WorkingHoursText = extras.WorkingHoursText,
-                ServicesProvided = extras.ServicesProvided.ToList(),
                 ProfileImageUri = extras.ProfileImageUri,
 
                 IsMon = mon,
@@ -75,27 +73,27 @@ namespace ClinicMiniProject.Services
         {
             var current = _authService.GetCurrentUser();
             if (current == null || current.staff_ID != doctorId)
-                 // Allow update if it's the user THEMSELVES, otherwise block
-                 throw new InvalidOperationException("Not authorized.");
+                throw new InvalidOperationException("Not authorized.");
 
             // --- 1. Update Staff Table (Name/Phone) ---
             bool staffChanged = false;
             var staffInDb = await _context.Staffs.FindAsync(doctorId);
-            
+
             if (staffInDb != null)
             {
                 if (staffInDb.staff_name != update.Name) { staffInDb.staff_name = update.Name; staffChanged = true; }
                 if (staffInDb.staff_contact != update.PhoneNo) { staffInDb.staff_contact = update.PhoneNo; staffChanged = true; }
-                
+
                 if (current.staff_name != update.Name) current.staff_name = update.Name;
             }
 
+            // --- 2. Update Availability Table ---
             var availability = await _context.DocAvailables.FindAsync(doctorId);
             if (availability == null)
             {
                 availability = new DocAvailable { staff_ID = doctorId };
                 _context.DocAvailables.Add(availability);
-                staffChanged = true; 
+                staffChanged = true;
             }
 
             availability.Monday = update.IsMon;
@@ -105,10 +103,8 @@ namespace ClinicMiniProject.Services
             availability.Friday = update.IsFri;
             availability.Saturday = update.IsSat;
             availability.Sunday = update.IsSun;
-            
 
-
-            if (staffChanged || true) 
+            if (staffChanged || true)
             {
                 await _context.SaveChangesAsync();
             }
@@ -124,17 +120,10 @@ namespace ClinicMiniProject.Services
             if (_extrasByDoctorId.TryGetValue(doctorId, out var extras))
                 return extras;
 
-            // Initialize with default services since Staff model doesn't have specialities field yet
             extras = new ProfileExtras
             {
                 WorkingHoursText = "9:00 AM - 9:00 PM",
-                ProfileImageUri = "dotnet_bot.png",
-                ServicesProvided = new List<string> 
-                { 
-                    "General Consultation",
-                    "Health Checkup",
-                    "Medical Screening"
-                }
+                ProfileImageUri = "dotnet_bot.png"
             };
 
             _extrasByDoctorId[doctorId] = extras;

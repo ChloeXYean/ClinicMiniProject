@@ -27,35 +27,13 @@
                                 <RoundRectangle CornerRadius="43" />
                             </Border.StrokeShape>
                             <Image Source="{Binding ProfileImageUri}" Aspect="AspectFill" />
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding ChangeProfilePictureCommand}" />
-                            </Border.GestureRecognizers>
-                            <Border.VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup Name="CommonStates">
-                                    <VisualState Name="Normal">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#F5F7FF" />
-                                            <Setter Property="Scale" Value="1.0" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState Name="PointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#E8EEFF" />
-                                            <Setter Property="Scale" Value="1.05" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </Border.VisualStateManager.VisualStateGroups>
                         </Border>
 
-                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding DoctorId, StringFormat='Doctor ID: {0}'}" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding DoctorId, StringFormat='Doctor ID: {0}'}" TextColor="Gray" FontSize="12"/>
 
-                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding DoctorName, StringFormat='Dr. {0}'}" FontAttributes="Bold" IsVisible="{Binding IsReadOnlyMode}" />
-                        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding DoctorName, Mode=TwoWay}" IsVisible="{Binding IsEditMode}" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding DoctorName, StringFormat='Dr. {0}'}" FontAttributes="Bold" FontSize="16" TextColor="Black"/>
 
-                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding PhoneNumber, StringFormat='Phone Number: {0}'}" IsVisible="{Binding IsReadOnlyMode}" />
-                        <Entry Grid.Row="2" Grid.Column="1" Text="{Binding PhoneNumber, Mode=TwoWay}" Keyboard="Telephone" IsVisible="{Binding IsEditMode}" />
-
+                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding PhoneNumber, StringFormat='Phone: {0}'}" TextColor="Gray"/>
                     </Grid>
                 </Border>
 
@@ -64,9 +42,8 @@
                         <RoundRectangle CornerRadius="16" />
                     </Border.StrokeShape>
                     <VerticalStackLayout Spacing="10">
-                        <Label Text="Working Hours" FontAttributes="Bold" />
-                        <Label Text="{Binding WorkingHours}" IsVisible="{Binding IsReadOnlyMode}" />
-                        <Entry Text="{Binding WorkingHours, Mode=TwoWay}" IsVisible="{Binding IsEditMode}" />
+                        <Label Text="Working Hours" FontAttributes="Bold" TextColor="Black"/>
+                        <Label Text="{Binding WorkingHours}" TextColor="Gray"/>
                     </VerticalStackLayout>
                 </Border>
 
@@ -75,74 +52,47 @@
                         <RoundRectangle CornerRadius="16" />
                     </Border.StrokeShape>
                     <VerticalStackLayout Spacing="10">
-                        <Label Text="Services Provided:" FontAttributes="Bold" />
+                        <Label Text="Weekly Availability" FontAttributes="Bold" TextColor="Black"/>
 
-                        <CollectionView ItemsSource="{Binding ServicesProvided}" SelectionMode="None">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Padding="8">
-                                        <Label Grid.Column="0" Text="{Binding Name}" />
-                                        <ImageButton Grid.Column="1" Source="bell.png" HeightRequest="18" WidthRequest="18" BackgroundColor="Transparent"
-                                                     Command="{Binding BindingContext.RemoveServiceCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                     CommandParameter="{Binding .}"
-                                                     IsVisible="{Binding BindingContext.IsEditMode, Source={RelativeSource AncestorType={x:Type ContentPage}}}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8" ColumnSpacing="10" InputTransparent="True">
 
-                        <Button Text="+ Add Service" Command="{Binding AddServiceCommand}" IsVisible="{Binding IsEditMode}">
-                            <Button.VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup Name="CommonStates">
-                                    <VisualState Name="Normal">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#6EA8FE" />
-                                            <Setter Property="TextColor" Value="White" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState Name="PointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#5A90E6" />
-                                            <Setter Property="Scale" Value="1.02" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState Name="Pressed">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#4A7BC8" />
-                                            <Setter Property="Scale" Value="0.98" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </Button.VisualStateManager.VisualStateGroups>
-                        </Button>
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsMon}" Color="#2D5AF0"/>
+                                <Label Text="Monday" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsTue}" Color="#2D5AF0"/>
+                                <Label Text="Tuesday" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsWed}" Color="#2D5AF0"/>
+                                <Label Text="Wednesday" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsThu}" Color="#2D5AF0"/>
+                                <Label Text="Thursday" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsFri}" Color="#2D5AF0"/>
+                                <Label Text="Friday" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsSat}" Color="#2D5AF0"/>
+                                <Label Text="Saturday" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Grid.Row="3" Grid.Column="0" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsSun}" Color="#2D5AF0"/>
+                                <Label Text="Sunday" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+                        </Grid>
                     </VerticalStackLayout>
                 </Border>
-
-                <Button Text="Save Changes" Command="{Binding SaveProfileCommand}" HeightRequest="52" IsVisible="{Binding IsEditMode}">
-                    <Button.VisualStateManager.VisualStateGroups>
-                        <VisualStateGroup Name="CommonStates">
-                            <VisualState Name="Normal">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="#6EA8FE" />
-                                    <Setter Property="TextColor" Value="White" />
-                                </VisualState.Setters>
-                            </VisualState>
-                            <VisualState Name="PointerOver">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="#5A90E6" />
-                                    <Setter Property="TextColor" Value="White" />
-                                    <Setter Property="Scale" Value="1.02" />
-                                </VisualState.Setters>
-                            </VisualState>
-                            <VisualState Name="Pressed">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="#4A7BC8" />
-                                    <Setter Property="Scale" Value="0.98" />
-                                </VisualState.Setters>
-                            </VisualState>
-                        </VisualStateGroup>
-                    </Button.VisualStateManager.VisualStateGroups>
-                </Button>
 
                 <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="16" Margin="0,20,0,0">
                     <Border.StrokeShape>
@@ -150,65 +100,21 @@
                     </Border.StrokeShape>
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Account Settings" FontAttributes="Bold" FontSize="16" TextColor="#333" />
+
                         <Button Text="Edit Profile" 
                                 Command="{Binding EditProfileCommand}" 
                                 BackgroundColor="#2D5AF0" 
                                 TextColor="White"
                                 HeightRequest="48"
                                 CornerRadius="8"
-                                Margin="0,0,0,10">
-                            <Button.VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup Name="CommonStates">
-                                    <VisualState Name="Normal">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#2D5AF0" />
-                                            <Setter Property="Scale" Value="1.0" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState Name="PointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#1E4BC6" />
-                                            <Setter Property="Scale" Value="1.02" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState Name="Pressed">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#153FA0" />
-                                            <Setter Property="Scale" Value="0.98" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </Button.VisualStateManager.VisualStateGroups>
-                        </Button>
+                                Margin="0,0,0,10" />
+
                         <Button Text="Logout" 
                                 Command="{Binding LogoutCommand}" 
                                 BackgroundColor="#FF4444" 
                                 TextColor="White"
                                 HeightRequest="48"
-                                CornerRadius="8">
-                            <Button.VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup Name="CommonStates">
-                                    <VisualState Name="Normal">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#FF4444" />
-                                            <Setter Property="Scale" Value="1.0" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState Name="PointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#E63939" />
-                                            <Setter Property="Scale" Value="1.02" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState Name="Pressed">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#CC2E2E" />
-                                            <Setter Property="Scale" Value="0.98" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </Button.VisualStateManager.VisualStateGroups>
-                        </Button>
+                                CornerRadius="8" />
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>

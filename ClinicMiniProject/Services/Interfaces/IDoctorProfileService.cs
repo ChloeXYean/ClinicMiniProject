@@ -16,11 +16,9 @@ namespace ClinicMiniProject.Services.Interfaces
         public string PhoneNo { get; init; } = string.Empty;
 
         public string WorkingHoursText { get; init; } = string.Empty;
-
-        public IReadOnlyList<string> ServicesProvided { get; init; } = new List<string>();
-
         public string ProfileImageUri { get; init; } = string.Empty;
 
+        // Availability
         public bool IsMon { get; set; }
         public bool IsTue { get; set; }
         public bool IsWed { get; set; }
@@ -35,9 +33,9 @@ namespace ClinicMiniProject.Services.Interfaces
         public string? Name { get; init; }
         public string? PhoneNo { get; init; }
         public string? WorkingHoursText { get; init; }
-        public IReadOnlyList<string>? ServicesProvided { get; init; }
         public string? ProfileImageUri { get; init; }
 
+        // Availability
         public bool IsMon { get; set; }
         public bool IsTue { get; set; }
         public bool IsWed { get; set; }
