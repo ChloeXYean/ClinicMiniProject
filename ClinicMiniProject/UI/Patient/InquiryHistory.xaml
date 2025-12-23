@@ -4,63 +4,33 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
     x:Class="ClinicMiniProject.UI.Patient.InquiryHistory"
-    Title="Inquiry History"
-    Shell.NavBarIsVisible="True"
+	Shell.NavBarIsVisible="False"
     BackgroundColor="#F6F7F9">
-
     <Grid RowDefinitions="Auto, *">
+        <control:BackNavBar Grid.Row="0" Title="Inquiry History" BackCommand="{Binding BackCommand}" />
+        <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="16">
 
-        <VerticalStackLayout Grid.Row="0" Padding="20,20,20,10" Spacing="16">
-            <SearchBar Placeholder="Search inquiry" 
-                       Text="{Binding SearchQuery}" 
-                       BackgroundColor="White" />
-        </VerticalStackLayout>
+            <SearchBar Placeholder="Search inquiry" />
 
-        <CollectionView Grid.Row="1" 
-                        ItemsSource="{Binding PatientInquiryHistory}"
-                        Margin="20,0,20,20">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame Margin="0,0,0,10"
+            <CollectionView ItemsSource="{Binding PatientInquiryHistory}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="0,0,0,10"
                            BackgroundColor="White"
                            CornerRadius="8"
-                           HasShadow="True"
-                           Padding="0">
-                        <VerticalStackLayout Padding="15">
-                            <Label Text="{Binding DoctorName}"
-                                   FontAttributes="Bold"
-                                   FontSize="16"
-                                   TextColor="#333"/>
+                           HasShadow="True">
+                            <VerticalStackLayout Padding="10">
+                                <Label Text="{Binding DoctorName}"
+                                   FontAttributes="Bold" />
+                                <Label Text="{Binding SymptomHistory}" />
+                                <Button Text="View Details"
+                                    Command="{Binding ViewDetailsCommand}" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-                            <Label Text="{Binding SymptomHistory}" 
-                                   TextColor="#666"
-                                   MaxLines="2"
-                                   LineBreakMode="TailTruncation"
-                                   Margin="0,4,0,8"/>
-
-                            <Button Text="View Details"
-                                    Command="{Binding ViewDetailsCommand}"
-                                    BackgroundColor="#6EA8FE"
-                                    TextColor="White"
-                                    HeightRequest="40"
-                                    CornerRadius="8"/>
-                        </VerticalStackLayout>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-
-            <CollectionView.EmptyView>
-                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                    <Label Text="No inquiries found." 
-                           TextColor="Red" 
-                           FontSize="18"
-                           HorizontalOptions="Center"/>
-                    <Label Text="(Check if you are logged in)" 
-                           TextColor="Gray" 
-                           FontSize="12"
-                           HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-            </CollectionView.EmptyView>
-        </CollectionView>
+        </VerticalStackLayout>
     </Grid>
 </ContentPage>

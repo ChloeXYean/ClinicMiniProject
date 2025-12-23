@@ -130,8 +130,8 @@ namespace ClinicMiniProject.ViewModels
         private async Task GenerateTimeSlots()
         {
             TimeSlots.Clear();
-            var startTime = new TimeSpan(9, 0, 0);  // 9am - Clinic opening
-            var endTime = new TimeSpan(21, 0, 0);   // 9pm - Generates slots until 8pm (last bookable hour)
+            var startTime = new TimeSpan(9, 0, 0);
+            var endTime = new TimeSpan(17, 0, 0);
             var now = DateTime.Now;
 
             // Get current patient's IC
