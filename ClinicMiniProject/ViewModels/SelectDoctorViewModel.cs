@@ -161,10 +161,6 @@ namespace ClinicMiniProject.ViewModels
 
                     if (success)
                     {
-                        // ---------------------------------------------------------
-                        // ADD THIS: Send message to refresh the home page
-                        // ---------------------------------------------------------
-                        MessagingCenter.Send<object>(this, "RefreshAppointments");
 
                         await Shell.Current.DisplayAlert("Success", "Appointment Request Sent!", "OK");
                         await Shell.Current.GoToAsync("///PatientHomePage");
