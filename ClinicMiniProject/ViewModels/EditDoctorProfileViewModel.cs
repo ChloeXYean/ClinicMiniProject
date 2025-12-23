@@ -48,16 +48,14 @@ namespace ClinicMiniProject.ViewModels
             set { newProfilePicturePath = value; OnPropertyChanged(); }
         }
 
-        public List<ServiceTypeItem> ServiceTypes { get; } = new()
-        {
-            new ServiceTypeItem { Name = "General Consultation", IsSelected = false },
-            new ServiceTypeItem { Name = "Vaccination/Injection", IsSelected = false },
-            new ServiceTypeItem { Name = "Follow Up Treatment", IsSelected = false },
-            new ServiceTypeItem { Name = "Test Result Discussion", IsSelected = false },
-            new ServiceTypeItem { Name = "Medical Checkup", IsSelected = false },
-            new ServiceTypeItem { Name = "Follow-up", IsSelected = false },
-            new ServiceTypeItem { Name = "Online", IsSelected = false }
-        };
+        // Availability Properties
+        private bool isMon; public bool IsMon { get => isMon; set { isMon = value; OnPropertyChanged(); } }
+        private bool isTue; public bool IsTue { get => isTue; set { isTue = value; OnPropertyChanged(); } }
+        private bool isWed; public bool IsWed { get => isWed; set { isWed = value; OnPropertyChanged(); } }
+        private bool isThu; public bool IsThu { get => isThu; set { isThu = value; OnPropertyChanged(); } }
+        private bool isFri; public bool IsFri { get => isFri; set { isFri = value; OnPropertyChanged(); } }
+        private bool isSat; public bool IsSat { get => isSat; set { isSat = value; OnPropertyChanged(); } }
+        private bool isSun; public bool IsSun { get => isSun; set { isSun = value; OnPropertyChanged(); } }
 
         public ICommand SaveCommand { get; }
         public ICommand BackCommand { get; }
@@ -74,22 +72,45 @@ namespace ClinicMiniProject.ViewModels
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
             ChangeProfilePictureCommand = new Command(async () => await OnChangeProfilePicture());
 
-            LoadCurrentDoctorProfile();
+            // Fire and forget load
+            _ = LoadCurrentDoctorProfile();
         }
 
-        private void LoadCurrentDoctorProfile()
+        private async Task LoadCurrentDoctorProfile()
         {
-            var doctor = _authService.GetCurrentUser();
-            if (doctor == null)
-                return;
+            var user = _authService.GetCurrentUser();
+            if (user == null) return;
 
-            // Load current profile data
-            Name = doctor.staff_name ?? string.Empty;
-            PhoneNumber = doctor.staff_contact ?? string.Empty;
-            WorkingHours = "9:00 AM - 9:00 PM"; // Default working hours
-            
-            // Load profile picture
-            ProfilePictureSource = ImageSource.FromFile("profilepicture.png"); // Default image
+            try
+            {
+                // Fetch full profile including availability from database
+                var profile = await _doctorProfileService.GetDoctorProfileAsync(user.staff_ID);
+
+                if (profile != null)
+                {
+                    Name = profile.Name;
+                    PhoneNumber = profile.PhoneNo;
+                    WorkingHours = profile.WorkingHoursText;
+
+                    if (!string.IsNullOrEmpty(profile.ProfileImageUri))
+                        ProfilePictureSource = ImageSource.FromFile(profile.ProfileImageUri);
+                    else
+                        ProfilePictureSource = ImageSource.FromFile("profilepicture.png");
+
+                    // Set Availability
+                    IsMon = profile.IsMon;
+                    IsTue = profile.IsTue;
+                    IsWed = profile.IsWed;
+                    IsThu = profile.IsThu;
+                    IsFri = profile.IsFri;
+                    IsSat = profile.IsSat;
+                    IsSun = profile.IsSun;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading profile: {ex.Message}");
+            }
         }
 
         private async Task OnChangeProfilePicture()
@@ -114,7 +135,6 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
-        
         private async Task OnSave()
         {
             if (string.IsNullOrWhiteSpace(Name))
@@ -126,13 +146,6 @@ namespace ClinicMiniProject.ViewModels
             if (string.IsNullOrWhiteSpace(PhoneNumber))
             {
                 await Shell.Current.DisplayAlert("Error", "Phone number is required.", "OK");
-                return;
-            }
-
-            var selectedServices = ServiceTypes.Where(s => s.IsSelected).Select(s => s.Name).ToList();
-            if (!selectedServices.Any())
-            {
-                await Shell.Current.DisplayAlert("Error", "Please select at least one service type.", "OK");
                 return;
             }
 
@@ -150,13 +163,20 @@ namespace ClinicMiniProject.ViewModels
                     Name = Name,
                     PhoneNo = PhoneNumber,
                     WorkingHoursText = WorkingHours,
-                    ServicesProvided = selectedServices,
-                    ProfileImageUri = NewProfilePicturePath
+                    ProfileImageUri = NewProfilePicturePath,
+                    // Pass availability to DTO
+                    IsMon = IsMon,
+                    IsTue = IsTue,
+                    IsWed = IsWed,
+                    IsThu = IsThu,
+                    IsFri = IsFri,
+                    IsSat = IsSat,
+                    IsSun = IsSun
                 };
 
                 await _doctorProfileService.UpdateDoctorProfileAsync(doctor.staff_ID, update);
-                
-                await Shell.Current.DisplayAlert("Success", "Profile updated successfully!", "OK");
+
+                await Shell.Current.DisplayAlert("Success", "Profile and availability updated successfully!", "OK");
                 await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)
@@ -169,11 +189,5 @@ namespace ClinicMiniProject.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-    }
-
-    public sealed class ServiceTypeItem
-    {
-        public string Name { get; set; } = string.Empty;
-        public bool IsSelected { get; set; }
     }
 }

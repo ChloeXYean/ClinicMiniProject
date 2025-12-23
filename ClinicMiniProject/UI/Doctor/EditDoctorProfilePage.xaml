@@ -13,7 +13,6 @@
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="20">
 
-                <!-- Profile Picture Section -->
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="12">
                     <Border HeightRequest="100" WidthRequest="100" StrokeShape="RoundRectangle 50" BackgroundColor="#E0E0E0" StrokeThickness="2" Stroke="#2D5AF0">
                         <Border.GestureRecognizers>
@@ -24,11 +23,10 @@
                     <Label Text="Tap to change photo" FontSize="12" TextColor="#2D5AF0" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
 
-                <!-- Doctor Information -->
                 <Border BackgroundColor="#F8F9FA" StrokeThickness="0" StrokeShape="RoundRectangle 15" Padding="20">
                     <VerticalStackLayout Spacing="15">
                         <Label Text="Doctor Information" FontSize="16" FontAttributes="Bold" TextColor="Black"/>
-                        
+
                         <VerticalStackLayout Spacing="8">
                             <Label Text="Full Name" TextColor="Gray" FontSize="14"/>
                             <Border BackgroundColor="White" StrokeThickness="1" Stroke="#E0E0E0" StrokeShape="RoundRectangle 8" Padding="15,10">
@@ -52,30 +50,50 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Services Section -->
                 <Border BackgroundColor="#F8F9FA" StrokeThickness="0" StrokeShape="RoundRectangle 15" Padding="20">
                     <VerticalStackLayout Spacing="15">
-                        <Label Text="Services Provided" FontSize="16" FontAttributes="Bold" TextColor="Black"/>
-                        
-                        <VerticalStackLayout Spacing="8">
-                            <Label Text="Select Service Types" TextColor="Gray" FontSize="14"/>
-                            <Border BackgroundColor="White" StrokeThickness="1" Stroke="#E0E0E0" StrokeShape="RoundRectangle 8" Padding="15,10">
-                                <CollectionView ItemsSource="{Binding ServiceTypes}" SelectionMode="None">
-                                    <CollectionView.ItemTemplate>
-                                        <DataTemplate>
-                                            <HorizontalStackLayout Spacing="10" Padding="10" VerticalOptions="Center">
-                                                <CheckBox IsChecked="{Binding IsSelected}" VerticalOptions="Center"/>
-                                                <Label Text="{Binding Name}" VerticalOptions="Center" TextColor="Black"/>
-                                            </HorizontalStackLayout>
-                                        </DataTemplate>
-                                    </CollectionView.ItemTemplate>
-                                </CollectionView>
-                            </Border>
-                        </VerticalStackLayout>
+                        <Label Text="Weekly Availability" FontSize="16" FontAttributes="Bold" TextColor="Black"/>
+                        <Label Text="Select days you are available:" TextColor="Gray" FontSize="14"/>
+
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="10" ColumnSpacing="10">
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsMon}" Color="#2D5AF0"/>
+                                <Label Text="Monday" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsTue}" Color="#2D5AF0"/>
+                                <Label Text="Tuesday" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsWed}" Color="#2D5AF0"/>
+                                <Label Text="Wednesday" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsThu}" Color="#2D5AF0"/>
+                                <Label Text="Thursday" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsFri}" Color="#2D5AF0"/>
+                                <Label Text="Friday" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsSat}" Color="#2D5AF0"/>
+                                <Label Text="Saturday" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Grid.Row="3" Grid.Column="0" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsSun}" Color="#2D5AF0"/>
+                                <Label Text="Sunday" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+                        </Grid>
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Save Button -->
                 <Button Text="Save Changes" 
                         Command="{Binding SaveCommand}"
                         BackgroundColor="#2D5AF0" 

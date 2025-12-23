@@ -12,13 +12,12 @@ namespace ClinicMiniProject.UI.Nurse
             BindingContext = viewModel;
         }
 
-        protected override async void OnAppearing()
+        protected override void OnAppearing()
         {
             base.OnAppearing();
-
             if (BindingContext is NurseProfileViewModel vm)
             {
-                await vm.RefreshAsync();
+                vm.RefreshCommand.Execute(null);
             }
         }
 

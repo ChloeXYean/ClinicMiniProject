@@ -67,7 +67,8 @@
                                            Margin="0,15,0,0">
 
                                         <Label.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EndConsultationViewModel}}, Path=ViewDetailsCommand}"
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EndConsultationViewModel}}, Path=
+                                                }"
                                                                   CommandParameter="{Binding .}"/>
                                         </Label.GestureRecognizers>
                                     </Label>

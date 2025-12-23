@@ -136,7 +136,7 @@ namespace ClinicMiniProject.ViewModels
         public ICommand InquiryCommand { get; }
         public ICommand RefreshCommand { get; }
         public ICommand SaveProfileCommand { get; }
-        public ICommand ToggleEditModeCommand { get; }
+        public ICommand EditProfileCommand { get; }
         public ICommand ChangeProfilePictureCommand { get; }
         public ICommand LogoutCommand { get; }
 
@@ -156,7 +156,7 @@ namespace ClinicMiniProject.ViewModels
             // Functional Commands
             RefreshCommand = new Command(async () => await RefreshAsync());
             SaveProfileCommand = new Command(async () => await SaveAsync());
-            ToggleEditModeCommand = new Command(OnToggleEditMode);
+            EditProfileCommand = new Command(async () => await Shell.Current.GoToAsync("EditNurseProfile")); 
             ChangeProfilePictureCommand = new Command(async () => await ChangeProfilePictureAsync());
 
             // Logout Logic
@@ -212,11 +212,6 @@ namespace ClinicMiniProject.ViewModels
             {
                 await Shell.Current.DisplayAlert("Error", "Failed to update profile.", "OK");
             }
-        }
-
-        private void OnToggleEditMode()
-        {
-            IsEditMode = !IsEditMode;
         }
 
         private async Task ChangeProfilePictureAsync()

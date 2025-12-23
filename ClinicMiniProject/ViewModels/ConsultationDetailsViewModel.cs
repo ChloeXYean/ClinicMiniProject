@@ -236,6 +236,11 @@ namespace ClinicMiniProject.ViewModels
             // Filter commands
             ApplyFilterCommand = new Command(async () => await ApplyFilter());
             ClearFilterCommand = new Command(async () => await ClearFilter());
+
+            if (string.IsNullOrEmpty(AppointmentId))
+            {
+                _ = LoadConsultationDetails();
+            }
         }
 
         private async Task LoadConsultationDetails()
@@ -249,29 +254,6 @@ namespace ClinicMiniProject.ViewModels
 
             // Load specific appointment (backward compatibility)
             await LoadSingleAppointment();
-        }
-
-        private async Task<List<WalkInQueueDto>> GetWalkInQueueForToday()
-        {
-            try
-            {
-                // Use the nurse controller to get walk-in patients
-                var walkInQueue = await _nurseController.GetWalkInQueueForToday();
-                
-                return walkInQueue.Select(w => new WalkInQueueDto
-                {
-                    QueueId = w.QueueId,
-                    PatientName = w.PatientName,
-                    ICNumber = w.ICNumber,
-                    ServiceType = w.ServiceType,
-                    RegisteredTime = w.RegisteredTime
-                }).ToList();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error getting walk-in queue: {ex.Message}");
-                return new List<WalkInQueueDto>();
-            }
         }
 
         private async Task LoadTodayAppointments()
@@ -385,7 +367,11 @@ namespace ClinicMiniProject.ViewModels
                     SelectedAppointment = AppointmentsList[0];
                     System.Diagnostics.Debug.WriteLine($"Auto-selected: {SelectedAppointment.PatientName}");
                 }
-                
+                OnPropertyChanged(nameof(HasAppointments));
+                OnPropertyChanged(nameof(HasNoAppointments));
+                OnPropertyChanged(nameof(HasSelectedAppointment));
+                OnPropertyChanged(nameof(CanStartSelectedConsultation));
+
                 System.Diagnostics.Debug.WriteLine($"=== FINAL: Total appointments shown: {AppointmentsList.Count} ===");
             }
             catch (Exception ex)
@@ -419,14 +405,13 @@ namespace ClinicMiniProject.ViewModels
                         DoctorRemarks = !string.IsNullOrWhiteSpace(consultation.DoctorRemark) ? consultation.DoctorRemark : "No doctor remarks available ";
                         NurseNotes = !string.IsNullOrWhiteSpace(consultation.NurseRemark) ? consultation.NurseRemark : "No Nurse remarks available";
                         CompletedConsultationRemarks = consultation.DoctorRemark ?? "No remarks available";
-                        Prescription = " - "; // Or fetch prescription if you have that logic later
-                    }
-                    else
-                    {
-                        DoctorRemarks = " - ";
-                        NurseNotes = " - ";
                         Prescription = " - ";
                     }
+
+                    // Notify UI about status changes
+                    OnPropertyChanged(nameof(IsConsultationCompleted));
+                    OnPropertyChanged(nameof(IsConsultationInProgress));
+                    OnPropertyChanged(nameof(CanStartSelectedConsultation));
                 }
             }
             catch (Exception ex)
@@ -601,12 +586,9 @@ namespace ClinicMiniProject.ViewModels
 
         private async Task SaveConsultationDetails(string appointmentId, string remarks)
         {
-            // This would save to the consultation table
-            // For now, we'll just log it - you'll need to implement the actual consultation service method
+
             System.Diagnostics.Debug.WriteLine($"Saving consultation remarks for appointment {appointmentId}: {remarks}");
-            
-            // TODO: Implement actual consultation details saving
-            // await _consultationService.SaveConsultationDetailsAsync(appointmentId, remarks);
+
         }
 
         private async Task ViewDetails(ConsultationAppointmentDto appointment)
