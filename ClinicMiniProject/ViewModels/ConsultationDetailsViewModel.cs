@@ -5,9 +5,20 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
+using ClinicMiniProject.Controller;
 
 namespace ClinicMiniProject.ViewModels
 {
+    // DTO for walk-in patients (matching nurse controller structure)
+    public class WalkInQueueDto
+    {
+        public string QueueId { get; set; }
+        public string PatientName { get; set; }
+        public string ICNumber { get; set; }
+        public string ServiceType { get; set; }
+        public string RegisteredTime { get; set; }
+    }
+
     [QueryProperty(nameof(AppointmentId), "appointmentId")]
     public class ConsultationDetailsViewModel : INotifyPropertyChanged
     {
@@ -15,6 +26,7 @@ namespace ClinicMiniProject.ViewModels
         private readonly IConsultationService _consultationService;
         private readonly IAppointmentService _appointmentService;
         private readonly IDoctorDashboardService _dashboardService;
+        private readonly NurseController _nurseController;
 
         // Single appointment properties (for backward compatibility)
         private string _appointmentId;
@@ -167,6 +179,7 @@ namespace ClinicMiniProject.ViewModels
         public ICommand EndConsultationCommand { get; }
         public ICommand SaveRemarksCommand { get; }
         public ICommand EditRemarksCommand { get; }
+        public ICommand ViewDetailsCommand { get; }
         public ICommand ApplyFilterCommand { get; }
         public ICommand ClearFilterCommand { get; }
 
@@ -202,12 +215,13 @@ namespace ClinicMiniProject.ViewModels
                                        SelectedBookingType != "All" || 
                                        SelectedTimeRange != "All Day";
 
-        public ConsultationDetailsViewModel(IAuthService authService, IConsultationService consultationService, IAppointmentService appointmentService, IDoctorDashboardService dashboardService)
+        public ConsultationDetailsViewModel(IAuthService authService, IConsultationService consultationService, IAppointmentService appointmentService, IDoctorDashboardService dashboardService, NurseController nurseController)
         {
             _authService = authService;
             _consultationService = consultationService;
             _appointmentService = appointmentService;
             _dashboardService = dashboardService;
+            _nurseController = nurseController;
 
             BackCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
 
@@ -217,6 +231,7 @@ namespace ClinicMiniProject.ViewModels
             EndConsultationCommand = new Command(async () => await EndConsultation());
             SaveRemarksCommand = new Command(async () => await SaveRemarks());
             EditRemarksCommand = new Command(async () => await EditRemarks());
+            ViewDetailsCommand = new Command<ConsultationAppointmentDto>(async (appointment) => await ViewDetails(appointment));
             
             // Filter commands
             ApplyFilterCommand = new Command(async () => await ApplyFilter());
@@ -236,6 +251,29 @@ namespace ClinicMiniProject.ViewModels
             await LoadSingleAppointment();
         }
 
+        private async Task<List<WalkInQueueDto>> GetWalkInQueueForToday()
+        {
+            try
+            {
+                // Use the nurse controller to get walk-in patients
+                var walkInQueue = await _nurseController.GetWalkInQueueForToday();
+                
+                return walkInQueue.Select(w => new WalkInQueueDto
+                {
+                    QueueId = w.QueueId,
+                    PatientName = w.PatientName,
+                    ICNumber = w.ICNumber,
+                    ServiceType = w.ServiceType,
+                    RegisteredTime = w.RegisteredTime
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error getting walk-in queue: {ex.Message}");
+                return new List<WalkInQueueDto>();
+            }
+        }
+
         private async Task LoadTodayAppointments()
         {
             try
@@ -250,16 +288,65 @@ namespace ClinicMiniProject.ViewModels
                 var today = DateTime.Today;
                 var now = DateTime.Now;
                 
-                System.Diagnostics.Debug.WriteLine($"Loading appointments for doctor: {currentUser.staff_ID}");
+                System.Diagnostics.Debug.WriteLine($"=== LOADING APPOINTMENTS FOR DOCTOR: {currentUser.staff_ID} ===");
                 System.Diagnostics.Debug.WriteLine($"Today's date: {today}");
 
-                // Get today's appointments for this doctor
-                var appointments = await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(
+                // Get today's scheduled appointments for this doctor
+                var scheduledAppointments = await _appointmentService.GetAppointmentsByStaffAndDateRangeAsync(
                     currentUser.staff_ID, today, today.AddDays(1));
 
-                System.Diagnostics.Debug.WriteLine($"Found {appointments?.Count() ?? 0} appointments");
+                System.Diagnostics.Debug.WriteLine($"Found {scheduledAppointments?.Count() ?? 0} scheduled appointments");
+                if (scheduledAppointments != null)
+                {
+                    foreach (var apt in scheduledAppointments)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Scheduled: {apt.appointment_ID} - {apt.Patient?.patient_name} - {apt.status}");
+                    }
+                }
 
-                var consultationAppointments = appointments
+                // Get walk-in patients - get ALL appointments for today and filter for walk-ins
+                var walkInPatients = new List<ConsultationAppointmentDto>();
+                try
+                {
+                    // Get all appointments for today (not just this doctor's)
+                    var allTodayAppointments = await _appointmentService.GetAppointmentsByDateAsync(today);
+                    System.Diagnostics.Debug.WriteLine($"Total appointments for today: {allTodayAppointments?.Count() ?? 0}");
+                    
+                    if (allTodayAppointments != null)
+                    {
+                        // Filter for walk-in patients (no assigned doctor or walk-in status)
+                        var walkIns = allTodayAppointments
+                            .Where(a => (a.staff_ID == null || a.staff_ID == currentUser.staff_ID) && 
+                                       (a.status == "Pending" || a.status == "Walk-in"))
+                            .ToList();
+                        
+                        System.Diagnostics.Debug.WriteLine($"Found {walkIns.Count} potential walk-in patients");
+                        
+                        walkInPatients = walkIns.Select(w => new ConsultationAppointmentDto
+                        {
+                            AppointmentId = w.appointment_ID,
+                            PatientName = w.Patient?.patient_name ?? "Unknown Patient",
+                            PatientIC = w.patient_IC ?? "Unknown IC",
+                            ServiceType = w.service_type?.ToString() ?? "General Consultation",
+                            AppointmentTime = w.appointedAt ?? DateTime.Now,
+                            Status = "Walk-in",
+                            CanStartConsultation = true,
+                            CanStartEarly = true,
+                            TimeFromNow = TimeSpan.Zero,
+                            TimeIndicatorColor = "#28A745", // Green for walk-ins
+                            StatusColor = GetStatusColor("Walk-in")
+                        }).ToList();
+                        
+                        System.Diagnostics.Debug.WriteLine($"Converted {walkInPatients.Count} walk-in patients");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error loading walk-in patients: {ex.Message}");
+                }
+
+                // Combine both scheduled and walk-in appointments
+                var allAppointments = scheduledAppointments
                     .Where(a => a.appointedAt.HasValue)
                     .Select(a => new ConsultationAppointmentDto
                     {
@@ -275,24 +362,31 @@ namespace ClinicMiniProject.ViewModels
                         TimeIndicatorColor = GetTimeIndicatorColor(a.appointedAt.Value, now),
                         StatusColor = GetStatusColor(a.status ?? "Pending")
                     })
+                    .Concat(walkInPatients)
                     .OrderBy(a => a.AppointmentTime)
                     .ToList();
+
+                System.Diagnostics.Debug.WriteLine($"Combined total appointments: {allAppointments.Count}");
 
                 // Clear and update both collections
                 AppointmentsList.Clear();
                 _allAppointments.Clear();
                 
-                foreach (var appointment in consultationAppointments)
+                foreach (var appointment in allAppointments)
                 {
                     AppointmentsList.Add(appointment);
                     _allAppointments.Add(appointment);
+                    System.Diagnostics.Debug.WriteLine($"Added: {appointment.PatientName} - {appointment.ServiceType}");
                 }
 
                 // Auto-select the first appointment (closest to current time)
                 if (AppointmentsList.Count > 0)
                 {
                     SelectedAppointment = AppointmentsList[0];
+                    System.Diagnostics.Debug.WriteLine($"Auto-selected: {SelectedAppointment.PatientName}");
                 }
+                
+                System.Diagnostics.Debug.WriteLine($"=== FINAL: Total appointments shown: {AppointmentsList.Count} ===");
             }
             catch (Exception ex)
             {
@@ -513,6 +607,26 @@ namespace ClinicMiniProject.ViewModels
             
             // TODO: Implement actual consultation details saving
             // await _consultationService.SaveConsultationDetailsAsync(appointmentId, remarks);
+        }
+
+        private async Task ViewDetails(ConsultationAppointmentDto appointment)
+        {
+            try
+            {
+                if (appointment == null)
+                {
+                    await Shell.Current.DisplayAlert("Error", "No appointment selected", "OK");
+                    return;
+                }
+
+                // Navigate to details page with appointment ID
+                await Shell.Current.GoToAsync($"ConsultationDetailsPage?appointmentId={appointment.AppointmentId}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error viewing details: {ex.Message}");
+                await Shell.Current.DisplayAlert("Error", "Failed to view appointment details", "OK");
+            }
         }
 
         private async Task EditRemarks()

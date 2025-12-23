@@ -60,7 +60,15 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<DoctorDashboardViewModel>();
 
             builder.Services.AddTransient<ConsultationDetailsPage>();
-            builder.Services.AddTransient<ConsultationDetailsViewModel>();
+            builder.Services.AddTransient<ConsultationDetailsViewModel>((serviceProvider) =>
+            {
+                var authService = serviceProvider.GetRequiredService<IAuthService>();
+                var consultationService = serviceProvider.GetRequiredService<IConsultationService>();
+                var appointmentService = serviceProvider.GetRequiredService<IAppointmentService>();
+                var dashboardService = serviceProvider.GetRequiredService<IDoctorDashboardService>();
+                var nurseController = serviceProvider.GetRequiredService<NurseController>();
+                return new ConsultationDetailsViewModel(authService, consultationService, appointmentService, dashboardService, nurseController);
+            });
 
             builder.Services.AddTransient<EditConsultationRemarksViewModel>();
 
