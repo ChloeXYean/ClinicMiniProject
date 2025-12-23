@@ -16,7 +16,6 @@ namespace ClinicMiniProject.ViewModels
         private string _nurseId = string.Empty;
         private string _name = string.Empty;
         private string _phoneNo = string.Empty;
-        private string _workingHoursText = string.Empty;
         private string _department = string.Empty;
         private string _profileImageUri = string.Empty;
         private bool _isEditMode;
@@ -80,31 +79,6 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
-        // Wrapper for WorkingHours to match XAML binding {Binding WorkingHours}
-        public string WorkingHours
-        {
-            get => _workingHoursText;
-            set
-            {
-                if (SetProperty(ref _workingHoursText, value))
-                {
-                    OnPropertyChanged(nameof(WorkingHoursText));
-                }
-            }
-        }
-
-        public string WorkingHoursText
-        {
-            get => _workingHoursText;
-            set
-            {
-                if (SetProperty(ref _workingHoursText, value))
-                {
-                    OnPropertyChanged(nameof(WorkingHours));
-                }
-            }
-        }
-
         public string Department
         {
             get => _department;
@@ -136,7 +110,7 @@ namespace ClinicMiniProject.ViewModels
         public ICommand InquiryCommand { get; }
         public ICommand RefreshCommand { get; }
         public ICommand SaveProfileCommand { get; }
-        public ICommand ToggleEditModeCommand { get; }
+        public ICommand EditProfileCommand { get; } 
         public ICommand ChangeProfilePictureCommand { get; }
         public ICommand LogoutCommand { get; }
 
@@ -156,8 +130,7 @@ namespace ClinicMiniProject.ViewModels
             // Functional Commands
             RefreshCommand = new Command(async () => await RefreshAsync());
             SaveProfileCommand = new Command(async () => await SaveAsync());
-            ToggleEditModeCommand = new Command(OnToggleEditMode);
-            ChangeProfilePictureCommand = new Command(async () => await ChangeProfilePictureAsync());
+            EditProfileCommand = new Command(async () => await Shell.Current.GoToAsync("EditNurseProfile")); ChangeProfilePictureCommand = new Command(async () => await ChangeProfilePictureAsync());
 
             // Logout Logic
             LogoutCommand = new Command(async () =>
@@ -197,7 +170,7 @@ namespace ClinicMiniProject.ViewModels
                 PhoneNo = PhoneNo,
                 Department = Department,
                 ProfileImageUri = ProfileImageUri,
-                ICNumber = string.Empty // Default value as we aren't using this in UI yet
+                ICNumber = string.Empty 
             };
 
             var success = await _nurseProfileService.UpdateNurseProfileAsync(nurse.staff_ID, update);

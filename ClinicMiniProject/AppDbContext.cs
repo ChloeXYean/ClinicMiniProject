@@ -36,7 +36,7 @@ namespace ClinicMiniProject
                 var connStr =
                     $"server={serverip};" + // use the variable here
                     "port=19463;" +
-                    "database=testdb;" +
+                    "database=railway;" +
                     "uid=root;" +
                     "pwd=NrIvCewJcTGAPqmOXyoziksWgwoQmaQd;" +
                     "sslmode=Required;" +

@@ -39,6 +39,7 @@ namespace ClinicMiniProject
             Routing.RegisterRoute(nameof(EndConsultationPage), typeof(EndConsultationPage));
             Routing.RegisterRoute(nameof(RegisterPatientPage), typeof(RegisterPatientPage));
             Routing.RegisterRoute(nameof(WalkInPatientQueuePage), typeof(WalkInPatientQueuePage));
+            Routing.RegisterRoute("EditNurseProfile", typeof(EditNurseProfilePage));
 
             // --- Patient Specific Routes ---
             Routing.RegisterRoute("InquiryHistory", typeof(InquiryHistory));

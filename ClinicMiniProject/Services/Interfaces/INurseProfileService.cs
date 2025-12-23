@@ -1,4 +1,4 @@
-using ClinicMiniProject.Models;
+using System.Threading.Tasks;
 
 namespace ClinicMiniProject.Services.Interfaces
 {
@@ -15,12 +15,7 @@ namespace ClinicMiniProject.Services.Interfaces
         public string PhoneNo { get; set; } = string.Empty;
         public string Department { get; set; } = "General Nursing";
         public string ProfileImageUri { get; set; } = string.Empty;
-
-        // --- NEW FIELD ---
         public string ICNumber { get; set; } = string.Empty;
-
-        // --- REMOVED ---
-        // public string WorkingHoursText { get; set; } 
     }
 
     public class NurseProfileUpdateDto
@@ -29,11 +24,6 @@ namespace ClinicMiniProject.Services.Interfaces
         public string PhoneNo { get; set; } = string.Empty;
         public string Department { get; set; } = "General Nursing";
         public string ProfileImageUri { get; set; } = string.Empty;
-
-        // --- NEW FIELD ---
         public string ICNumber { get; set; } = string.Empty;
-
-        // --- REMOVED ---
-        // public string WorkingHoursText { get; set; } 
     }
 }
