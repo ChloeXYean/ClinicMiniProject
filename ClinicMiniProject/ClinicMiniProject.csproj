@@ -119,14 +119,8 @@
 	  <Compile Update="UI\Patient\PatientAppointmentHistoryPage.xaml.cs">
 	    <DependentUpon>PatientAppointmentHistoryPage.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="UI\Patient\PatientConsultationDetailsPage.xaml.cs">
-	    <DependentUpon>PatientConsultationDetailsPage.xaml</DependentUpon>
-	  </Compile>
 	  <Compile Update="UI\Patient\OnlineInquiryPatient.xaml.cs">
 	    <DependentUpon>OnlineInquiryPatient.xaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="UI\Patient\EndDoctorConsultationPage.xaml.cs">
-	    <DependentUpon>EndDoctorConsultationPage.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
@@ -192,12 +186,6 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="UI\Patient\EditPatientProfilePage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="UI\Patient\PatientConsultationDetailsPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="UI\Patient\EndDoctorConsultationPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 

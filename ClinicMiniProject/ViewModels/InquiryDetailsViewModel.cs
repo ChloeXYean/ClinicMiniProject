@@ -106,10 +106,10 @@ namespace ClinicMiniProject.ViewModels
             try
             {
                 await _inquiryService.SendResponseAsync(InquiryId, DoctorResponseText);
-                
+
                 // Show success message
                 await Shell.Current.DisplayAlert("Success", "Response sent successfully!", "OK");
-                
+
                 // Navigate back to inquiry history
                 await Shell.Current.GoToAsync("///Inquiry");
             }

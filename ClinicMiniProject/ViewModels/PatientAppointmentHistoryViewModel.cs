@@ -1,3 +1,4 @@
+
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using ClinicMiniProject.Models;
@@ -67,20 +68,10 @@ namespace ClinicMiniProject.ViewModels
             _originalAppointments = new List<AppointmentHistoryItem>();
 
             LoadAppointmentsCommand = new Command(async () => await LoadAppointments());
-            BackCommand = new Command(async () => await GoBack());
+            BackCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
+
             // Initial load
             _ = LoadAppointments();
-        }
-        private async Task GoBack()
-        {
-            if (UserType == "Nurse")
-            {
-                await Shell.Current.GoToAsync("///NurseHomePage");
-            }
-            else
-            {
-                await Shell.Current.GoToAsync("///DoctorDashboardPage");
-            }
         }
 
         private async Task LoadAppointments()
@@ -197,7 +188,7 @@ namespace ClinicMiniProject.ViewModels
                     (a.Details != null && a.Details.ToLower().Contains(search)));
             }
 
-            // 2. SORTING: Status Priority, then Nearest Date First
+            // 2. SORTING: Newest Date First
             var sorted = filtered
                 .OrderBy(a => a.Status?.ToLower() switch
                 {
@@ -206,7 +197,7 @@ namespace ClinicMiniProject.ViewModels
                     "cancelled" => 2,
                     _ => 3
                 })
-                .ThenBy(a => a.RawDate) // Nearest date first within each status
+                .ThenByDescending(a => a.RawDate) // Latest history first
                 .ToList();
 
             Appointments.Clear();

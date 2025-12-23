@@ -141,9 +141,8 @@ namespace ClinicMiniProject.Services
 
         public Task<Appointment?> GetAppointmentByIdAsync(string appointmentId)
         {
-            return _context.Appointments
-                .Include(a => a.Patient) 
-                .FirstOrDefaultAsync(a => a.appointment_ID == appointmentId);
+            //1223
+            return _context.Appointments.FirstOrDefaultAsync(a => a.appointment_ID == appointmentId);
         }
 
         public Task UpdateAppointmentAsync(Appointment appointment)

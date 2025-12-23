@@ -2,7 +2,7 @@ namespace ClinicMiniProject.UI.Patient;
 
 public partial class InquiryHistory : ContentPage
 {
-    private readonly ViewModels.OnlineMedicalInquiryViewModel? _viewModel;
+    private readonly ClinicMiniProject.ViewModels.OnlineMedicalInquiryViewModel? _viewModel;
 
     public InquiryHistory()
     {
