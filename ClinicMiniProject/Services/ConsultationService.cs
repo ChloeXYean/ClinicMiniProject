@@ -87,13 +87,20 @@ namespace ClinicMiniProject.Services
             return await BuildDetailsAsync(appt);
         }
 
-        public async Task StartConsultationAsync(string appointmentId)
+        public async Task StartConsultationAsync(string appointmentId, string doctorId)
         {
             var appt = await _appointmentService.GetAppointmentByIdAsync(appointmentId);
             if (appt == null)
                 throw new InvalidOperationException("Appointment not found.");
 
             appt.status = "InProgress";
+            appt.staff_ID = doctorId;
+
+            // Ensure appointedAt is set (required field)
+            if (appt.appointedAt == null)
+            {
+                appt.appointedAt = DateTime.Now;
+            }
 
             // TODO: link with database (persist appointment status)
             await _appointmentService.UpdateAppointmentAsync(appt);

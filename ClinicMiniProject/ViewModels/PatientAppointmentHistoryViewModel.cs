@@ -237,7 +237,16 @@ namespace ClinicMiniProject.ViewModels
         {
             if (!string.IsNullOrEmpty(appointmentId))
             {
-                await Shell.Current.GoToAsync($"///PatientConsultationDetailsPage?appointmentId={appointmentId}");
+                if (UserType == "Doctor" || UserType == "Nurse")
+                {
+                    // Doctor/Nurse sees their specific details page
+                    await Shell.Current.GoToAsync($"ConsultationDetailsPage?appointmentId={appointmentId}&isHistory=true");
+                }
+                else
+                {
+                     // Patient sees patient details page
+                    await Shell.Current.GoToAsync($"PatientConsultationDetails?appointmentId={appointmentId}");
+                }
             }
         }
 
