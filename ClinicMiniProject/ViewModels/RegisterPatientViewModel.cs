@@ -10,7 +10,6 @@ namespace ClinicMiniProject.ViewModels
     public class RegisterPatientViewModel : BindableObject
     {
         private readonly NurseController _controller;
-        private readonly IStaffService _staffService;
         private readonly IAuthService _authService;
 
         private string name = string.Empty;
@@ -96,7 +95,7 @@ namespace ClinicMiniProject.ViewModels
             if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(IcNumber) ||
                 string.IsNullOrWhiteSpace(PhoneNumber) || string.IsNullOrEmpty(SelectedServiceType))
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Please fill in all required fields.", "OK");
+                await Shell.Current.DisplayAlert("Error", "Please fill in all required fields.", "OK");
                 return;
             }
 
@@ -104,14 +103,14 @@ namespace ClinicMiniProject.ViewModels
             var authService = new Services.AuthService(null);
             if (!authService.ValidateICNumber(IcNumber, out string icMessage))
             {
-                await Application.Current.MainPage.DisplayAlert("Error", icMessage, "OK");
+                await Shell.Current.DisplayAlert("Error", icMessage, "OK");
                 return;
             }
 
             // Phone number validation
             if (!authService.ValidatePhoneNumber(PhoneNumber, out string phoneMessage))
             {
-                await Application.Current.MainPage.DisplayAlert("Error", phoneMessage, "OK");
+                await Shell.Current.DisplayAlert("Error", phoneMessage, "OK");
                 return;
             }
 
@@ -121,7 +120,7 @@ namespace ClinicMiniProject.ViewModels
 
             if (result == "Success")
             {
-                await Application.Current.MainPage.DisplayAlert("Success", "Patient registered successfully.", "OK");
+                await Shell.Current.DisplayAlert("Success", "Patient registered successfully.", "OK");
                 await Shell.Current.GoToAsync("WalkInPatientQueuePage");
             }
             else

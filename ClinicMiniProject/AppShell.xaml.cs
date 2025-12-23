@@ -33,6 +33,7 @@ namespace ClinicMiniProject
             Routing.RegisterRoute("InquiryDetails", typeof(InquiryDetailsPage));
             Routing.RegisterRoute("EndConsultationDetails", typeof(ClinicMiniProject.UI.Nurse.EndConsultationDetailsPage));
 
+            Routing.RegisterRoute("NurseAppointmentHistory", typeof(AppointmentHistoryPage));
             // --- Nurse Specific Routes ---
             Routing.RegisterRoute(nameof(EndConsultationPage), typeof(EndConsultationPage));
             Routing.RegisterRoute(nameof(RegisterPatientPage), typeof(RegisterPatientPage));
@@ -46,6 +47,7 @@ namespace ClinicMiniProject
             Routing.RegisterRoute("BookAnAppointment", typeof(AppointmentBooking_Patient));
             Routing.RegisterRoute("AppointmentBooking", typeof(AppointmentBooking_Patient));
             Routing.RegisterRoute("SelectDoctorPage", typeof(SelectDoctorPage));
+            Routing.RegisterRoute("AppointmentCancellation", typeof(AppointmentCancellationPage));
             Routing.RegisterRoute("EditPatientProfile", typeof(EditPatientProfilePage));
 
 

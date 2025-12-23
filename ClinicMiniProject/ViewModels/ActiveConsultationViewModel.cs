@@ -63,7 +63,7 @@ namespace ClinicMiniProject.ViewModels
         public ICommand BackCommand { get; }
         public ICommand EndConsultationCommand { get; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public ActiveConsultationViewModel(IAuthService authService, IConsultationService consultationService, IAppointmentService appointmentService)
         {

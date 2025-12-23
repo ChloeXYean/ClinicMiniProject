@@ -17,7 +17,6 @@ namespace ClinicMiniProject.ViewModels
         private readonly IAuthService _authService;
         private readonly IDoctorDashboardService _dashboardService;
         private readonly IInquiryService _inquiryService;
-        private readonly IAppointmentService _appointmentService;
         private string _greeting = "Welcome";
         private TodayStatsDto _todayStats = new();
         private UpcomingScheduleDto _upcomingSchedule = new();

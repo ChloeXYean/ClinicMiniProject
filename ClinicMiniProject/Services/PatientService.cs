@@ -1,4 +1,5 @@
 ﻿using ClinicMiniProject.Models;
+using ClinicMiniProject.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicMiniProject.Services
@@ -6,10 +7,12 @@ namespace ClinicMiniProject.Services
     public class PatientService
     {
         private readonly AppDbContext _context;
+        private readonly IAppointmentService _appointmentService;
 
-        public PatientService(AppDbContext appDbContext)
+        public PatientService(AppDbContext appDbContext, IAppointmentService appointmentService)
         {
             _context = appDbContext;
+            _appointmentService = appointmentService;
         }
 
         // Add patient
@@ -44,6 +47,9 @@ namespace ClinicMiniProject.Services
         // Get patient appointments
         public async Task<List<Appointment>> GetPatientsAppointmentsAsync(string patient_IC)
         {
+            // Auto-cancel expired appointments
+            await _appointmentService.AutoCancelExpiredAppointmentsAsync();
+
             return await _context.Appointments
                 .Where(a => a.patient_IC == patient_IC)
                 .OrderBy(a => a.status == "Pending" ? 0 :
@@ -56,6 +62,9 @@ namespace ClinicMiniProject.Services
         // Get upcoming appointment
         public async Task<Appointment?> GetUpcomingAppointmentEntityAsync(string patient_IC)
         {
+            // Auto-cancel expired appointments
+            await _appointmentService.AutoCancelExpiredAppointmentsAsync();
+
             System.Diagnostics.Debug.WriteLine($"[PatientService] Fetching upcoming appointment for IC: {patient_IC}");
 
             var now = DateTime.Now;

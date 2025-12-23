@@ -120,6 +120,9 @@ namespace ClinicMiniProject.Controller
 
         public async Task<List<Appointment>> GetUpcomingAppointment()
         {
+            // Auto-cancel expired appointments
+            await _appointmentService.AutoCancelExpiredAppointmentsAsync();
+
             var now = DateTime.Now;
 
             var appointments = await _appointmentService

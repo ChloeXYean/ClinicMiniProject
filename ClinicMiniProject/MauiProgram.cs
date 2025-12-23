@@ -116,6 +116,8 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<SelectDoctorViewModel>();
             builder.Services.AddTransient<EditPatientProfilePage>();
             builder.Services.AddTransient<EditPatientProfileViewModel>();
+            builder.Services.AddTransient<AppointmentCancellationPage>();
+            builder.Services.AddTransient<AppointmentCancellationViewModel>();
             builder.Services.AddTransient<AppointmentBooking_Patient>();
 
             builder.Services.AddTransient<PatientAppointmentHistoryViewModel>();

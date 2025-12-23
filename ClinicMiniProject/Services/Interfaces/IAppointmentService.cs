@@ -50,5 +50,7 @@ namespace ClinicMiniProject.Services.Interfaces
         Task<bool> IsAnyDoctorAvailableAtTimeAsync(DateTime appointmentDateTime);
 
         Task<List<TimeSpan>> GetUnavailableTimeSlotsForDateAsync(DateTime date);
+        Task AutoCancelExpiredAppointmentsAsync();
+        Task<bool> CancelAppointmentAsync(string appointmentId);
     }
 }

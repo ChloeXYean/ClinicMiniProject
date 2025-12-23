@@ -15,6 +15,8 @@ namespace ClinicMiniProject.ViewModels
         private readonly IAppointmentService _appointmentService;
         private readonly IAuthService _authService;
         private readonly PatientService _patientService;
+        private string _upcomingAppointmentId;
+        private DateTime? _upcomingAppointmentDateTime;
 
         public ICommand HomeCommand { get; }
         public ICommand InquiryHistoryCommand { get; }
@@ -24,6 +26,7 @@ namespace ClinicMiniProject.ViewModels
         public ICommand NavigateToAppointmentHistoryCommand { get; }
         public ICommand NavigateToOnlineInquiryCommand { get; }
         public ICommand NotificationCommand { get; }
+        public ICommand CancelAppointmentCommand { get; }
 
         private bool _hasUpcomingAppointment;
         public bool HasUpcomingAppointment
@@ -91,6 +94,8 @@ namespace ClinicMiniProject.ViewModels
             NotificationCommand = new Command(async () =>
                 await Shell.Current.DisplayAlert("Notification", "You have no new notifications.", "OK"));
 
+            CancelAppointmentCommand = new Command(async () => await OnCancelAppointment());
+
             _ = LoadUpcomingAppointment();
         }
 
@@ -118,11 +123,16 @@ namespace ClinicMiniProject.ViewModels
                     int ahead = await _patientService.GetConsultationQueueAsync(upcoming);
                     QueueSequence = ahead.ToString();
 
+                    _upcomingAppointmentId = upcoming.appointment_ID;
+                    _upcomingAppointmentDateTime = upcoming.appointedAt;
+
                     System.Diagnostics.Debug.WriteLine($"[PatientHomeViewModel] Loaded appointment: {AppointmentDate} at {AppointmentTime} with {DoctorName}");
                 }
                 else
                 {
                     HasUpcomingAppointment = false;
+                    _upcomingAppointmentId = null;
+                    _upcomingAppointmentDateTime = null;
                     System.Diagnostics.Debug.WriteLine("[PatientHomeViewModel] No upcoming appointment returned from service.");
                 }
             }
@@ -157,6 +167,29 @@ namespace ClinicMiniProject.ViewModels
             catch
             {
                 await Shell.Current.GoToAsync("PatientAppointmentHistory?UserType=Patient");
+            }
+        }
+
+        private async Task OnCancelAppointment()
+        {
+            if (string.IsNullOrEmpty(_upcomingAppointmentId) || !_upcomingAppointmentDateTime.HasValue)
+                return;
+
+            var timeRemaining = _upcomingAppointmentDateTime.Value - DateTime.Now;
+
+            if (timeRemaining.TotalHours < 24)
+            {
+                await Shell.Current.DisplayAlert("Cannot Cancel",
+                    "Appointments can only be cancelled at least 24 hours in advance. Please contact the clinic for late cancellations.", "OK");
+                return;
+            }
+
+            bool confirm = await Shell.Current.DisplayAlert("Confirm Cancellation",
+                "Are you sure you want to cancel this appointment?", "Yes", "No");
+
+            if (confirm)
+            {
+                await Shell.Current.GoToAsync($"AppointmentCancellation?appointmentId={_upcomingAppointmentId}");
             }
         }
     }

@@ -98,7 +98,17 @@ namespace ClinicMiniProject.ViewModels
             _consultationService = consultationService;
             _appointmentService = appointmentService;
 
-            BackCommand = new Command(async () => await Shell.Current.GoToAsync("///AppointmentHistoryPage?UserType=Doctor"));
+            BackCommand = new Command(async () => 
+            {
+                if (_authService.GetCurrentPatient() != null)
+                {
+                    await Shell.Current.GoToAsync("PatientAppointmentHistory?UserType=Patient");
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync("///AppointmentHistoryPage?UserType=Doctor");
+                }
+            });
         }
 
         private async Task LoadConsultationDetails()
@@ -141,7 +151,7 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {

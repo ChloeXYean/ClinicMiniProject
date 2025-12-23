@@ -68,7 +68,17 @@ namespace ClinicMiniProject.ViewModels
             _originalAppointments = new List<AppointmentHistoryItem>();
 
             LoadAppointmentsCommand = new Command(async () => await LoadAppointments());
-            BackCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
+            BackCommand = new Command(async () =>
+            {
+                if (UserType == "Patient")
+                {
+                    await Shell.Current.GoToAsync("///PatientHomePage");
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync("///DoctorDashboardPage");
+                }
+            });
 
             // Initial load
             _ = LoadAppointments();
@@ -110,6 +120,8 @@ namespace ClinicMiniProject.ViewModels
 
                 foreach (var appt in rawData)
                 {
+                    if (!appt.appointedAt.HasValue) continue;
+
                     string status = appt.status ?? "Pending";
                     var (cardBg, badgeBg) = GetColors(status);
 
@@ -137,24 +149,22 @@ namespace ClinicMiniProject.ViewModels
                         subDetailText = appt.service_type.ToString();
                     }
 
-                    string timeDisplay = appt.appointedAt?.ToString("hh:mm tt") + " - " + appt.appointedAt?.AddHours(1).ToString("hh:mm tt");
-
                     uiItems.Add(new AppointmentHistoryItem
                     {
-                        Time = timeDisplay,
-                        Date = appt.appointedAt?.ToString("dd MMM yyyy") ?? "-",
-                        RawDate = appt.appointedAt ?? DateTime.MinValue,
-
-                        // IMPORTANT: DoctorName property is used for the Main Header in your XAML
-                        DoctorName = mainHeaderName,
+                        Time = appt.appointedAt.Value.ToString("hh:mm tt"),
+                        Date = appt.appointedAt.Value.ToString("dd MMM yyyy"),
                         Details = subDetailText,
-
+                        DoctorName = mainHeaderName,
                         Status = status,
-                        StatusColor = Colors.Black,
                         BadgeColor = badgeBg,
+                        StatusColor = Colors.White,
                         CardBackgroundColor = cardBg,
                         AppointmentId = appt.appointment_ID,
-                        ViewDetailsCommand = new Command(async () => await NavigateToConsultationDetails(appt.appointment_ID))
+                        RawDate = appt.appointedAt.Value,
+                        
+                        // Cancellation support: Restored 24h lead time constraint
+                        IsCancellable = !isStaffView && status == "Pending" && (appt.appointedAt.Value - DateTime.Now).TotalHours >= 24,
+                        CancelCommand = new Command(async () => await OnCancelAppointment(appt.appointment_ID, status, appt.appointedAt))
                     });
                 }
 
@@ -197,7 +207,7 @@ namespace ClinicMiniProject.ViewModels
                     "cancelled" => 2,
                     _ => 3
                 })
-                .ThenByDescending(a => a.RawDate) // Latest history first
+                .ThenBy(a => Math.Abs((a.RawDate - DateTime.Now).Ticks))
                 .ToList();
 
             Appointments.Clear();
@@ -216,16 +226,32 @@ namespace ClinicMiniProject.ViewModels
             {
                 "pending" => (Color.FromArgb("#E3F2FD"), Color.FromArgb("#42A5F5")),   // Blue
                 "cancelled" => (Color.FromArgb("#FFEBEE"), Color.FromArgb("#EF5350")), // Red
-                "completed" => (Color.FromArgb("#FFFDE7"), Color.FromArgb("#FFCA28")), // Yellow
+                "completed" => (Color.FromArgb("#FFFDE7"), Color.FromArgb("#FFCA28")), // Yellow (Previous design)
                 _ => (Colors.White, Colors.Gray)
             };
         }
 
-        private async Task NavigateToConsultationDetails(string appointmentId)
+
+        private async Task OnCancelAppointment(string appointmentId, string status, DateTime? appointedAt)
         {
-            if (!string.IsNullOrEmpty(appointmentId))
+            if (string.IsNullOrEmpty(appointmentId) || status != "Pending" || !appointedAt.HasValue)
+                return;
+
+            var timeRemaining = appointedAt.Value - DateTime.Now;
+
+            if (timeRemaining.TotalHours < 24)
             {
-                await Shell.Current.GoToAsync($"///ConsultationDetailsPage?appointmentId={appointmentId}");
+                await Shell.Current.DisplayAlert("Cannot Cancel",
+                    "Appointments can only be cancelled at least 24 hours in advance.", "OK");
+                return;
+            }
+
+            bool confirm = await Shell.Current.DisplayAlert("Confirm",
+                "Are you sure you want to cancel this appointment?", "Yes", "No");
+
+            if (confirm)
+            {
+                await Shell.Current.GoToAsync($"AppointmentCancellation?appointmentId={appointmentId}");
             }
         }
     }
@@ -242,6 +268,8 @@ namespace ClinicMiniProject.ViewModels
         public Color BadgeColor { get; set; } // Background of the status pill
         public Color CardBackgroundColor { get; set; } // Background of the entire card
         public string AppointmentId { get; set; }
-        public ICommand ViewDetailsCommand { get; set; }
+        public bool IsCancellable { get; set; } // New
+        public ICommand CancelCommand { get; set; } // New
     }
 }
+

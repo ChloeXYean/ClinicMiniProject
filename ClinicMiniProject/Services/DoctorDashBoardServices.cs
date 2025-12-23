@@ -23,6 +23,9 @@ namespace ClinicMiniProject.Services
 
         public async Task<DoctorDashboardDataDto> GetDashboardDataAsync(string doctorId)
         {
+            // Auto-cancel expired appointments
+            await _appointmentService.AutoCancelExpiredAppointmentsAsync();
+
             var today = DateTime.Today;
             var now = DateTime.Now;
             var endOfDay = today.AddDays(1);

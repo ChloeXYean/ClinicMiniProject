@@ -101,7 +101,7 @@ namespace ClinicMiniProject.ViewModels
         }
 
         #region Property Changed Helpers
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string name = null)

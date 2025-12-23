@@ -143,7 +143,7 @@ namespace ClinicMiniProject.ViewModels
             if (doctor == null)
             {
                 System.Diagnostics.Debug.WriteLine("No current user found - user might not be logged in");
-                await Application.Current.MainPage.DisplayAlert("Error", "No user logged in", "OK");
+                await Shell.Current.DisplayAlert("Error", "No user logged in", "OK");
                 return;
             }
 
@@ -155,7 +155,7 @@ namespace ClinicMiniProject.ViewModels
             if (dto == null)
             {
                 System.Diagnostics.Debug.WriteLine("DoctorProfileDto returned null - service might not be working");
-                await Application.Current.MainPage.DisplayAlert("Error", "Failed to load profile", "OK");
+                await Shell.Current.DisplayAlert("Error", "Failed to load profile", "OK");
                 return;
             }
 
@@ -213,11 +213,11 @@ namespace ClinicMiniProject.ViewModels
 
                 IsEditMode = false;
                 
-                await Application.Current.MainPage.DisplayAlert("Success", "Profile updated successfully and saved to database!", "OK");
+                await Shell.Current.DisplayAlert("Success", "Profile updated successfully and saved to database!", "OK");
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", $"Failed to save profile: {ex.Message}", "OK");
+                await Shell.Current.DisplayAlert("Error", $"Failed to save profile: {ex.Message}", "OK");
             }
         }
 

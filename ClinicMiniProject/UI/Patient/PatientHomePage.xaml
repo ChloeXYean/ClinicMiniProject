@@ -38,9 +38,9 @@
                                  Command="{Binding NotificationCommand}" Aspect="AspectFit"/>
                 </Grid>
 
-                <Frame CornerRadius="16" BackgroundColor="#2D60FF" Padding="20" HasShadow="True" HeightRequest="180">
+                <Frame CornerRadius="16" BackgroundColor="#2D60FF" Padding="20" HasShadow="True" HeightRequest="210">
                     <Grid>
-                        <Grid RowDefinitions="Auto, *, Auto" IsVisible="{Binding HasUpcomingAppointment}">
+                        <Grid RowDefinitions="Auto, *, Auto, Auto" IsVisible="{Binding HasUpcomingAppointment}">
                             <HorizontalStackLayout Spacing="8">
                                 <Image Source="calendar_white.png" WidthRequest="16" HeightRequest="16" Aspect="AspectFit"/>
                                 <Label Text="Upcoming Appointment" TextColor="White" FontSize="20" FontAttributes="Bold"/>
@@ -69,6 +69,18 @@
                                     <Label Text="{Binding QueueSequence}" TextColor="White" FontSize="16" FontAttributes="Bold" VerticalOptions="Center"/>
                                 </HorizontalStackLayout>
                             </Grid>
+
+                            <Button Grid.Row="3" 
+                                    Text="Cancel Appointment" 
+                                    Command="{Binding CancelAppointmentCommand}"
+                                    BackgroundColor="#FF4D4D"
+                                    TextColor="White"
+                                    FontSize="12"
+                                    HeightRequest="30"
+                                    Padding="15,0"
+                                    CornerRadius="15"
+                                    HorizontalOptions="Center"
+                                    Margin="0,15,0,0"/>
                         </Grid>
 
                         <VerticalStackLayout IsVisible="{Binding HasUpcomingAppointment, Converter={StaticResource InvertedBoolConverter}}" 

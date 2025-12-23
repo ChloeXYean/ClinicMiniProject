@@ -30,7 +30,18 @@ namespace ClinicMiniProject.Services
                 return false;
 
             if (string.IsNullOrEmpty(appt.appointment_ID))
-                appt.appointment_ID = "A" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
+            {
+                // Ensure a unique ID by checking if it already exists
+                string newId;
+                bool exists;
+                do
+                {
+                    newId = "A" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
+                    exists = await _context.Appointments.AnyAsync(a => a.appointment_ID == newId);
+                } while (exists);
+                
+                appt.appointment_ID = newId;
+            }
 
             _context.Appointments.Add(appt);
             await _context.SaveChangesAsync();
@@ -350,6 +361,63 @@ namespace ClinicMiniProject.Services
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[Error] Failed to auto-cancel late appointments: {ex.Message}");
+            }
+        }
+        
+        public async Task AutoCancelExpiredAppointmentsAsync()
+        {
+            try
+            {
+                var today = DateTime.Today;
+
+                // Find all PENDING appointments where the appointment date is before today
+                var expiredAppointments = await _context.Appointments
+                    .Where(a => a.status == "Pending"
+                                && a.appointedAt.HasValue
+                                && a.appointedAt.Value.Date < today)
+                    .ToListAsync();
+
+                if (expiredAppointments.Any())
+                {
+                    foreach (var appt in expiredAppointments)
+                    {
+                        appt.status = "Cancelled";
+                        appt.nurse_remark = "Auto-cancelled: Appointment date has passed.";
+                    }
+
+                    _context.Appointments.UpdateRange(expiredAppointments);
+                    await _context.SaveChangesAsync();
+
+                    System.Diagnostics.Debug.WriteLine($"[System] Auto-cancelled {expiredAppointments.Count} expired appointments.");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Error] Failed to auto-cancel expired appointments: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> CancelAppointmentAsync(string appointmentId)
+        {
+            try
+            {
+                var appointment = await _context.Appointments
+                    .FirstOrDefaultAsync(a => a.appointment_ID == appointmentId);
+
+                if (appointment == null || appointment.status != "Pending")
+                    return false;
+
+                appointment.status = "Cancelled";
+                appointment.nurse_remark = "Cancelled by patient.";
+
+                _context.Appointments.Update(appointment);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Error] Failed to cancel appointment: {ex.Message}");
+                return false;
             }
         }
     }
