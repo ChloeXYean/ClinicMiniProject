@@ -23,21 +23,34 @@ namespace ClinicMiniProject.Controller
         }
 
         public async Task<string> RegisterWalkInPatient(string fullName, string ic, string phone, string serviceType, bool isEmergency = false)
-        { 
+        {
             try
             {
                 var existingPatient = _patientService.GetPatientByIC(ic);
-                if (existingPatient == null)
+
+                // Check if patient already exists
+                if (existingPatient != null)
                 {
-                    var patient = new Patient
-                    {
-                        patient_IC = ic,
-                        patient_name = fullName,
-                        patient_contact = phone,
-                        isAppUser = false
-                    };
-                    _patientService.AddPatient(patient);
+                    return "Patient with this IC number already exists.";
                 }
+
+                // New Patient Logic: Validation for First Time Services
+                // New patients cannot have 'Follow Up Treatment' or 'Follow-up'
+                if (serviceType == "Follow Up Treatment" || serviceType == "Follow-up")
+                {
+                    return "New patients cannot perform Follow Up Treatment.";
+                }
+
+                // If not existing, create new
+                var patient = new Patient
+                {
+                    patient_IC = ic,
+                    patient_name = fullName,
+                    patient_contact = phone,
+                    isAppUser = false
+                };
+                _patientService.AddPatient(patient);
+
 
                 var doctors = _staffService.GetAllDocs();
 
@@ -126,9 +139,9 @@ namespace ClinicMiniProject.Controller
 
             var appointments = await _appointmentService
                 .GetAppointmentsByStaffAndDateRangeAsync(
-                    staffId: "",          
+                    staffId: "",
                     startDate: now,
-                    endDate: now.AddDays(30) 
+                    endDate: now.AddDays(30)
                 );
 
             return appointments
@@ -140,21 +153,20 @@ namespace ClinicMiniProject.Controller
         public async Task<List<PatientQueueDto>> GetWalkInQueueForToday()
         {
             var today = DateTime.Today;
-            var appointments = await _appointmentService.GetAppointmentsByDateAsync(today); 
+            var appointments = await _appointmentService.GetAppointmentsByDateAsync(today);
 
-        
+
             var walkIns = appointments
-                .Where(a => a.status == "Pending" || a.status == "Completed" || a.status == "Emergency" || a.status == "Cancelled") 
+                .Where(a => a.status == "Pending" || a.status == "Completed" || a.status == "Emergency" || a.status == "Cancelled")
                 .ToList();
 
-          
+
             var sortedWalkIns = walkIns
                 .OrderByDescending(a => a.status == "Emergency")
                 .ThenByDescending(a => a.status == "Pending" || a.status == "Completed")
-                .ThenBy(a => a.appointedAt) 
+                .ThenBy(a => a.appointedAt)
                 .ToList();
 
-            // 4. Convert DB Model -> UI DTO
             var queueList = new List<PatientQueueDto>();
 
             foreach (var app in sortedWalkIns)
@@ -214,4 +226,3 @@ namespace ClinicMiniProject.Controller
 
 
 }
-

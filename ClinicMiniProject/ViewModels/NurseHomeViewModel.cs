@@ -5,12 +5,20 @@ using System.Windows.Input;
 using ClinicMiniProject.Controller;
 using ClinicMiniProject.UI.Nurse;
 using ClinicMiniProject.UI.Doctor;
+using ClinicMiniProject.Services.Interfaces; 
 
 namespace ClinicMiniProject.ViewModels
 {
     public class NurseHomeViewModel : INotifyPropertyChanged
     {
         private readonly NurseController _controller;
+
+        private string userName = string.Empty;
+        public string UserName
+        {
+            get => userName;
+            set => SetProperty(ref userName, value);
+        }
 
         private string date = string.Empty;
         public string AppDate
@@ -43,6 +51,7 @@ namespace ClinicMiniProject.ViewModels
         public ICommand HomeCommand { get; }
         public ICommand InquiryCommand { get; }
         public ICommand ProfileCommand { get; }
+        public ICommand NotificationCommand { get; }
 
         public ICommand RegisterPatientCommand { get; }
         public ICommand EndConsultationCommand { get; }
@@ -51,13 +60,20 @@ namespace ClinicMiniProject.ViewModels
         public ICommand ReportingManagementCommand { get; }
         public ICommand WalkInQueueCommand { get; }
 
-        public NurseHomeViewModel(NurseController controller)
+        public NurseHomeViewModel(NurseController controller, IAuthService authService)
         {
             _controller = controller;
+
+            // Get current user name
+            var currentUser = authService.GetCurrentUser();
+            UserName = currentUser?.staff_name ?? "Nurse";
 
             HomeCommand = new Command(async () => await Shell.Current.GoToAsync($"///{nameof(NurseHomePage)}"));
             InquiryCommand = new Command(async () => await Shell.Current.GoToAsync("Inquiry"));
             ProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///NurseProfile"));
+
+            NotificationCommand = new Command(async () =>
+                await Shell.Current.DisplayAlert("Notification", "No new notifications", "OK"));
 
             RegisterPatientCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(RegisterPatientPage)));
             EndConsultationCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(EndConsultationPage)));
@@ -93,7 +109,7 @@ namespace ClinicMiniProject.ViewModels
                 if (nextAppointment != null && nextAppointment.appointedAt.HasValue)
                 {
                     AppTime = $"Time: {nextAppointment.appointedAt.Value:hh:mm tt}";
-                    AppDoc = $"Doctor: {nextAppointment.staff_ID}"; 
+                    AppDoc = $"Doctor: {nextAppointment.staff_ID}";
                 }
 
                 PendingCount = upcomingList.Count.ToString();

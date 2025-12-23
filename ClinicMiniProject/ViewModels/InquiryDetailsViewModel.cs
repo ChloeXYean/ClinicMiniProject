@@ -1,10 +1,11 @@
+using ClinicMiniProject.Dtos;
+using ClinicMiniProject.Services.Interfaces;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using ClinicMiniProject.Services.Interfaces;
-using ClinicMiniProject.Dtos;
+using Windows.System;
 
 namespace ClinicMiniProject.ViewModels
 {
@@ -13,6 +14,7 @@ namespace ClinicMiniProject.ViewModels
         private readonly IInquiryService _inquiryService;
 
         private string _inquiryId = string.Empty;
+        private string _userType = "Doctor";
         private InquiryDto? _details;
         private string _doctorResponseText = string.Empty;
 
@@ -41,6 +43,21 @@ namespace ClinicMiniProject.ViewModels
                 }
             }
         }
+        public string UserType
+        {
+            get => _userType;
+            set
+            {
+                if (SetProperty(ref _userType, value))
+                {
+                    OnPropertyChanged(nameof(IsDoctor));
+                    OnPropertyChanged(nameof(IsResponseEditable));
+                }
+            }
+        }
+
+        public bool IsDoctor => UserType == "Doctor";
+        public bool IsResponseEditable => IsDoctor; // Only Doctors can edit
 
         public InquiryDto? Details
         {
@@ -109,9 +126,9 @@ namespace ClinicMiniProject.ViewModels
                 
                 // Show success message
                 await Shell.Current.DisplayAlert("Success", "Response sent successfully!", "OK");
-                
+
                 // Navigate back to inquiry history
-                await Shell.Current.GoToAsync("///Inquiry");
+                await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)
             {
@@ -125,7 +142,7 @@ namespace ClinicMiniProject.ViewModels
             if (string.IsNullOrWhiteSpace(ic))
                 return;
 
-            Shell.Current.GoToAsync($"PatientDetails?patientIc={Uri.EscapeDataString(ic)}&UserType=Doctor");
+            Shell.Current.GoToAsync($"PatientDetails?patientIc={Uri.EscapeDataString(ic)}&UserType={UserType}");
         }
 
         private static ImageSource? ResolveImage(string? path)

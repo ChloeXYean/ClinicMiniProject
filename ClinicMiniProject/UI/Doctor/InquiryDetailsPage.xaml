@@ -2,12 +2,19 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
+             xmlns:converters="clr-namespace:ClinicMiniProject.Converters"
              x:Class="ClinicMiniProject.UI.Doctor.InquiryDetailsPage"
              Title="Inquiry Details"
              Shell.NavBarIsVisible="True">
 
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <Grid RowDefinitions="Auto,*" RowSpacing="0">
-        
+
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="14">
 
@@ -58,11 +65,19 @@
                     </Border.StrokeShape>
                     <VerticalStackLayout Spacing="10">
                         <Label Text="Doctor Response" FontAttributes="Bold" />
-                        <Editor Text="{Binding DoctorResponseText, Mode=TwoWay}" Placeholder="Type your response" HeightRequest="140" AutoSize="TextChanges" />
+
+                        <Editor Text="{Binding DoctorResponseText, Mode=TwoWay}" 
+                                Placeholder="{Binding IsDoctor, Converter={StaticResource InvertedBoolConverter}, ConverterParameter='No response yet|Type your response'}"
+                                IsReadOnly="{Binding IsDoctor, Converter={StaticResource InvertedBoolConverter}}"
+                                HeightRequest="140" 
+                                AutoSize="TextChanges" />
                     </VerticalStackLayout>
                 </Border>
 
-                <Button Text="Send Response" Command="{Binding SendResponseCommand}" HeightRequest="52" />
+                <Button Text="Send Response" 
+                        Command="{Binding SendResponseCommand}" 
+                        IsVisible="{Binding IsDoctor}"
+                        HeightRequest="52" />
 
             </VerticalStackLayout>
         </ScrollView>
