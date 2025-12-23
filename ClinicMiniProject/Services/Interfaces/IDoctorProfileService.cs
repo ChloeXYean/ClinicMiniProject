@@ -6,7 +6,6 @@ namespace ClinicMiniProject.Services.Interfaces
     public interface IDoctorProfileService
     {
         Task<DoctorProfileDto?> GetDoctorProfileAsync(string doctorId);
-
         Task UpdateDoctorProfileAsync(string doctorId, DoctorProfileUpdateDto update);
     }
 
@@ -21,6 +20,14 @@ namespace ClinicMiniProject.Services.Interfaces
         public IReadOnlyList<string> ServicesProvided { get; init; } = new List<string>();
 
         public string ProfileImageUri { get; init; } = string.Empty;
+
+        public bool IsMon { get; set; }
+        public bool IsTue { get; set; }
+        public bool IsWed { get; set; }
+        public bool IsThu { get; set; }
+        public bool IsFri { get; set; }
+        public bool IsSat { get; set; }
+        public bool IsSun { get; set; }
     }
 
     public sealed class DoctorProfileUpdateDto
@@ -30,5 +37,13 @@ namespace ClinicMiniProject.Services.Interfaces
         public string? WorkingHoursText { get; init; }
         public IReadOnlyList<string>? ServicesProvided { get; init; }
         public string? ProfileImageUri { get; init; }
+
+        public bool IsMon { get; set; }
+        public bool IsTue { get; set; }
+        public bool IsWed { get; set; }
+        public bool IsThu { get; set; }
+        public bool IsFri { get; set; }
+        public bool IsSat { get; set; }
+        public bool IsSun { get; set; }
     }
 }
