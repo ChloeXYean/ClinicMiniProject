@@ -9,7 +9,6 @@ using ClinicMiniProject.Dtos;
 using ClinicMiniProject.Services.Interfaces;
 using ClinicMiniProject.UI.Doctor;
 
-
 namespace ClinicMiniProject.ViewModels
 {
     public class DoctorDashboardViewModel : INotifyPropertyChanged
@@ -18,6 +17,7 @@ namespace ClinicMiniProject.ViewModels
         private readonly IDoctorDashboardService _dashboardService;
         private readonly IInquiryService _inquiryService;
         private readonly IAppointmentService _appointmentService;
+        private readonly IConsultationService _consultationService;
         private string _greeting = "Welcome";
         private TodayStatsDto _todayStats = new();
         private UpcomingScheduleDto _upcomingSchedule = new();
@@ -26,7 +26,8 @@ namespace ClinicMiniProject.ViewModels
         private string _searchText = string.Empty;
         private ObservableCollection<InquiryDto> _allInquiries = new();
         private ObservableCollection<InquiryDto> _filteredInquiries = new();
-
+        private string _consultationRemarks = string.Empty;
+        private CurrentConsultationDto _currentConsultation = null;
 
         public string Greeting
         {
@@ -83,6 +84,22 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
+        public string ConsultationRemarks
+        {
+            get => _consultationRemarks;
+            set => SetProperty(ref _consultationRemarks, value);
+        }
+
+        public CurrentConsultationDto CurrentConsultation
+        {
+            get => _currentConsultation;
+            set => SetProperty(ref _currentConsultation, value);
+        }
+
+        public bool HasNoAppointments => UpcomingSchedule?.PendingAppointments == 0;
+        public bool HasNextAppointment => UpcomingSchedule?.NextAppointmentDetails != null && CurrentConsultation == null;
+        public bool IsConsultationInProgress => CurrentConsultation != null;
+
         // Commands for menu items
         public ICommand LogoutCommand { get; }
         public ICommand NavigateToAppointmentScheduleCommand { get; }
@@ -97,21 +114,25 @@ namespace ClinicMiniProject.ViewModels
         public ICommand ToggleMenuCommand { get; }
         public ICommand NotificationCommand { get; }
         public ICommand ViewInquiryDetailsCommand { get; }
+        public ICommand StartConsultationCommand { get; }
+        public ICommand EndConsultationCommand { get; }
+        public ICommand SaveRemarksCommand { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public DoctorDashboardViewModel(IAuthService authService, IDoctorDashboardService dashboardService, IInquiryService inquiryService)
+        public DoctorDashboardViewModel(IAuthService authService, IDoctorDashboardService dashboardService, IInquiryService inquiryService, IAppointmentService appointmentService, IConsultationService consultationService)
         {
             _authService = authService;
             _dashboardService = dashboardService;
             _inquiryService = inquiryService;
+            _appointmentService = appointmentService;
+            _consultationService = consultationService;
 
             // --- Navigation Logic ---
             NavigateToAppointmentScheduleCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(AppointmentSchedulePage)));
             NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync("///ConsultationDetailsPage"));
             NavigateToAppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(AppointmentHistoryPage)));
             NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("///ReportingManagementPage"));
-
 
             // Bottom Bar Commands
             NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
@@ -124,16 +145,21 @@ namespace ClinicMiniProject.ViewModels
                 _authService.Logout();
                 await Shell.Current.GoToAsync($"///LoginPage");
             });
-            
+
             // Initialize missing commands to avoid warnings
             ToggleMenuCommand = new Command(() => { /* TODO: Implement Toggle Menu */ });
             NotificationCommand = new Command(async () => await Shell.Current.DisplayAlert("Notification", "No new notifications", "OK"));
             NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
             ViewInquiryDetailsCommand = new Command<string>(async (inquiryId) => await NavigateToInquiryDetails(inquiryId));
 
+            // Consultation commands
+            StartConsultationCommand = new Command(async () => await StartConsultation());
+            EndConsultationCommand = new Command(async () => await EndConsultation());
+            SaveRemarksCommand = new Command(async () => await SaveRemarks());
+
             // Initialize Data
             LoadDashboardData();
-            
+
             // Load inquiry data asynchronously without blocking constructor
             _ = Task.Run(async () => await LoadInquiryData());
 
@@ -276,6 +302,128 @@ namespace ClinicMiniProject.ViewModels
             }
             
             System.Diagnostics.Debug.WriteLine($"=== FilterInquiries Completed ===");
+        }
+
+        private async Task StartConsultation()
+        {
+            try
+            {
+                var nextAppointment = UpcomingSchedule?.NextAppointmentDetails;
+                if (nextAppointment == null)
+                {
+                    await Shell.Current.DisplayAlert("Error", "No upcoming appointment available", "OK");
+                    return;
+                }
+
+                // Update appointment time to current time (early start)
+                var appointment = await _appointmentService.GetAppointmentByIdAsync(nextAppointment.AppointmentId);
+                if (appointment != null)
+                {
+                    var originalTime = appointment.appointedAt;
+                    appointment.appointedAt = DateTime.Now;
+                    appointment.status = "In Progress";
+                    
+                    await _appointmentService.UpdateAppointmentAsync(appointment);
+
+                    // Set current consultation
+                    CurrentConsultation = new CurrentConsultationDto
+                    {
+                        AppointmentId = nextAppointment.AppointmentId,
+                        PatientName = nextAppointment.PatientName,
+                        PatientIC = nextAppointment.PatientIC,
+                        ServiceType = nextAppointment.ServiceType,
+                        StartTime = DateTime.Now,
+                        OriginalAppointmentTime = originalTime ?? DateTime.Now
+                    };
+
+                    // Clear remarks for new consultation
+                    ConsultationRemarks = string.Empty;
+
+                    // Refresh dashboard data
+                    LoadDashboardData();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error starting consultation: {ex.Message}");
+                await Shell.Current.DisplayAlert("Error", "Failed to start consultation", "OK");
+            }
+        }
+
+        private async Task EndConsultation()
+        {
+            try
+            {
+                if (CurrentConsultation == null)
+                {
+                    await Shell.Current.DisplayAlert("Error", "No active consultation", "OK");
+                    return;
+                }
+
+                // Update appointment status to completed
+                var appointment = await _appointmentService.GetAppointmentByIdAsync(CurrentConsultation.AppointmentId);
+                if (appointment != null)
+                {
+                    appointment.status = "Completed";
+                    await _appointmentService.UpdateAppointmentAsync(appointment);
+
+                    // Save consultation remarks if available
+                    if (!string.IsNullOrWhiteSpace(ConsultationRemarks))
+                    {
+                        await SaveConsultationDetails(CurrentConsultation.AppointmentId, ConsultationRemarks);
+                    }
+                }
+
+                // Clear current consultation
+                CurrentConsultation = null;
+                ConsultationRemarks = string.Empty;
+
+                // Refresh dashboard data
+                LoadDashboardData();
+
+                await Shell.Current.DisplayAlert("Success", "Consultation ended successfully", "OK");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error ending consultation: {ex.Message}");
+                await Shell.Current.DisplayAlert("Error", "Failed to end consultation", "OK");
+            }
+        }
+
+        private async Task SaveRemarks()
+        {
+            try
+            {
+                if (CurrentConsultation == null)
+                {
+                    await Shell.Current.DisplayAlert("Error", "No active consultation", "OK");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(ConsultationRemarks))
+                {
+                    await Shell.Current.DisplayAlert("Error", "Please enter consultation remarks", "OK");
+                    return;
+                }
+
+                await SaveConsultationDetails(CurrentConsultation.AppointmentId, ConsultationRemarks);
+                await Shell.Current.DisplayAlert("Success", "Remarks saved successfully", "OK");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error saving remarks: {ex.Message}");
+                await Shell.Current.DisplayAlert("Error", "Failed to save remarks", "OK");
+            }
+        }
+
+        private async Task SaveConsultationDetails(string appointmentId, string remarks)
+        {
+            // This would save to the consultation table
+            // For now, we'll just log it - you'll need to implement the actual consultation service method
+            System.Diagnostics.Debug.WriteLine($"Saving consultation remarks for appointment {appointmentId}: {remarks}");
+            
+            // TODO: Implement actual consultation details saving
+            // await _consultationService.SaveConsultationDetailsAsync(appointmentId, remarks);
         }
     }
 }

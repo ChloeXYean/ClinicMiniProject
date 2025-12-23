@@ -82,13 +82,37 @@ namespace ClinicMiniProject.Services
             var onlinePending = upcomingAppointments
                 .Count(a => a.service_type == "Online");
 
+            var nextAppointment = upcomingAppointments.FirstOrDefault();
+            var nextAppointmentDetails = nextAppointment != null ? new NextAppointmentDetailsDto
+            {
+                AppointmentId = nextAppointment.appointment_ID,
+                PatientName = nextAppointment.Patient?.patient_name ?? "Unknown Patient",
+                PatientIC = nextAppointment.patient_IC ?? "Unknown IC",
+                ServiceType = nextAppointment.service_type?.ToString() ?? "General Consultation",
+                AppointmentTime = nextAppointment.appointedAt ?? DateTime.MinValue,
+                Status = nextAppointment.status ?? "Pending",
+                IsCurrentTimeSlot = IsCurrentTimeSlot(nextAppointment.appointedAt, now)
+            } : null;
+
             return new UpcomingScheduleDto
             {
                 PendingAppointments = upcomingAppointments.Count,
                 OnlinePending = onlinePending,
                 WalkInPending = upcomingAppointments.Count - onlinePending,
-                NextAppointmentTime = upcomingAppointments.FirstOrDefault()?.appointedAt
+                NextAppointmentTime = nextAppointment?.appointedAt,
+                NextAppointmentDetails = nextAppointmentDetails
             };
+        }
+
+        private bool IsCurrentTimeSlot(DateTime? appointmentTime, DateTime now)
+        {
+            if (!appointmentTime.HasValue) return false;
+            
+            var appointment = appointmentTime.Value;
+            var currentTimeSlotStart = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0);
+            var currentTimeSlotEnd = currentTimeSlotStart.AddHours(1);
+            
+            return appointment >= currentTimeSlotStart && appointment < currentTimeSlotEnd;
         }
     }
 }

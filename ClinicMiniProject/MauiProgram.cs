@@ -62,6 +62,8 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<ConsultationDetailsPage>();
             builder.Services.AddTransient<ConsultationDetailsViewModel>();
 
+            builder.Services.AddTransient<EditConsultationRemarksViewModel>();
+
             builder.Services.AddTransient<ActiveConsultationPage>();
             builder.Services.AddTransient<ActiveConsultationViewModel>();
 

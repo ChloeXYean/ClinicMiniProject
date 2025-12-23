@@ -86,6 +86,82 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- Consultation Details Section -->
+                <Border StrokeThickness="0" BackgroundColor="White" Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.05" Radius="10" Offset="0,4"/>
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="15">
+                        <Label Text="Consultation Details" FontSize="18" FontAttributes="Bold" TextColor="#333" />
+                        
+                        <!-- Show when no appointments available -->
+                        <VerticalStackLayout IsVisible="{Binding HasNoAppointments}" Spacing="10">
+                            <Label Text="No appointments scheduled for today" FontSize="14" TextColor="#666" HorizontalOptions="Center"/>
+                            <Label Text="Available for walk-in patients" FontSize="12" TextColor="#999" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <!-- Show next appointment details -->
+                        <VerticalStackLayout IsVisible="{Binding HasNextAppointment}" Spacing="12">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <BoxView Grid.Column="0" Color="#6EA8FE" CornerRadius="8" WidthRequest="4" HeightRequest="40" Margin="0,0,10,0"/>
+                                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                    <Label Text="{Binding UpcomingSchedule.NextAppointmentDetails.PatientName}" FontSize="16" FontAttributes="Bold" TextColor="#333"/>
+                                    <Label Text="{Binding UpcomingSchedule.NextAppointmentDetails.ServiceType}" FontSize="12" TextColor="#666"/>
+                                    <Label Text="{Binding UpcomingSchedule.NextAppointmentDetails.AppointmentTime, StringFormat='Scheduled: {0:hh:mm tt}'}" FontSize="12" TextColor="#666"/>
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <Border BackgroundColor="#F0F8FF" Padding="12" StrokeShape="RoundRectangle 8">
+                                <VerticalStackLayout Spacing="8">
+                                    <Label Text="Early Start Available" FontSize="12" TextColor="#2D5AF0" FontAttributes="Bold" HorizontalOptions="Center"/>
+                                    <Label Text="Patient can start earlier if available" FontSize="10" TextColor="#666" HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <Button Text="Start Consultation" 
+                                    Command="{Binding StartConsultationCommand}"
+                                    BackgroundColor="#2D5AF0" 
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    Padding="20,10"/>
+                        </VerticalStackLayout>
+
+                        <!-- Show consultation in progress -->
+                        <VerticalStackLayout IsVisible="{Binding IsConsultationInProgress}" Spacing="12">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <BoxView Grid.Column="0" Color="#28A745" CornerRadius="8" WidthRequest="4" HeightRequest="40" Margin="0,0,10,0"/>
+                                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                    <Label Text="{Binding CurrentConsultation.PatientName}" FontSize="16" FontAttributes="Bold" TextColor="#333"/>
+                                    <Label Text="Consultation in progress" FontSize="12" TextColor="#28A745"/>
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <Editor Text="{Binding ConsultationRemarks}" 
+                                    Placeholder="Enter consultation remarks..." 
+                                    HeightRequest="100"
+                                    BackgroundColor="#F8F9FA"
+                                    TextColor="#333"/>
+
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <Button Grid.Column="0" Text="End Consultation" 
+                                        Command="{Binding EndConsultationCommand}"
+                                        BackgroundColor="#DC3545" 
+                                        TextColor="White"
+                                        CornerRadius="8"/>
+                                <Button Grid.Column="1" Text="Save Remarks" 
+                                        Command="{Binding SaveRemarksCommand}"
+                                        BackgroundColor="#28A745" 
+                                        TextColor="White"
+                                        CornerRadius="8"/>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
 				<Label Text="Quick Actions" FontAttributes="Bold" FontSize="16" TextColor="#555" Margin="5,0,0,-10"/>
 
 				<Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="15" RowSpacing="15">

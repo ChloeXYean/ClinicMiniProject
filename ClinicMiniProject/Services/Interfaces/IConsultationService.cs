@@ -19,6 +19,8 @@ namespace ClinicMiniProject.Services.Interfaces
         Task EndConsultationAsync(string appointmentId, string doctorRemark, string? nurseRemark);
 
         Task UpdateRemarksAsync(string appointmentId, string docRemark, string nurseRemark);
+        
+        Task UpdateConsultationRemarksAsync(string appointmentId, string newRemarks);
     }
 
     public sealed class ConsultationDetailsDto

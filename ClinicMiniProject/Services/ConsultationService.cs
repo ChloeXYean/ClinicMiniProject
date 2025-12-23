@@ -139,7 +139,16 @@ namespace ClinicMiniProject.Services
                 appt.doc_remark = docRemark;
                 appt.nurse_remark = nurseRemark;
 
+                await _appointmentService.UpdateAppointmentAsync(appt);
+            }
+        }
 
+        public async Task UpdateConsultationRemarksAsync(string appointmentId, string newRemarks)
+        {
+            var appt = await _appointmentService.GetAppointmentByIdAsync(appointmentId);
+            if (appt != null)
+            {
+                appt.doc_remark = newRemarks;
                 await _appointmentService.UpdateAppointmentAsync(appt);
             }
         }

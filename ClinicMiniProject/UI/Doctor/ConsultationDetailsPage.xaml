@@ -12,72 +12,225 @@
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="16">
 
-                <!-- Appointment Date & Time -->
+                <!-- Filter Section -->
                 <Border BackgroundColor="White" StrokeThickness="0" Padding="16">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="12" />
                     </Border.StrokeShape>
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="Appointment Date" FontAttributes="Bold" FontSize="16" TextColor="#333" />
-                        <Label Text="{Binding AppointmentDate}" FontSize="14" TextColor="#666" />
-                        <Label Text="{Binding AppointmentTime}" FontSize="14" TextColor="#666" />
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.05" Radius="10" Offset="0,4"/>
+                    </Border.Shadow>
+                    
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Filter Appointments" FontAttributes="Bold" FontSize="16" TextColor="#333" />
+                        
+                        <!-- Search/Filter Inputs -->
+                        <Grid ColumnDefinitions="*,*" RowSpacing="10" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="8">
+                                <Label Text="Patient Name" FontSize="12" TextColor="#666"/>
+                                <Entry Text="{Binding FilterPatientName}" 
+                                       Placeholder="Enter patient name..."
+                                       BackgroundColor="#F8F9FA"
+                                       TextColor="#333"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="8">
+                                <Label Text="IC Number" FontSize="12" TextColor="#666"/>
+                                <Entry Text="{Binding FilterPatientIC}" 
+                                       Placeholder="Enter IC number..."
+                                       BackgroundColor="#F8F9FA"
+                                       TextColor="#333"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                        
+                        <Grid ColumnDefinitions="*,*,*" RowSpacing="10" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="8">
+                                <Label Text="Booking Type" FontSize="12" TextColor="#666"/>
+                                <Picker ItemsSource="{Binding BookingTypes}" 
+                                        SelectedItem="{Binding SelectedBookingType}"
+                                        BackgroundColor="#F8F9FA"
+                                        TextColor="#333"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="8">
+                                <Label Text="Time Range" FontSize="12" TextColor="#666"/>
+                                <Picker ItemsSource="{Binding TimeRanges}" 
+                                        SelectedItem="{Binding SelectedTimeRange}"
+                                        BackgroundColor="#F8F9FA"
+                                        TextColor="#333"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="2" Spacing="8">
+                                <Label Text="Actions" FontSize="12" TextColor="#666"/>
+                                <Button Text="Apply Filter" 
+                                        Command="{Binding ApplyFilterCommand}"
+                                        BackgroundColor="#2D5AF0" 
+                                        TextColor="White"
+                                        CornerRadius="6"
+                                        Padding="10,5"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                        
+                        <!-- Clear Filter Button -->
+                        <Button Text="Clear All Filters" 
+                                Command="{Binding ClearFilterCommand}"
+                                BackgroundColor="#6C757D" 
+                                TextColor="White"
+                                CornerRadius="6"
+                                HorizontalOptions="Center"
+                                Padding="20,8"
+                                IsVisible="{Binding HasActiveFilters}"/>
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Patient Information -->
+                <!-- Today's Appointments List -->
                 <Border BackgroundColor="White" StrokeThickness="0" Padding="16">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="12" />
                     </Border.StrokeShape>
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="Patient Information" FontAttributes="Bold" FontSize="16" TextColor="#333" />
-                        <Label Text="{Binding PatientName}" FontSize="14" TextColor="#666" />
-                        <Label Text="{Binding PatientIC}" FontSize="14" TextColor="#666" />
-                        <Label Text="{Binding ServiceType}" FontSize="14" TextColor="#666" />
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.05" Radius="10" Offset="0,4"/>
+                    </Border.Shadow>
+                    
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Today's Appointments" FontAttributes="Bold" FontSize="16" TextColor="#333" />
+                        
+                        <!-- Show when no appointments -->
+                        <VerticalStackLayout IsVisible="{Binding HasNoAppointments}" Spacing="8">
+                            <Label Text="No appointments scheduled for today" FontSize="14" TextColor="#666" HorizontalOptions="Center"/>
+                            <Label Text="Available for walk-in patients" FontSize="12" TextColor="#999" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <!-- Appointments List -->
+                        <CollectionView ItemsSource="{Binding AppointmentsList}" IsVisible="{Binding HasAppointments}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BackgroundColor="#F8F9FA" StrokeThickness="1" Stroke="#E0E0E0" Padding="12" Margin="0,5">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8" />
+                                        </Border.StrokeShape>
+                                        
+                                        <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*" RowSpacing="8">
+                                            <!-- Time indicator -->
+                                            <Border Grid.Row="0" Grid.Column="0" 
+                                                    BackgroundColor="{Binding TimeIndicatorColor}" 
+                                                    Padding="8,4" StrokeShape="RoundRectangle 6" 
+                                                    Margin="0,0,10,0">
+                                                <Label Text="{Binding AppointmentTime, StringFormat='{0:hh:mm tt}'}" 
+                                                       TextColor="White" FontSize="12" FontAttributes="Bold"/>
+                                            </Border>
+                                            
+                                            <!-- Patient info -->
+                                            <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2">
+                                                <Label Text="{Binding PatientName}" FontSize="14" FontAttributes="Bold" TextColor="#333"/>
+                                                <Label Text="{Binding ServiceType}" FontSize="12" TextColor="#666"/>
+                                                <Label Text="{Binding PatientIC}" FontSize="11" TextColor="#999"/>
+                                            </VerticalStackLayout>
+                                            
+                                            <!-- Status and action buttons -->
+                                            <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Spacing="8" HorizontalOptions="End">
+                                                <Border BackgroundColor="{Binding StatusColor}" Padding="6,3" StrokeShape="RoundRectangle 4">
+                                                    <Label Text="{Binding Status}" FontSize="10" TextColor="White"/>
+                                                </Border>
+                                                
+                                                <Button Text="Start" 
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.StartConsultationCommand}"
+                                                        CommandParameter="{Binding AppointmentId}"
+                                                        IsEnabled="{Binding CanStartConsultation}"
+                                                        BackgroundColor="#2D5AF0" 
+                                                        TextColor="White"
+                                                        CornerRadius="6"
+                                                        Padding="15,5"
+                                                        FontSize="11"/>
+                                            </HorizontalStackLayout>
+                                            
+                                            <!-- Early start indicator -->
+                                            <Label Grid.Row="2" Grid.Column="1" 
+                                                   Text="Can start early" 
+                                                   FontSize="10" TextColor="#28A745"
+                                                   IsVisible="{Binding CanStartEarly}"
+                                                   FontAttributes="Bold"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Doctor Remarks -->
-                <Border BackgroundColor="White" StrokeThickness="0" Padding="16">
+                <!-- Selected Appointment Details -->
+                <Border BackgroundColor="White" StrokeThickness="0" Padding="16" IsVisible="{Binding HasSelectedAppointment}">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="12" />
                     </Border.StrokeShape>
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="Doctor Remarks" FontAttributes="Bold" FontSize="16" TextColor="#333" />
-                        <Label Text="{Binding DoctorRemarks}" FontSize="14" TextColor="#666" LineBreakMode="WordWrap" />
-                    </VerticalStackLayout>
-                </Border>
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.05" Radius="10" Offset="0,4"/>
+                    </Border.Shadow>
+                    
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Selected Appointment Details" FontAttributes="Bold" FontSize="16" TextColor="#333" />
+                        
+                        <Grid ColumnDefinitions="*,*" RowSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="Patient Name" FontSize="12" TextColor="#666"/>
+                                <Label Text="{Binding SelectedAppointment.PatientName}" FontSize="14" FontAttributes="Bold" TextColor="#333"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Service Type" FontSize="12" TextColor="#666"/>
+                                <Label Text="{Binding SelectedAppointment.ServiceType}" FontSize="14" FontAttributes="Bold" TextColor="#333"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                        
+                        <!-- Consultation Actions -->
+                        <VerticalStackLayout IsVisible="{Binding CanStartSelectedConsultation}" Spacing="10">
+                            <Button Text="Start Consultation" 
+                                    Command="{Binding StartSelectedConsultationCommand}"
+                                    BackgroundColor="#28A745" 
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    Padding="20,10"/>
+                        </VerticalStackLayout>
+                        
+                        <!-- Consultation in Progress -->
+                        <VerticalStackLayout IsVisible="{Binding IsConsultationInProgress}" Spacing="10">
+                            <Label Text="Consultation in progress" FontSize="14" TextColor="#28A745" FontAttributes="Bold"/>
+                            
+                            <Editor Text="{Binding ConsultationRemarks}" 
+                                    Placeholder="Enter consultation remarks..." 
+                                    HeightRequest="100"
+                                    BackgroundColor="#F8F9FA"
+                                    TextColor="#333"/>
 
-                <!-- Nurse Notes -->
-                <Border BackgroundColor="White" StrokeThickness="0" Padding="16">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="Nurse Notes" FontAttributes="Bold" FontSize="16" TextColor="#333" />
-                        <Label Text="{Binding NurseNotes}" FontSize="14" TextColor="#666" LineBreakMode="WordWrap" />
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Prescription -->
-                <Border BackgroundColor="White" StrokeThickness="0" Padding="16">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="Prescription" FontAttributes="Bold" FontSize="16" TextColor="#333" />
-                        <Label Text="{Binding Prescription}" FontSize="14" TextColor="#666" LineBreakMode="WordWrap" />
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Status -->
-                <Border BackgroundColor="White" StrokeThickness="0" Padding="16">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="Consultation Status" FontAttributes="Bold" FontSize="16" TextColor="#333" />
-                        <Label Text="{Binding Status}" FontSize="14" TextColor="#666" />
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <Button Grid.Column="0" Text="End Consultation" 
+                                        Command="{Binding EndConsultationCommand}"
+                                        BackgroundColor="#DC3545" 
+                                        TextColor="White"
+                                        CornerRadius="8"/>
+                                <Button Grid.Column="1" Text="Save Remarks" 
+                                        Command="{Binding SaveRemarksCommand}"
+                                        BackgroundColor="#2D5AF0" 
+                                        TextColor="White"
+                                        CornerRadius="8"/>
+                            </Grid>
+                        </VerticalStackLayout>
+                        
+                        <!-- Completed Consultation -->
+                        <VerticalStackLayout IsVisible="{Binding IsConsultationCompleted}" Spacing="10">
+                            <Label Text="Consultation Completed" FontSize="14" TextColor="#6C757D" FontAttributes="Bold"/>
+                            
+                            <Label Text="Previous Remarks:" FontSize="12" TextColor="#666"/>
+                            <Editor Text="{Binding CompletedConsultationRemarks}" 
+                                    IsEnabled="False"
+                                    HeightRequest="80"
+                                    BackgroundColor="#F8F9FA"
+                                    TextColor="#333"/>
+                            
+                            <Button Text="Edit Remarks" 
+                                    Command="{Binding EditRemarksCommand}"
+                                    BackgroundColor="#FFA500" 
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    HorizontalOptions="Center"
+                                    Padding="20,10"/>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
 
