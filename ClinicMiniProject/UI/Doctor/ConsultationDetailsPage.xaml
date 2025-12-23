@@ -137,23 +137,11 @@
                                                     <Label Text="{Binding Status}" FontSize="10" TextColor="White"/>
                                                 </Border>
                                                 
-                                                <Button Text="Start" 
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.StartConsultationCommand}"
-                                                        CommandParameter="{Binding AppointmentId}"
-                                                        IsEnabled="{Binding CanStartConsultation}"
-                                                        BackgroundColor="#2D5AF0" 
-                                                        TextColor="White"
-                                                        CornerRadius="6"
-                                                        Padding="15,5"
-                                                        FontSize="11"/>
+
                                             </HorizontalStackLayout>
                                             
                                             <!-- Early start indicator -->
-                                            <Label Grid.Row="2" Grid.Column="1" 
-                                                   Text="Can start early" 
-                                                   FontSize="10" TextColor="#28A745"
-                                                   IsVisible="{Binding CanStartEarly}"
-                                                   FontAttributes="Bold"/>
+
                                         </Grid>
                                     </Border>
                                 </DataTemplate>

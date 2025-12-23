@@ -56,7 +56,7 @@ namespace ClinicMiniProject.Dtos
         public DateTime AppointmentTime { get; init; }
         public string Status { get; init; }
         public bool CanStartConsultation { get; init; }
-        public bool CanStartEarly { get; init; }
+
         public string TimeIndicatorColor { get; init; }
         public string StatusColor { get; init; }
         public TimeSpan TimeFromNow { get; init; }

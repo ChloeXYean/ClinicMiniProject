@@ -20,6 +20,7 @@ namespace ClinicMiniProject.ViewModels
     }
 
     [QueryProperty(nameof(AppointmentId), "appointmentId")]
+    [QueryProperty(nameof(IsHistoryMode), "isHistory")]
     public class ConsultationDetailsViewModel : INotifyPropertyChanged
     {
         private readonly IAuthService _authService;
@@ -27,6 +28,22 @@ namespace ClinicMiniProject.ViewModels
         private readonly IAppointmentService _appointmentService;
         private readonly IDoctorDashboardService _dashboardService;
         private readonly NurseController _nurseController;
+
+        private bool _isHistoryMode;
+        public bool IsHistoryMode
+        {
+            get => _isHistoryMode;
+            set => _isHistoryMode = value;
+        }
+
+        // ... existing fields ...
+
+        // IN CONSTRUCTOR:
+        // BackCommand = new Command(async () => 
+        // {
+        //     if (IsHistoryMode) await Shell.Current.GoToAsync("..");
+        //     else await Shell.Current.GoToAsync("///DoctorDashboardPage");
+        // });
 
         // Single appointment properties (for backward compatibility)
         private string _appointmentId;
@@ -144,6 +161,8 @@ namespace ClinicMiniProject.ViewModels
                     AppointmentDate = value.AppointmentTime.ToString("dd MMM yyyy");
                     Status = value.Status;
                 }
+                OnPropertyChanged(nameof(HasSelectedAppointment));
+                OnPropertyChanged(nameof(CanStartSelectedConsultation));
             }
         }
 
@@ -156,7 +175,14 @@ namespace ClinicMiniProject.ViewModels
         public CurrentConsultationDto CurrentConsultation
         {
             get => _currentConsultation;
-            set => SetProperty(ref _currentConsultation, value);
+            set
+            {
+                if (SetProperty(ref _currentConsultation, value))
+                {
+                    OnPropertyChanged(nameof(IsConsultationInProgress));
+                    OnPropertyChanged(nameof(CanStartSelectedConsultation));
+                }
+            }
         }
 
         public string CompletedConsultationRemarks
@@ -223,7 +249,17 @@ namespace ClinicMiniProject.ViewModels
             _dashboardService = dashboardService;
             _nurseController = nurseController;
 
-            BackCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
+            BackCommand = new Command(async () => 
+            {
+                if (IsHistoryMode)
+                {
+                    await Shell.Current.GoToAsync("..");
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync("///DoctorDashboardPage");
+                }
+            });
 
             // New commands
             StartConsultationCommand = new Command<string>(async (appointmentId) => await StartConsultation(appointmentId));
@@ -264,6 +300,7 @@ namespace ClinicMiniProject.ViewModels
                 if (currentUser == null) 
                 {
                     System.Diagnostics.Debug.WriteLine("No current user found");
+                    await Shell.Current.DisplayAlert("Error", "Unable to identify current doctor", "OK");
                     return;
                 }
 
@@ -318,7 +355,7 @@ namespace ClinicMiniProject.ViewModels
                         AppointmentTime = w.appointedAt ?? DateTime.Now,
                         Status = w.staff_ID == null ? "Walk-in" : (w.status ?? "Pending"),
                         CanStartConsultation = true,
-                        CanStartEarly = true,
+
                         TimeFromNow = TimeSpan.Zero,
                         TimeIndicatorColor = "#28A745", // Green for walk-ins
                         StatusColor = GetStatusColor(w.staff_ID == null ? "Walk-in" : (w.status ?? "Pending"))
@@ -338,8 +375,8 @@ namespace ClinicMiniProject.ViewModels
                         ServiceType = a.service_type?.ToString() ?? "General Consultation",
                         AppointmentTime = a.appointedAt.Value,
                         Status = a.status ?? "Pending",
-                        CanStartConsultation = a.status == "Pending",
-                        CanStartEarly = a.appointedAt.Value > now,
+                        CanStartConsultation = (a.status == "Pending") && (a.appointedAt.Value - now).TotalMinutes <= 30,
+
                         TimeFromNow = a.appointedAt.Value - now,
                         TimeIndicatorColor = GetTimeIndicatorColor(a.appointedAt.Value, now),
                         StatusColor = GetStatusColor(a.status ?? "Pending")
@@ -467,19 +504,29 @@ namespace ClinicMiniProject.ViewModels
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"=== STARTING CONSULTATION FOR: {appointmentId} ===");
+                
                 var appointment = await _appointmentService.GetAppointmentByIdAsync(appointmentId);
                 if (appointment == null)
                 {
+                    System.Diagnostics.Debug.WriteLine($"ERROR: Appointment {appointmentId} not found");
                     await Shell.Current.DisplayAlert("Error", "Appointment not found", "OK");
                     return;
                 }
 
-                // Update appointment time to current time (early start)
-                var originalTime = appointment.appointedAt;
-                appointment.appointedAt = DateTime.Now;
-                appointment.status = "In Progress";
-                
-                await _appointmentService.UpdateAppointmentAsync(appointment);
+                System.Diagnostics.Debug.WriteLine($"Found appointment: {appointment.appointment_ID} - {appointment.Patient?.patient_name} - Status: {appointment.status}");
+
+                // Get current doctor
+                var currentUser = _authService.GetCurrentUser();
+                if (currentUser == null)
+                {
+                    await Shell.Current.DisplayAlert("Error", "Unable to identify current doctor", "OK");
+                    return;
+                }
+
+                // Use the consultation service to start consultation
+                await _consultationService.StartConsultationAsync(appointmentId, currentUser.staff_ID);
+                System.Diagnostics.Debug.WriteLine("Consultation service StartConsultationAsync completed");
 
                 // Set current consultation
                 CurrentConsultation = new CurrentConsultationDto
@@ -489,8 +536,10 @@ namespace ClinicMiniProject.ViewModels
                     PatientIC = appointment.patient_IC ?? "Unknown IC",
                     ServiceType = appointment.service_type?.ToString() ?? "General Consultation",
                     StartTime = DateTime.Now,
-                    OriginalAppointmentTime = originalTime ?? DateTime.Now
+                    OriginalAppointmentTime = appointment.appointedAt ?? DateTime.Now
                 };
+
+                System.Diagnostics.Debug.WriteLine($"Current consultation set for: {CurrentConsultation.PatientName}");
 
                 // Clear remarks for new consultation
                 ConsultationRemarks = string.Empty;
@@ -499,11 +548,21 @@ namespace ClinicMiniProject.ViewModels
                 await LoadTodayAppointments();
 
                 await Shell.Current.DisplayAlert("Success", "Consultation started successfully", "OK");
+                System.Diagnostics.Debug.WriteLine("=== CONSULTATION STARTED SUCCESSFULLY ===");
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error starting consultation: {ex.Message}");
-                await Shell.Current.DisplayAlert("Error", "Failed to start consultation", "OK");
+                if (ex.InnerException != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                
+                var errorMessage = ex.InnerException != null 
+                    ? $"{ex.Message}\nDetails: {ex.InnerException.Message}" 
+                    : ex.Message;
+                    
+                await Shell.Current.DisplayAlert("Error", $"Failed to start consultation: {errorMessage}", "OK");
             }
         }
 
@@ -528,19 +587,12 @@ namespace ClinicMiniProject.ViewModels
                     return;
                 }
 
-                // Update appointment status to completed
-                var appointment = await _appointmentService.GetAppointmentByIdAsync(CurrentConsultation.AppointmentId);
-                if (appointment != null)
-                {
-                    appointment.status = "Completed";
-                    await _appointmentService.UpdateAppointmentAsync(appointment);
-
-                    // Save consultation remarks if available
-                    if (!string.IsNullOrWhiteSpace(ConsultationRemarks))
-                    {
-                        await SaveConsultationDetails(CurrentConsultation.AppointmentId, ConsultationRemarks);
-                    }
-                }
+                // Use the consultation service to end consultation
+                await _consultationService.EndConsultationAsync(
+                    CurrentConsultation.AppointmentId, 
+                    ConsultationRemarks, 
+                    string.Empty // Nurse remarks - can be added later if needed
+                );
 
                 // Clear current consultation
                 CurrentConsultation = null;
@@ -554,7 +606,7 @@ namespace ClinicMiniProject.ViewModels
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error ending consultation: {ex.Message}");
-                await Shell.Current.DisplayAlert("Error", "Failed to end consultation", "OK");
+                await Shell.Current.DisplayAlert("Error", $"Failed to end consultation: {ex.Message}", "OK");
             }
         }
 

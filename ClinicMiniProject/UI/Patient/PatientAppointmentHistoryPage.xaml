@@ -110,6 +110,17 @@
                                             IsVisible="{Binding IsCancellable}"
                                             Command="{Binding CancelCommand}"
                                             VerticalOptions="Center"/>
+
+									<Button Text="Consultation Details"
+                                            FontSize="12"
+                                            FontAttributes="Bold"
+                                            HeightRequest="36"
+                                            Padding="20,0"
+                                            BackgroundColor="#6EA8FE"
+                                            TextColor="White"
+                                            CornerRadius="18"
+                                            Command="{Binding ViewDetailsCommand}"
+                                            VerticalOptions="Center"/>
 								</HorizontalStackLayout>
 							</Grid>
 						</Frame>

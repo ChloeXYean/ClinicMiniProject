@@ -14,7 +14,7 @@ namespace ClinicMiniProject.Services.Interfaces
 
         Task<ConsultationDetailsDto?> GetConsultationDetailsByAppointmentIdAsync(string appointmentId);
 
-        Task StartConsultationAsync(string appointmentId);
+        Task StartConsultationAsync(string appointmentId, string doctorId);
 
         Task EndConsultationAsync(string appointmentId, string doctorRemark, string? nurseRemark);
 

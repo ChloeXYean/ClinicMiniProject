@@ -88,4 +88,9 @@
         ContentTemplate="{DataTemplate nur:NurseProfilePage}"
         Route="NurseProfile" />
 
+    <ShellContent
+        Title="Patient Consultation Details"
+        ContentTemplate="{DataTemplate pat:PatientConsultationDetailsPage}"
+        Route="PatientConsultationDetailsPage" />
+
 </Shell>
