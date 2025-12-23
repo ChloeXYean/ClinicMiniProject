@@ -109,6 +109,7 @@ namespace ClinicMiniProject.ViewModels
         public ICommand NavigateToInquiryCommand { get; }
         public ICommand NavigateToProfileCommand { get; }
         public ICommand NavigateToInquiryHistoryCommand { get; }
+        public ICommand NavigateToConsultationDetailsCommand { get; }
 
         public ICommand ToggleMenuCommand { get; }
         public ICommand NotificationCommand { get; }
@@ -131,6 +132,7 @@ namespace ClinicMiniProject.ViewModels
             NavigateToAppointmentScheduleCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(AppointmentSchedulePage)));
             NavigateToAppointmentHistoryCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(AppointmentHistoryPage)));
             NavigateToReportingManagementCommand = new Command(async () => await Shell.Current.GoToAsync("///ReportingManagementPage"));
+            NavigateToConsultationDetailsCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(ConsultationDetailsPage)));
 
             // Bottom Bar Commands
             NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry"));
