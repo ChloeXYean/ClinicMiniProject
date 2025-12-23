@@ -15,12 +15,8 @@
 
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="12">
                     <Border HeightRequest="100" WidthRequest="100" StrokeShape="RoundRectangle 50" BackgroundColor="#E0E0E0" StrokeThickness="2" Stroke="#2D5AF0">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding ChangeProfilePictureCommand}"/>
-                        </Border.GestureRecognizers>
                         <Image Source="{Binding ProfilePictureSource}" Aspect="AspectFill" Margin="0"/>
                     </Border>
-                    <Label Text="Tap to change photo" FontSize="12" TextColor="#2D5AF0" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
 
                 <Border BackgroundColor="#F8F9FA" StrokeThickness="0" StrokeShape="RoundRectangle 15" Padding="20">

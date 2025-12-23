@@ -20,11 +20,6 @@ namespace ClinicMiniProject.ViewModels
         private string department = string.Empty;
         public string Department { get => department; set { department = value; OnPropertyChanged(); } }
 
-        private ImageSource profilePictureSource;
-        public ImageSource ProfilePictureSource { get => profilePictureSource; set { profilePictureSource = value; OnPropertyChanged(); } }
-
-        private string newProfilePicturePath;
-
         public ICommand SaveCommand { get; }
         public ICommand BackCommand { get; }
         public ICommand ChangeProfilePictureCommand { get; }
@@ -38,7 +33,6 @@ namespace ClinicMiniProject.ViewModels
 
             SaveCommand = new Command(async () => await OnSave());
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
-            ChangeProfilePictureCommand = new Command(async () => await OnChangeProfilePicture());
 
             LoadCurrentProfile();
         }
@@ -54,22 +48,7 @@ namespace ClinicMiniProject.ViewModels
                 Name = dto.Name;
                 PhoneNumber = dto.PhoneNo;
                 Department = dto.Department;
-                ProfilePictureSource = dto.ProfileImageUri;
             }
-        }
-
-        private async Task OnChangeProfilePicture()
-        {
-            try
-            {
-                var result = await FilePicker.PickAsync(new PickOptions { PickerTitle = "Select profile photo", FileTypes = FilePickerFileType.Images });
-                if (result != null)
-                {
-                    newProfilePicturePath = result.FullPath;
-                    ProfilePictureSource = ImageSource.FromFile(result.FullPath);
-                }
-            }
-            catch (Exception ex) { /* Handle error */ }
         }
 
         private async Task OnSave()
@@ -81,8 +60,7 @@ namespace ClinicMiniProject.ViewModels
             {
                 Name = Name,
                 PhoneNo = PhoneNumber,
-                Department = Department,
-                ProfileImageUri = newProfilePicturePath
+                Department = Department
             };
 
             var success = await _nurseProfileService.UpdateNurseProfileAsync(nurse.staff_ID, update);

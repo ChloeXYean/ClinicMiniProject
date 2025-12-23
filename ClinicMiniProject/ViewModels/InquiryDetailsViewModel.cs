@@ -11,6 +11,7 @@ namespace ClinicMiniProject.ViewModels
     public sealed class InquiryDetailsViewModel : INotifyPropertyChanged
     {
         private readonly IInquiryService _inquiryService;
+        private readonly IAuthService _authService;
 
         private string _inquiryId = string.Empty;
         private string _userType = "Doctor";
@@ -19,16 +20,35 @@ namespace ClinicMiniProject.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public InquiryDetailsViewModel(IInquiryService inquiryService)
+        public InquiryDetailsViewModel(IInquiryService inquiryService, IAuthService authService)
         {
             _inquiryService = inquiryService;
+            _authService = authService;
 
             SendResponseCommand = new Command(async () => await SendAsync());
             ViewFullProfileCommand = new Command(OnViewFullProfile);
-            NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
-            NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorInquiryHistory"));
-            NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
             BackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
+
+            // MODIFIED: Check Role immediately to setup Navigation
+            var user = _authService.GetCurrentUser();
+            bool isNurse = user != null && !user.isDoctor;
+
+            if (isNurse)
+            {
+                UserType = "Nurse"; // This will set IsDoctor = false
+
+                NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///NurseHomePage"));
+                NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///Inquiry")); // Go back to shared Inquiry list
+                NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///NurseProfile"));
+            }
+            else
+            {
+                UserType = "Doctor"; // This will set IsDoctor = true
+
+                NavigateToHomeCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorDashboardPage"));
+                NavigateToInquiryCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorInquiryHistory"));
+                NavigateToProfileCommand = new Command(async () => await Shell.Current.GoToAsync("///DoctorProfile"));
+            }
         }
 
         public string InquiryId
@@ -116,6 +136,8 @@ namespace ClinicMiniProject.ViewModels
 
         private async Task SendAsync()
         {
+            if (!IsDoctor) return;
+
             if (string.IsNullOrWhiteSpace(InquiryId))
                 return;
 
