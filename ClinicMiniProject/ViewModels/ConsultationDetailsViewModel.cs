@@ -144,6 +144,8 @@ namespace ClinicMiniProject.ViewModels
                     AppointmentDate = value.AppointmentTime.ToString("dd MMM yyyy");
                     Status = value.Status;
                 }
+                OnPropertyChanged(nameof(HasSelectedAppointment));
+                OnPropertyChanged(nameof(CanStartSelectedConsultation));
             }
         }
 
@@ -156,7 +158,14 @@ namespace ClinicMiniProject.ViewModels
         public CurrentConsultationDto CurrentConsultation
         {
             get => _currentConsultation;
-            set => SetProperty(ref _currentConsultation, value);
+            set
+            {
+                if (SetProperty(ref _currentConsultation, value))
+                {
+                    OnPropertyChanged(nameof(IsConsultationInProgress));
+                    OnPropertyChanged(nameof(CanStartSelectedConsultation));
+                }
+            }
         }
 
         public string CompletedConsultationRemarks
@@ -236,6 +245,13 @@ namespace ClinicMiniProject.ViewModels
             // Filter commands
             ApplyFilterCommand = new Command(async () => await ApplyFilter());
             ClearFilterCommand = new Command(async () => await ClearFilter());
+
+            // Initial load if no appointmentId is provided via QueryProperty
+            // Note: If appointmentId IS provided, the setter will call LoadConsultationDetails
+            if (string.IsNullOrEmpty(AppointmentId))
+            {
+                _ = LoadConsultationDetails();
+            }
         }
 
         private async Task LoadConsultationDetails()
@@ -386,6 +402,12 @@ namespace ClinicMiniProject.ViewModels
                     System.Diagnostics.Debug.WriteLine($"Auto-selected: {SelectedAppointment.PatientName}");
                 }
                 
+                // Notify UI about changes in computed properties
+                OnPropertyChanged(nameof(HasAppointments));
+                OnPropertyChanged(nameof(HasNoAppointments));
+                OnPropertyChanged(nameof(HasSelectedAppointment));
+                OnPropertyChanged(nameof(CanStartSelectedConsultation));
+                
                 System.Diagnostics.Debug.WriteLine($"=== FINAL: Total appointments shown: {AppointmentsList.Count} ===");
             }
             catch (Exception ex)
@@ -419,14 +441,13 @@ namespace ClinicMiniProject.ViewModels
                         DoctorRemarks = !string.IsNullOrWhiteSpace(consultation.DoctorRemark) ? consultation.DoctorRemark : "No doctor remarks available ";
                         NurseNotes = !string.IsNullOrWhiteSpace(consultation.NurseRemark) ? consultation.NurseRemark : "No Nurse remarks available";
                         CompletedConsultationRemarks = consultation.DoctorRemark ?? "No remarks available";
-                        Prescription = " - "; // Or fetch prescription if you have that logic later
-                    }
-                    else
-                    {
-                        DoctorRemarks = " - ";
-                        NurseNotes = " - ";
                         Prescription = " - ";
                     }
+
+                    // Notify UI about status changes
+                    OnPropertyChanged(nameof(IsConsultationCompleted));
+                    OnPropertyChanged(nameof(IsConsultationInProgress));
+                    OnPropertyChanged(nameof(CanStartSelectedConsultation));
                 }
             }
             catch (Exception ex)
