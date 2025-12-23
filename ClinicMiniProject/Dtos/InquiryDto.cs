@@ -10,7 +10,7 @@ namespace ClinicMiniProject.Dtos
         public int PatientAge { get; init; }
         public string PatientGender { get; init; } = string.Empty;
 
-        public string DoctorId {  get; init; } = string.Empty;
+        public string DoctorId { get; init; } = string.Empty;
         public string? DoctorName { get; init; } // For patient history view
 
         public string FullSymptomDescription { get; init; } = string.Empty;

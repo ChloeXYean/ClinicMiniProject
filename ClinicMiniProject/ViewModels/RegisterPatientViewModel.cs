@@ -10,6 +10,7 @@ namespace ClinicMiniProject.ViewModels
     public class RegisterPatientViewModel : BindableObject
     {
         private readonly NurseController _controller;
+        private readonly IStaffService _staffService;
         private readonly IAuthService _authService;
 
         private string name = string.Empty;

@@ -89,6 +89,8 @@ namespace ClinicMiniProject
 
             builder.Services.AddTransient<NurseProfilePage>();
             builder.Services.AddTransient<NurseProfileViewModel>();
+            builder.Services.AddTransient<EditNurseProfilePage>();
+            builder.Services.AddTransient<EditNurseProfileViewModel>();
 
             builder.Services.AddTransient<RegisterPatientPage>();
             builder.Services.AddTransient<RegisterPatientViewModel>();
@@ -120,7 +122,6 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<InquiryHistory>();
             builder.Services.AddTransient<InquiryHistory_DetailedView>();
             builder.Services.AddTransient<OnlineInquiryPatient>();
-            builder.Services.AddTransient<PatientConsultationDetailsPage>();
             builder.Services.AddTransient<PatientAppointmentHistoryPage>();
             builder.Services.AddTransient<AppointmentBooking_Patient>();
             builder.Services.AddTransient<SelectDoctorPage>();
@@ -138,7 +139,7 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<PatientAppointmentBookingViewModel>();
 
             builder.Services.AddTransient<EndConsultationDetailsViewModel>();
-            builder.Services.AddTransient<ClinicMiniProject.UI.Nurse.EndConsultationDetailsPage>();
+            builder.Services.AddTransient<EndConsultationDetailsPage>();
 
 
             return builder.Build();

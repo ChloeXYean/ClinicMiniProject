@@ -3,6 +3,7 @@ using ClinicMiniProject.UI.Doctor;
 using ClinicMiniProject.UI.Nurse;
 using ClinicMiniProject.UI.Patient;
 using Microsoft.Maui.Controls;
+using System;
 
 namespace ClinicMiniProject
 {
@@ -38,12 +39,12 @@ namespace ClinicMiniProject
             Routing.RegisterRoute(nameof(EndConsultationPage), typeof(EndConsultationPage));
             Routing.RegisterRoute(nameof(RegisterPatientPage), typeof(RegisterPatientPage));
             Routing.RegisterRoute(nameof(WalkInPatientQueuePage), typeof(WalkInPatientQueuePage));
+            Routing.RegisterRoute("EditNurseProfile", typeof(EditNurseProfilePage));
 
             // --- Patient Specific Routes ---
             Routing.RegisterRoute("InquiryHistory", typeof(InquiryHistory));
             Routing.RegisterRoute("InquiryDetailsView", typeof(InquiryHistory_DetailedView));
             Routing.RegisterRoute("OnlineInquiry", typeof(OnlineInquiryPatient));
-            Routing.RegisterRoute("PatientConsultationDetails", typeof(PatientConsultationDetailsPage));
             Routing.RegisterRoute("PatientAppointmentHistory", typeof(PatientAppointmentHistoryPage));
             Routing.RegisterRoute("BookAnAppointment", typeof(AppointmentBooking_Patient));
             Routing.RegisterRoute("AppointmentBooking", typeof(AppointmentBooking_Patient));

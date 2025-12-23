@@ -1,4 +1,4 @@
-using ClinicMiniProject.Models;
+using System.Threading.Tasks;
 
 namespace ClinicMiniProject.Services.Interfaces
 {

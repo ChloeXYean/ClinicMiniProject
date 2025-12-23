@@ -92,8 +92,8 @@ namespace ClinicMiniProject.ViewModels
         public ICommand SelectTimeCommand { get; }
         public ICommand ConfirmSelectionCommand { get; }
 
-        public static readonly TimeSpan StartTime = new TimeSpan(9, 0, 0); // 9 AM
-        public static readonly TimeSpan EndTime = new TimeSpan(21, 0, 0);   // 9 PM
+        public static readonly TimeSpan StartTime = new TimeSpan(10, 0, 0); // 10 AM
+        public static readonly TimeSpan EndTime = new TimeSpan(22, 0, 0);   // 10 PM
 
         public AppointmentBookingViewModel()
         {
@@ -201,6 +201,11 @@ namespace ClinicMiniProject.ViewModels
             {
                 if (isToday)
                 {
+                    // Disable if time has passed
+                    // We can compare TimeSlotModel.Time (TimeSpan) with now.TimeOfDay
+                    // But if now is 10:30, 10:00 slot starts before now. 
+                    // Usually we want to book for future. Let's strictly say start time > now
+                    // Or maybe give a buffer. Let's stick to start time > now.TimeOfDay
 
                     slot.IsEnabled = slot.Time > now.TimeOfDay;
                 }
