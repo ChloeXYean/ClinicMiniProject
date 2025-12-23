@@ -87,6 +87,9 @@ namespace ClinicMiniProject
             builder.Services.AddTransient<NurseHomePage>();
             builder.Services.AddTransient<NurseHomeViewModel>();
 
+            builder.Services.AddTransient<EditNurseProfilePage>();
+            builder.Services.AddTransient<EditNurseProfileViewModel>();
+
             builder.Services.AddTransient<NurseProfilePage>();
             builder.Services.AddTransient<NurseProfileViewModel>();
 
