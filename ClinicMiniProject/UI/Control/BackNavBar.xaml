@@ -2,9 +2,10 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ClinicMiniProject.UI.Control.BackNavBar"
-             x:Name="thisControl">
+             x:Name="thisControl"
+             HorizontalOptions="Fill"
+             VerticalOptions="Start">
 
-    <Grid ColumnDefinitions="Auto, *" Padding="10">
         <Border BackgroundColor="#6EA8FE"
             StrokeThickness="0"
             Padding="20,15,100,20"
@@ -42,5 +43,4 @@
                    Margin="15,0,0,0"/>
             </Grid>
         </Border>
-    </Grid>
 </ContentView>
