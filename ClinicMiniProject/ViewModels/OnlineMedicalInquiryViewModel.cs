@@ -398,7 +398,7 @@ namespace ClinicMiniProject.ViewModels
         private void OnViewDetails(string inquiryId)
         {
             if (!string.IsNullOrWhiteSpace(inquiryId))
-                Shell.Current.GoToAsync($"///InquiryDetailsPage?inquiryId={Uri.EscapeDataString(inquiryId)}");
+                Shell.Current.GoToAsync($"InquiryDetails?inquiryId={Uri.EscapeDataString(inquiryId)}");
         }
 
         private static string BuildSnippet(string text)

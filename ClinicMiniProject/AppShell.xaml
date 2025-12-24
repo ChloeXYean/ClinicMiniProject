@@ -68,10 +68,7 @@
         ContentTemplate="{DataTemplate doc:InquiryPage}"
         Route="Inquiry" />
 
-    <ShellContent
-        Title="Inquiry Details"
-        ContentTemplate="{DataTemplate doc:InquiryDetailsPage}"
-        Route="InquiryDetailsPage" />
+
 
     <ShellContent
         Title="Consultation Details"

@@ -17,7 +17,7 @@
                         <RoundRectangle CornerRadius="16" />
                     </Border.StrokeShape>
                     <VerticalStackLayout Spacing="10">
-                        <Label Text="Date Range Selector" FontAttributes="Bold" />
+                        <Label Text="Select Date Range" FontAttributes="Bold" />
                         <DatePicker Date="{Binding ReportSelectedDate, Mode=TwoWay}" />
 
                         <Label Text="Time Period" FontAttributes="Bold" />
@@ -26,9 +26,6 @@
                             <RadioButton Content="Week" GroupName="Period" CheckedChanged="OnWeekChecked" />
                             <RadioButton Content="Month" GroupName="Period" CheckedChanged="OnMonthChecked" />
                         </HorizontalStackLayout>
-
-                        <Label Text="Select Service Type" FontAttributes="Bold" />
-                        <Picker ItemsSource="{Binding AvailableServiceTypes}" SelectedItem="{Binding SelectedServiceType, Mode=TwoWay}" />
 
                         <Button Text="Generate Report" Command="{Binding GenerateReportCommand}" HeightRequest="48" />
                     </VerticalStackLayout>

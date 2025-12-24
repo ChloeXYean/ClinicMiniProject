@@ -292,7 +292,7 @@ namespace ClinicMiniProject.ViewModels
         {
             if (!string.IsNullOrEmpty(inquiryId))
             {
-                await Shell.Current.GoToAsync($"///InquiryDetailsPage?inquiryId={inquiryId}");
+                await Shell.Current.GoToAsync($"InquiryDetails?inquiryId={inquiryId}");
             }
         }
 
