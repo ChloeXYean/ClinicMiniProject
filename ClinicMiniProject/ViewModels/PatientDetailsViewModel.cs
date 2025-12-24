@@ -67,9 +67,15 @@ namespace ClinicMiniProject.ViewModels
         {
             set
             {
+                System.Diagnostics.Debug.WriteLine($"[PatientDetailsViewModel] PatientId setter called with value: '{value}'");
                 if (!string.IsNullOrEmpty(value))
                 {
+                    System.Diagnostics.Debug.WriteLine($"[PatientDetailsViewModel] Calling LoadPatientDataAsync with IC: '{value}'");
                     _ = LoadPatientDataAsync(value);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"[PatientDetailsViewModel] PatientId is null or empty, skipping load");
                 }
             }
         }
@@ -216,9 +222,11 @@ namespace ClinicMiniProject.ViewModels
 
         private async Task LoadPatientDataAsync(string ic, bool overwriteVisitDetails = true)
         {
+            System.Diagnostics.Debug.WriteLine($"[PatientDetailsViewModel] LoadPatientDataAsync called with IC: '{ic}'");
             var p = await _patientService.GetPatientByICAsync(ic);
             if (p != null)
             {
+                System.Diagnostics.Debug.WriteLine($"[PatientDetailsViewModel] Patient found: {p.patient_name} (IC: {p.patient_IC})");
                 PatientName = p.patient_name;
                 IcNumber = p.patient_IC;
                 Contact = p.patient_contact;
@@ -227,6 +235,10 @@ namespace ClinicMiniProject.ViewModels
                 Gender = "Unknown";
 
                 ProfilePictureSource = ImageSource.FromFile("profilepicture.png");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"[PatientDetailsViewModel] Patient NOT found for IC: '{ic}'");
             }
             await LoadAppointments(ic);
         }
