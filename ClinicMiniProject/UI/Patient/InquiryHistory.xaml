@@ -5,7 +5,7 @@
     xmlns:control="clr-namespace:ClinicMiniProject.UI.Control"
     x:Class="ClinicMiniProject.UI.Patient.InquiryHistory"
     Title="Inquiry History"
-    Shell.NavBarIsVisible="True"
+    Shell.NavBarIsVisible="False"
     BackgroundColor="#F6F7F9">
 
     <Grid RowDefinitions="Auto, *">

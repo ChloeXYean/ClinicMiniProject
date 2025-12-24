@@ -19,7 +19,7 @@ namespace ClinicMiniProject.Services
         {
             try
             {
-                var appt = await _context.Appointments.FindAsync(appointmentId);
+                var appt = await _context.Appointments.FirstOrDefaultAsync(a => a.appointment_ID == appointmentId);
                 if (appt == null) return false;
 
                 appt.appointedAt = newDate;
@@ -426,7 +426,7 @@ namespace ClinicMiniProject.Services
 
         public async Task<bool> CancelAppointmentAsync(string appointmentId)
         {
-            var appt = await _context.Appointments.FindAsync(appointmentId);
+            var appt = await _context.Appointments.FirstOrDefaultAsync(a => a.appointment_ID == appointmentId);
             if (appt == null) return false;
 
             appt.status = "Cancelled"; 
