@@ -426,13 +426,21 @@ namespace ClinicMiniProject.Services
 
         public async Task<bool> CancelAppointmentAsync(string appointmentId)
         {
-            var appt = await _context.Appointments.FirstOrDefaultAsync(a => a.appointment_ID == appointmentId);
-            if (appt == null) return false;
+            try
+            {
+                var appt = await _context.Appointments.FindAsync(appointmentId);
+                if (appt == null) return false;
 
-            appt.status = "Cancelled"; 
+                appt.status = "Cancelled";
 
-            await _context.SaveChangesAsync(); 
-            return true;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[AppointmentService] Error cancelling appointment: {ex.Message}");
+                return false;
+            }
         }
     }
 }

@@ -95,8 +95,6 @@ namespace ClinicMiniProject.ViewModels
                 await Shell.Current.DisplayAlert("Notification", "You have no new notifications.", "OK"));
 
             CancelAppointmentCommand = new Command(async () => await OnCancelAppointment());
-
-            _ = LoadUpcomingAppointment();
         }
 
         private async Task LoadUpcomingAppointment()
@@ -146,7 +144,9 @@ namespace ClinicMiniProject.ViewModels
         public void ReloadData()
         {
             OnPropertyChanged(nameof(Username));
-            _ = LoadUpcomingAppointment();
+            // We should ideally avoid fire-and-forget here too, but for UI refresh it might be needed.
+            // Let's at least wrap it in a Task.Run or similar if needed, or better, await it if possible.
+            MainThread.BeginInvokeOnMainThread(async () => await LoadUpcomingAppointment());
         }
 
         private async Task OnNavigateToHistory()

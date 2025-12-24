@@ -131,8 +131,9 @@ namespace ClinicMiniProject.ViewModels
                     if (isStaffView)
                     {
                         // STAFF SEE: "Patient: Ali" (Dr. Steven)
+                        var patientDetails = await _nurseController.ViewPatientDetailsAsync(appt.patient_IC);
                         string pName = appt.Patient?.patient_name
-                                       ?? _nurseController.ViewPatientDetails(appt.patient_IC)?.patient_name
+                                       ?? patientDetails?.patient_name
                                        ?? "Unknown";
 
                         string dName = appt.Staff?.staff_name ?? appt.staff_ID;
@@ -244,7 +245,7 @@ namespace ClinicMiniProject.ViewModels
                 }
                 else
                 {
-                     // Patient sees patient details page
+                    // Patient sees patient details page
                     await Shell.Current.GoToAsync($"PatientConsultationDetails?appointmentId={appointmentId}");
                 }
             }

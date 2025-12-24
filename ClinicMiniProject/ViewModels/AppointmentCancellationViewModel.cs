@@ -108,6 +108,11 @@ namespace ClinicMiniProject.ViewModels
                     await Shell.Current.DisplayAlert("Error", "Failed to cancel appointment. Please try again.", "OK");
                 }
             }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[AppointmentCancellationViewModel] Error: {ex.Message}");
+                await Shell.Current.DisplayAlert("Error", "An unexpected error occurred. Please try again later.", "OK");
+            }
             finally
             {
                 IsBusy = false;

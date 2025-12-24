@@ -33,7 +33,7 @@ namespace ClinicMiniProject.ViewModels
 
                     var appointments = await _context.Appointments
                         .Include(a => a.Patient)
-                        .Where(a => a.appointedAt.Value.Date == today)
+                        .Where(a => a.appointedAt.HasValue && a.appointedAt.Value.Date == today)
                         .OrderBy(a => a.appointedAt)
                         .ToListAsync();
                     foreach (var appt in appointments)

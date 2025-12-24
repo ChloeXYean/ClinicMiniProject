@@ -32,7 +32,7 @@ namespace ClinicMiniProject.ViewModels
                 if (patient != null)
                 {
                     IsNurseView = true;
-                    LoadFromQueueDto(patient);
+                    _ = LoadFromQueueDtoAsync(patient);
                 }
             }
         }
@@ -46,7 +46,7 @@ namespace ClinicMiniProject.ViewModels
                 {
                     IsNurseView = false;
                     IsDoctorView = false;
-                    LoadCurrentPatientProfile();
+                    _ = LoadCurrentPatientProfileAsync();
                 }
                 else if (value == "Nurse")
                 {
@@ -57,7 +57,7 @@ namespace ClinicMiniProject.ViewModels
                 {
                     IsNurseView = false;
                     IsDoctorView = true;
-                    LoadCurrentPatientProfile();
+                    _ = LoadCurrentPatientProfileAsync();
                 }
             }
         }
@@ -69,7 +69,7 @@ namespace ClinicMiniProject.ViewModels
             {
                 if (!string.IsNullOrEmpty(value))
                 {
-                    LoadPatientData(value);
+                    _ = LoadPatientDataAsync(value);
                 }
             }
         }
@@ -88,7 +88,7 @@ namespace ClinicMiniProject.ViewModels
             }
         }
         public bool IsPatientView => !IsNurseView && !IsDoctorView;
-        
+
         private bool isDoctorView;
         public bool IsDoctorView
         {
@@ -155,12 +155,12 @@ namespace ClinicMiniProject.ViewModels
             CancelAppointmentCommand = new Command<Appointment>(async (a) => await OnCancelAppointment(a));
 
             // Auto-detect source if no parameters were passed yet
-            CheckInitialSource();
+            _ = CheckInitialSourceAsync();
         }
 
         // --- LOGIC METHODS ---
 
-        private void CheckInitialSource()
+        private async Task CheckInitialSourceAsync()
         {
             var currentUser = _authService.GetCurrentUser(); // Is it a Staff?
 
@@ -171,7 +171,7 @@ namespace ClinicMiniProject.ViewModels
                 if (patient != null)
                 {
                     IsNurseView = false;
-                    LoadPatientData(patient.patient_IC);
+                    await LoadPatientDataAsync(patient.patient_IC);
                 }
                 else
                 {
@@ -184,7 +184,7 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
-        private void LoadFromQueueDto(PatientQueueDto dto)
+        private async Task LoadFromQueueDtoAsync(PatientQueueDto dto)
         {
             QueueNo = dto.QueueId ?? "--";
             RegTime = dto.RegisteredTime ?? "--";
@@ -197,16 +197,16 @@ namespace ClinicMiniProject.ViewModels
 
             if (!string.IsNullOrEmpty(dto.ICNumber))
             {
-                LoadPatientData(dto.ICNumber, overwriteVisitDetails: false);
+                await LoadPatientDataAsync(dto.ICNumber, overwriteVisitDetails: false);
             }
         }
 
-        private void LoadCurrentPatientProfile()
+        private async Task LoadCurrentPatientProfileAsync()
         {
             var patient = _authService.GetCurrentPatient();
             if (patient != null)
             {
-                LoadPatientData(patient.patient_IC, overwriteVisitDetails: true);
+                await LoadPatientDataAsync(patient.patient_IC, overwriteVisitDetails: true);
 
                 QueueNo = "";
                 RegTime = "";
@@ -214,9 +214,9 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
-        private async void LoadPatientData(string ic, bool overwriteVisitDetails = true)
+        private async Task LoadPatientDataAsync(string ic, bool overwriteVisitDetails = true)
         {
-            var p = _patientService.GetPatientByIC(ic);
+            var p = await _patientService.GetPatientByICAsync(ic);
             if (p != null)
             {
                 PatientName = p.patient_name;
@@ -235,7 +235,7 @@ namespace ClinicMiniProject.ViewModels
         {
             if (!IsNurseView)
             {
-                LoadCurrentPatientProfile();
+                MainThread.BeginInvokeOnMainThread(async () => await LoadCurrentPatientProfileAsync());
             }
         }
 

@@ -13,7 +13,7 @@ namespace ClinicMiniProject.ViewModels
         private readonly IAuthService _authService;
         private readonly IConsultationService _consultationService;
         private readonly IAppointmentService _appointmentService;
-        
+
         private string _appointmentId;
         private string _currentRemarks;
         private string _editedRemarks;
@@ -119,7 +119,7 @@ namespace ClinicMiniProject.ViewModels
                         {
                             CurrentRemarks = consultation.DoctorRemark ?? "No remarks available";
                         }
-                        
+
                         // Load edit history (if you implement this feature)
                         await LoadEditHistory();
                     }
@@ -141,9 +141,9 @@ namespace ClinicMiniProject.ViewModels
                 EditHistory.Clear();
                 OnPropertyChanged(nameof(HasEditHistory));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                System.Diagnostics.Debug.WriteLine($"Error loading edit history: {ex.Message}");
+                // Silently ignore or log without variable if not used
             }
         }
 
@@ -199,13 +199,13 @@ namespace ClinicMiniProject.ViewModels
                     // await _consultationService.SaveEditHistoryAsync(editRecord);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                System.Diagnostics.Debug.WriteLine($"Error recording edit history: {ex.Message}");
+                // Unused ex
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {

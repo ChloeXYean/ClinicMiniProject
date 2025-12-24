@@ -20,7 +20,7 @@ namespace ClinicMiniProject.ViewModels
             {
                 if (!string.IsNullOrEmpty(value))
                 {
-                    LoadPatientByIC(value);
+                    _ = LoadPatientByICAsync(value);
                 }
             }
         }
@@ -70,9 +70,9 @@ namespace ClinicMiniProject.ViewModels
             }
         }
 
-        private void LoadPatientByIC(string targetIC)
+        private async Task LoadPatientByICAsync(string targetIC)
         {
-            var p = _patientService.GetPatientByIC(targetIC);
+            var p = await _patientService.GetPatientByICAsync(targetIC);
             if (p != null)
             {
                 MapPatientToProperties(p);

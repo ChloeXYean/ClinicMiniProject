@@ -26,7 +26,7 @@ namespace ClinicMiniProject.Controller
         {
             try
             {
-                var existingPatient = _patientService.GetPatientByIC(ic);
+                var existingPatient = await _patientService.GetPatientByICAsync(ic);
 
                 // Check if patient already exists
                 if (existingPatient != null)
@@ -49,7 +49,7 @@ namespace ClinicMiniProject.Controller
                     patient_contact = phone,
                     isAppUser = false
                 };
-                _patientService.AddPatient(patient);
+                await _patientService.AddPatientAsync(patient);
 
 
                 var doctors = _staffService.GetAllDocs();
@@ -126,9 +126,9 @@ namespace ClinicMiniProject.Controller
         }
 
 
-        public Patient? ViewPatientDetails(string patientIC)
+        public async Task<Patient?> ViewPatientDetailsAsync(string patientIC)
         {
-            return _patientService.GetPatientByIC(patientIC);
+            return await _patientService.GetPatientByICAsync(patientIC);
         }
 
         public async Task<List<Appointment>> GetUpcomingAppointment()
@@ -171,7 +171,7 @@ namespace ClinicMiniProject.Controller
 
             foreach (var app in sortedWalkIns)
             {
-                var patient = _patientService.GetPatientByIC(app.patient_IC);
+                var patient = await _patientService.GetPatientByICAsync(app.patient_IC);
 
                 queueList.Add(new PatientQueueDto
                 {
